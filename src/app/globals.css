@@ -10,7 +10,7 @@
     --card-foreground: 222.2 47.4% 11.2%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
-    --primary: 262 83% 50%; /* #6D28D9 - Purple */
+    --primary: 262 83% 58%; /* #6D28D9 - Purple */
     --primary-foreground: 210 40% 98%;
     --secondary: 221 83% 53%; /* #2563EB - Blue */
     --secondary-foreground: 210 40% 98%;
@@ -22,21 +22,21 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 50%;
-    --radius: 0.75rem;
-    --chart-1: 262 83% 50%;
+    --ring: 262 83% 58%;
+    --radius: 1rem;
+    --chart-1: 262 83% 58%;
     --chart-2: 221 83% 53%;
     --chart-3: 161 72% 39%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 222.2 47.4% 11.2%;
-    --sidebar-primary: 262 83% 50%;
+    --sidebar-primary: 262 83% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 94%;
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 262 83% 50%;
+    --sidebar-ring: 262 83% 58%;
   }
 }
 
@@ -53,14 +53,30 @@
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .tech-grid {
-  background-image: linear-gradient(rgba(109, 40, 217, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(109, 40, 217, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-image: linear-gradient(rgba(109, 40, 217, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(109, 40, 217, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px rgba(109, 40, 217, 0.15);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(109, 40, 217, 0.05) 0%, transparent 70%);
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5;
 }
