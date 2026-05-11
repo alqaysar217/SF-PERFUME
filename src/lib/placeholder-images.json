@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Abstract tech learning background",
+      "imageUrl": "https://picsum.photos/seed/siraj1/1200/800",
+      "imageHint": "technology education"
+    },
+    {
+      "id": "course-web",
+      "description": "Web Development Course",
+      "imageUrl": "https://picsum.photos/seed/web/600/400",
+      "imageHint": "coding programming"
+    },
+    {
+      "id": "course-ai",
+      "description": "Artificial Intelligence Course",
+      "imageUrl": "https://picsum.photos/seed/ai/600/400",
+      "imageHint": "artificial intelligence"
+    },
+    {
+      "id": "book-accounting",
+      "description": "Accounting Principles Book",
+      "imageUrl": "https://picsum.photos/seed/acc/400/600",
+      "imageHint": "accounting book"
+    },
+    {
+      "id": "service-cv",
+      "description": "Professional CV Design Service",
+      "imageUrl": "https://picsum.photos/seed/cv/600/400",
+      "imageHint": "resume design"
+    }
+  ]
 }
