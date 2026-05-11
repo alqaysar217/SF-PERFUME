@@ -4,39 +4,31 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* #F8FAFC */
-    --foreground: 222.2 47.4% 11.2%; /* #0F172A */
+    --background: 36 18% 96%; /* #F7F5F2 - Creamy warm background */
+    --foreground: 0 0% 12%; /* #1F1F1F - Dark Charcoal */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 0 0% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-    --primary: 262 83% 58%; /* #6D28D9 - Purple */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 221 83% 53%; /* #2563EB - Blue */
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 161 72% 39%; /* #10B981 - Green */
-    --accent-foreground: 210 40% 98%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 8 80% 16%; /* #4A1208 - Dark Luxury Brown */
+    --primary-foreground: 36 18% 96%;
+    --secondary: 35 90% 53%; /* #F39A1E - Warm Orange Light */
+    --secondary-foreground: 36 18% 96%;
+    --muted: 36 10% 90%;
+    --muted-foreground: 36 5% 45%;
+    --accent: 38 59% 64%; /* #D9B26F - Soft Gold */
+    --accent-foreground: 8 80% 16%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 58%;
-    --radius: 1rem;
-    --chart-1: 262 83% 58%;
-    --chart-2: 221 83% 53%;
-    --chart-3: 161 72% 39%;
+    --border: 36 15% 88%;
+    --input: 36 15% 88%;
+    --ring: 8 80% 16%;
+    --radius: 1.25rem;
+    --chart-1: 8 80% 16%;
+    --chart-2: 35 90% 53%;
+    --chart-3: 38 59% 64%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 210 40% 98%;
-    --sidebar-foreground: 222.2 47.4% 11.2%;
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 94%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 262 83% 58%;
   }
 }
 
@@ -53,30 +45,34 @@
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 253, 249, 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(74, 18, 8, 0.05);
 }
 
 .tech-grid {
-  background-image: linear-gradient(rgba(109, 40, 217, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(109, 40, 217, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-image: linear-gradient(rgba(74, 18, 8, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 18, 8, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
-.glow-primary {
-  box-shadow: 0 0 20px rgba(109, 40, 217, 0.15);
+.glow-warm {
+  box-shadow: 0 0 30px rgba(243, 154, 30, 0.1);
 }
 
-.glow-secondary {
-  box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+.glow-gold {
+  box-shadow: 0 0 25px rgba(217, 178, 111, 0.15);
 }
 
 .hero-gradient {
-  background: radial-gradient(circle at 50% 50%, rgba(109, 40, 217, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(243, 154, 30, 0.04) 0%, transparent 75%);
 }
 
 .card-hover {
-  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5;
+  @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/5;
+}
+
+.luxury-border {
+  border: 1px solid rgba(217, 178, 111, 0.2);
 }

@@ -1,68 +1,89 @@
 import Link from "next/link"
-import { Facebook, Instagram, Youtube, Twitter, MessageCircle } from "lucide-react"
+import { Facebook, Instagram, Youtube, Twitter, MessageCircle, Sparkles } from "lucide-react"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-foreground text-background py-16">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer className="bg-primary text-background py-20 relative overflow-hidden">
+      {/* Warm Glow Decorations */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-[100px] -z-10"></div>
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] -z-10"></div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
           {/* Brand Info */}
-          <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                <span className="text-white font-headline font-bold text-2xl">S</span>
+          <div className="space-y-8">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center luxury-border shadow-lg shadow-secondary/10">
+                <span className="text-primary font-headline font-bold text-2xl">S</span>
               </div>
-              <span className="text-2xl font-headline font-bold text-background">سراج</span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-headline font-bold text-background tracking-tight">سراج</span>
+                <span className="text-[10px] font-bold text-accent uppercase tracking-widest font-english">Education</span>
+              </div>
             </Link>
-            <p className="text-muted-foreground leading-relaxed">
-              منصة سراج التعليمية تهدف إلى توفير تعليم عصري احترافي بجودة عالية وسعر مناسب للشباب العربي الطموح.
+            <p className="text-background/70 leading-relaxed font-medium">
+              نحن في سراج نؤمن أن التعليم هو النور الذي يبني المستقبل. منصتنا العربية تهدف لتقديم مهارات الغد بجودة تليق بتطلعاتك.
             </p>
-            <div className="flex items-center gap-4">
-              <Link href="#" className="hover:text-primary transition-colors"><Facebook className="w-5 h-5" /></Link>
-              <Link href="#" className="hover:text-primary transition-colors"><Instagram className="w-5 h-5" /></Link>
-              <Link href="#" className="hover:text-primary transition-colors"><Youtube className="w-5 h-5" /></Link>
-              <Link href="#" className="hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></Link>
-              <Link href="https://wa.me/yourwhatsapp" className="hover:text-primary transition-colors text-accent"><MessageCircle className="w-5 h-5" /></Link>
+            <div className="flex items-center gap-5">
+              <Link href="#" className="hover:text-secondary transition-all transform hover:scale-110"><Facebook className="w-6 h-6" /></Link>
+              <Link href="#" className="hover:text-secondary transition-all transform hover:scale-110"><Instagram className="w-6 h-6" /></Link>
+              <Link href="#" className="hover:text-secondary transition-all transform hover:scale-110"><Youtube className="w-6 h-6" /></Link>
+              <Link href="#" className="hover:text-secondary transition-all transform hover:scale-110"><Twitter className="w-6 h-6" /></Link>
+              <Link href="https://wa.me/yourwhatsapp" className="text-secondary hover:text-accent transition-all transform hover:scale-110"><MessageCircle className="w-6 h-6" /></Link>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-bold mb-6">المنصة</h4>
+            <h4 className="text-xl font-headline font-bold mb-8 text-secondary flex items-center gap-2">
+              المعرفة
+              <Sparkles className="w-4 h-4" />
+            </h4>
             <ul className="space-y-4">
-              <li><Link href="/courses" className="text-muted-foreground hover:text-primary transition-colors">الكورسات التعليمية</Link></li>
-              <li><Link href="/paths" className="text-muted-foreground hover:text-primary transition-colors">المسارات التعليمية</Link></li>
-              <li><Link href="/books" className="text-muted-foreground hover:text-primary transition-colors">مكتبة سراج</Link></li>
-              <li><Link href="/services" className="text-muted-foreground hover:text-primary transition-colors">الخدمات والاستشارات</Link></li>
+              <li><Link href="/courses" className="text-background/70 hover:text-secondary transition-colors font-medium">الكورسات الاحترافية</Link></li>
+              <li><Link href="/paths" className="text-background/70 hover:text-secondary transition-colors font-medium">المسارات التعليمية</Link></li>
+              <li><Link href="/books" className="text-background/70 hover:text-secondary transition-colors font-medium">مكتبة سراج</Link></li>
+              <li><Link href="/services" className="text-background/70 hover:text-secondary transition-colors font-medium">الاستشارات الفنية</Link></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h4 className="text-lg font-bold mb-6">الدعم والمساعدة</h4>
+            <h4 className="text-xl font-headline font-bold mb-8 text-secondary">الدعم والتمكين</h4>
             <ul className="space-y-4">
-              <li><Link href="/verify" className="text-muted-foreground hover:text-primary transition-colors">التحقق من الشهادات</Link></li>
-              <li><Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">الأسئلة الشائعة</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">تواصل معنا</Link></li>
-              <li><Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors">الشروط والأحكام</Link></li>
+              <li><Link href="/verify" className="text-background/70 hover:text-secondary transition-colors font-medium">التحقق من الشهادات</Link></li>
+              <li><Link href="/faq" className="text-background/70 hover:text-secondary transition-colors font-medium">الأسئلة الشائعة</Link></li>
+              <li><Link href="/contact" className="text-background/70 hover:text-secondary transition-colors font-medium">تواصل مع الإدارة</Link></li>
+              <li><Link href="/terms" className="text-background/70 hover:text-secondary transition-colors font-medium">اتفاقية الاستخدام</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-lg font-bold mb-6">ابقى على تواصل</h4>
-            <div className="space-y-4 text-muted-foreground">
-              <p>واتساب: +967 7xx xxx xxx</p>
-              <p>البريد الإلكتروني: info@sirajplatform.com</p>
-              <p>الإدارة: م / سلطان باهبري</p>
+            <h4 className="text-xl font-headline font-bold mb-8 text-secondary">تواصل معنا</h4>
+            <div className="space-y-5 text-background/70 font-medium">
+              <div className="flex items-start gap-3">
+                <MessageCircle className="w-5 h-5 text-accent shrink-0 mt-1" />
+                <p>واتساب الإدارة: +967 7xx xxx xxx</p>
+              </div>
+              <p>البريد: care@sirajplatform.com</p>
+              <p>المشرف العام: م / سلطان باهبري</p>
+              <div className="pt-4">
+                <div className="bg-background/5 p-4 rounded-xl border border-white/10">
+                  <p className="text-xs text-accent font-bold mb-1">ساعات العمل</p>
+                  <p className="text-sm">السبت - الخميس: 9ص - 10م</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-muted/20 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} جميع الحقوق محفوظة لمنصة سراج التعليمية. صنع بكل حب لدعم الشباب العربي.</p>
+        <div className="mt-20 pt-10 border-t border-white/5 text-center">
+          <p className="text-sm text-background/40 font-medium">
+            © {currentYear} جميع الحقوق محفوظة لمنصة سراج التعليمية. صُممت بكل فخر لنشر الضوء والمعرفة.
+          </p>
         </div>
       </div>
     </footer>
