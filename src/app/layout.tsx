@@ -2,10 +2,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { BottomNav } from '@/components/navigation/bottom-nav';
 
 export const metadata: Metadata = {
-  title: 'تطبيق جديد | مساحة عمل نظيفة',
-  description: 'ابدأ بناء مشروعك القادم هنا.',
+  title: 'SF PERFUME | عالم العطور الفاخرة',
+  description: 'متجر SF PERFUME للعطور الأصلية والساعات الفاخرة - حضرموت، المكلا',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -15,10 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body className="antialiased">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      </head>
+      <body className="antialiased pb-24 min-h-screen">
         <main>
           {children}
         </main>
+        <BottomNav />
         <Toaster />
       </body>
     </html>

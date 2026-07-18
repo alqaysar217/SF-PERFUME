@@ -1,34 +1,40 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-bg",
-      "description": "Abstract tech learning background",
-      "imageUrl": "https://picsum.photos/seed/siraj1/1200/800",
-      "imageHint": "technology education"
+      "id": "perfume-1",
+      "description": "Luxury Men Perfume Bottle",
+      "imageUrl": "https://picsum.photos/seed/p1/600/800",
+      "imageHint": "luxury perfume"
     },
     {
-      "id": "course-web",
-      "description": "Web Development Course",
-      "imageUrl": "https://picsum.photos/seed/web/600/400",
-      "imageHint": "coding programming"
+      "id": "perfume-2",
+      "description": "Elegant Women Perfume",
+      "imageUrl": "https://picsum.photos/seed/p2/600/800",
+      "imageHint": "women fragrance"
     },
     {
-      "id": "course-ai",
-      "description": "Artificial Intelligence Course",
-      "imageUrl": "https://picsum.photos/seed/ai/600/400",
-      "imageHint": "artificial intelligence"
+      "id": "perfume-3",
+      "description": "Gold Edition Fragrance",
+      "imageUrl": "https://picsum.photos/seed/p3/600/800",
+      "imageHint": "gold perfume"
     },
     {
-      "id": "book-accounting",
-      "description": "Accounting Principles Book",
-      "imageUrl": "https://picsum.photos/seed/acc/400/600",
-      "imageHint": "accounting book"
+      "id": "watch-1",
+      "description": "Luxury Silver Watch",
+      "imageUrl": "https://picsum.photos/seed/w1/600/800",
+      "imageHint": "luxury watch"
     },
     {
-      "id": "service-cv",
-      "description": "Professional CV Design Service",
-      "imageUrl": "https://picsum.photos/seed/cv/600/400",
-      "imageHint": "resume design"
+      "id": "brand-logo",
+      "description": "Minimalist Brand Logo",
+      "imageUrl": "https://picsum.photos/seed/brand/200/200",
+      "imageHint": "luxury brand"
+    },
+    {
+      "id": "banner-1",
+      "description": "Hero Banner Perfume",
+      "imageUrl": "https://picsum.photos/seed/banner1/1200/600",
+      "imageHint": "fragrance shop"
     }
   ]
 }
