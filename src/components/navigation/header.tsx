@@ -93,6 +93,7 @@ export function Header() {
     { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
   ]
 
+  // منع مشاكل Hydration عبر عدم عرض الهيدر إلا بعد التأكد من تركيب المكون في المتصفح
   if (!mounted) return <header className="h-16 bg-white/95" />
 
   if (isAdmin && !isAdminLogin) {
@@ -117,6 +118,11 @@ export function Header() {
           </div>
         </div>
 
+        {/* Center: Title */}
+        <div className="flex-1 flex justify-center">
+           <h1 className="text-sm font-black text-luxury-black">{getTitle()}</h1>
+        </div>
+
         {/* Left Side: Sidebar Trigger */}
         <div className="flex justify-end">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -125,43 +131,45 @@ export function Header() {
                 <Menu className="w-5 h-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="rounded-l-[2.5rem] p-0 overflow-hidden border-none bg-background w-72">
+            <SheetContent side="right" className="rounded-l-[2rem] p-0 overflow-hidden border-none bg-background w-72">
               <SheetHeader className="sr-only">
                 <SheetTitle>قائمة التحكم بالإدارة</SheetTitle>
               </SheetHeader>
-              <div className="bg-luxury-black p-8 text-white space-y-4">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-luxury-black font-black text-xl shadow-xl">SF</div>
+              
+              {/* Sidebar Header - Compact Row */}
+              <div className="p-5 border-b border-gray-100 flex items-center gap-3">
+                <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg">SF</div>
                 <div>
-                  <h2 className="font-black text-lg">لوحة الإدارة</h2>
-                  <p className="text-primary text-[10px] font-bold uppercase tracking-widest">Admin Control Center</p>
+                  <h2 className="font-black text-sm text-luxury-black">SF PERFUME</h2>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">Control Center</p>
                 </div>
               </div>
               
-              <div className="p-4 space-y-1 mt-4">
+              <div className="p-3 space-y-1 mt-2">
                 {adminMenuItems.map((item) => (
                   <Link 
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors group"
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                   >
-                    <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
-                      <item.icon className="w-5 h-5" />
+                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                      <item.icon className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-bold text-luxury-black">{item.name}</span>
+                    <span className="text-xs font-bold text-luxury-black">{item.name}</span>
                   </Link>
                 ))}
                 
-                <div className="h-px bg-gray-100 my-4 mx-4" />
+                <div className="h-px bg-gray-50 my-4 mx-3" />
                 
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group"
                 >
-                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-                    <LogOut className="w-5 h-5" />
+                  <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                    <LogOut className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-bold">تسجيل الخروج</span>
+                  <span className="text-xs font-bold">تسجيل الخروج</span>
                 </button>
               </div>
             </SheetContent>
