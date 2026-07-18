@@ -4,10 +4,9 @@
 import { useParams, useRouter } from "next/navigation"
 import { PRODUCTS } from "@/lib/mock-data"
 import Image from "next/image"
-import { ArrowRight, Heart, Share2, MessageCircle, Star, ShieldCheck, Zap, Sparkles, Droplets, Maximize2 } from "lucide-react"
+import { ArrowRight, Heart, Share2, MessageCircle, Star, ShieldCheck, Zap, Sparkles, Droplets } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { ProductCard } from "@/components/shared/product-card"
@@ -17,13 +16,16 @@ export default function ProductDetails() {
   const router = useRouter()
   const product = PRODUCTS.find(p => p.id === id)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     if (!product) return
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
     setIsFavorite(favorites.some((f: any) => f.id === product.id))
   }, [product])
 
+  if (!mounted) return null
   if (!product) return <div className="p-20 text-center font-bold">المنتج غير موجود</div>
 
   const handleWhatsApp = () => {
@@ -67,7 +69,7 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Hero Section - Optimized height for mobile */}
+      {/* Hero Section - Optimized height */}
       <div className="relative w-full aspect-[4/3] bg-white overflow-hidden">
         <Image 
           src={product.image} 
@@ -152,7 +154,7 @@ export default function ProductDetails() {
           </div>
         </section>
 
-        {/* Similar Products - Using consistent ProductCard */}
+        {/* Similar Products - Fixed consistency */}
         <section className="space-y-4 pt-4">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-[13px] font-black text-luxury-black">منتجات قد تنال إعجابك</h3>

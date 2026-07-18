@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, ShoppingBag, Percent, Heart, MoreHorizontal } from "lucide-react"
@@ -8,6 +9,11 @@ import { cn } from "@/lib/utils"
 
 export function BottomNav() {
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const navItems = [
     { name: "الرئيسية", href: "/", icon: Home },
@@ -16,6 +22,9 @@ export function BottomNav() {
     { name: "المفضلة", href: "/favorites", icon: Heart },
     { name: "المزيد", href: "/more", icon: MoreHorizontal },
   ]
+
+  // Prevent hydration mismatch
+  if (!mounted) return null
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 px-4 pb-6 pt-3 z-50 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.04)] md:max-w-md md:mx-auto">
