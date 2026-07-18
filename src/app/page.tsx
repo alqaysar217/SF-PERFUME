@@ -83,7 +83,6 @@ export default function HomePage() {
               width={40}
               height={40}
               className="object-cover"
-              data-ai-hint="luxury logo"
             />
           </div>
           <div className="flex flex-col">
@@ -117,7 +116,6 @@ export default function HomePage() {
                   alt={img.title}
                   fill
                   className="object-cover opacity-50"
-                  data-ai-hint="luxury background"
                 />
                 <div className="absolute inset-0 p-8 flex flex-col justify-center gap-2">
                   <div className="flex items-center gap-2 bg-primary/20 backdrop-blur-sm w-fit px-3 py-1 rounded-full border border-primary/30">
