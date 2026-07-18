@@ -1,11 +1,11 @@
+
 "use client"
 
 import { useState } from "react"
-import { Search, SlidersHorizontal, ArrowRight, X, User, UserRound, Watch, LayoutGrid } from "lucide-react"
+import { Search, SlidersHorizontal, X, User, UserRound, Watch, LayoutGrid } from "lucide-react"
 import { PRODUCTS } from "@/lib/mock-data"
 import { ProductCard } from "@/components/shared/product-card"
 import { Input } from "@/components/ui/input"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
@@ -31,16 +31,6 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <Link href="/" className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
-          <ArrowRight className="w-5 h-5" />
-        </Link>
-        <h1 className="text-lg font-black text-luxury-black">المتجر الكامل</h1>
-        <div className="w-10" />
-      </div>
-
-      {/* Search & Filter Bar */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
@@ -59,7 +49,7 @@ export default function ProductsPage() {
             </button>
           </SheetTrigger>
           <SheetContent side="bottom" className="rounded-t-[2.5rem] p-8 h-fit min-h-[40vh]">
-            <SheetHeader className="mb-8">
+            <SheetHeader className="mb-8 relative">
               <SheetTitle className="text-right font-black text-xl">تصفية المنتجات</SheetTitle>
             </SheetHeader>
             <div className="space-y-8">
@@ -93,7 +83,6 @@ export default function ProductsPage() {
         </Sheet>
       </div>
 
-      {/* Active Filter Info */}
       <div className="flex items-center justify-between px-1">
         <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
           عرض: {activeFilter} ({filtered.length} منتج)
@@ -108,7 +97,6 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Product List - Single Column */}
       <div className="flex flex-col gap-8">
         {filtered.map(product => (
           <ProductCard key={product.id} product={product} />

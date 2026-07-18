@@ -3,11 +3,35 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, ShoppingBag, MapPin } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Search, ShoppingBag, MapPin, ArrowRight } from "lucide-react"
 import Image from "next/image"
 
+const PAGE_TITLES: { [key: string]: string } = {
+  "/products": "المتجر الكامل",
+  "/offers": "العروض الحصرية",
+  "/favorites": "المفضلة",
+  "/more": "المزيد",
+  "/cart": "سلة التسوق",
+  "/about": "من نحن",
+  "/contact": "تواصل معنا",
+  "/payment-info": "بيانات التحويل",
+  "/faq": "الأسئلة الشائعة",
+  "/guide": "دليل العطور",
+  "/brands": "الماركات العالمية",
+}
+
 export function Header() {
+  const pathname = usePathname()
+  const router = useRouter()
   const [cartCount, setCartCount] = useState(0)
+  const isHome = pathname === "/"
+  
+  // Handle dynamic titles for product details
+  const getTitle = () => {
+    if (pathname.startsWith("/products/")) return "تفاصيل المنتج"
+    return PAGE_TITLES[pathname] || ""
+  }
 
   const updateCartCount = () => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]')
@@ -23,23 +47,37 @@ export function Header() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
-      <Link href="/" className="flex items-center gap-2 group active:scale-95 transition-transform">
-        <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center border border-white/10 shadow-sm overflow-hidden relative">
-           <Image 
-            src="https://picsum.photos/seed/brand/200/200" 
-            alt="SF Logo" 
-            fill
-            className="object-cover"
-          />
-        </div>
-        <div className="flex flex-col">
-          <h1 className="text-sm font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
-          <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
-            <MapPin className="w-2 h-2 text-primary" />
-            المكلا، حضرموت
+      <div className="flex items-center gap-3">
+        {isHome ? (
+          <Link href="/" className="flex items-center gap-2 group active:scale-95 transition-transform">
+            <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center border border-white/10 shadow-sm overflow-hidden relative">
+               <Image 
+                src="https://picsum.photos/seed/brand/200/200" 
+                alt="SF Logo" 
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-sm font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
+              <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
+                <MapPin className="w-2 h-2 text-primary" />
+                المكلا، حضرموت
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => router.back()}
+              className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
+            <h1 className="text-sm font-black text-luxury-black">{getTitle()}</h1>
           </div>
-        </div>
-      </Link>
+        )}
+      </div>
       
       <div className="flex items-center gap-2">
         <Link href="/products" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform">

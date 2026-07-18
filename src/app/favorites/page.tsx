@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Heart, ArrowRight } from "lucide-react"
+import { Heart } from "lucide-react"
 import { Product } from "@/lib/mock-data"
 import { ProductCard } from "@/components/shared/product-card"
 import Link from "next/link"
@@ -28,15 +28,6 @@ export default function FavoritesPage() {
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in min-h-screen pb-32">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <Link href="/" className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
-          <ArrowRight className="w-5 h-5" />
-        </Link>
-        <h1 className="text-lg font-black text-luxury-black text-center">المفضلة</h1>
-        <div className="w-10" />
-      </div>
-
       {favorites.length > 0 ? (
         <div className="flex flex-col gap-8">
           {favorites.map(product => (

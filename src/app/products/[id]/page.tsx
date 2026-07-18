@@ -1,10 +1,10 @@
 
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { PRODUCTS } from "@/lib/mock-data"
 import Image from "next/image"
-import { ArrowRight, Heart, Share2, ShoppingBag, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus } from "lucide-react"
+import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
@@ -14,7 +14,6 @@ import { toast } from "@/hooks/use-toast"
 
 export default function ProductDetails() {
   const { id } = useParams()
-  const router = useRouter()
   const product = PRODUCTS.find(p => p.id === id)
   const [isFavorite, setIsFavorite] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -65,19 +64,14 @@ export default function ProductDetails() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-32 animate-fade-in">
-      <div className="fixed top-20 left-4 right-4 z-40 flex justify-between items-center pointer-events-none">
-        <button onClick={() => router.back()} className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg border border-gray-100 pointer-events-auto active:scale-90 transition-transform">
-          <ArrowRight className="w-5 h-5" />
-        </button>
-        <div className="flex gap-2 pointer-events-auto">
-          <button onClick={toggleFavorite} className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg border border-gray-100 active:scale-90 transition-transform">
-            <Heart className={cn("w-4 h-4 transition-colors", isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-300')} />
-          </button>
-        </div>
-      </div>
-
       <div className="relative w-full aspect-[4/3] bg-white overflow-hidden">
         <Image src={product.image} alt={product.name} fill className="object-cover" priority />
+        <button 
+          onClick={toggleFavorite}
+          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg active:scale-90 transition-transform z-10"
+        >
+          <Heart className={cn("w-5 h-5 transition-colors", isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-300')} />
+        </button>
         <div className="absolute bottom-4 right-4">
           <Badge className="bg-luxury-black text-primary border-none px-4 py-1.5 rounded-lg text-[10px] font-black shadow-xl uppercase tracking-widest">
             {product.size}
