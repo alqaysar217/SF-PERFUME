@@ -8,6 +8,7 @@ import { BottomNav } from '@/components/navigation/bottom-nav';
 import { WhatsAppBubble } from '@/components/shared/whatsapp-bubble';
 import { Header } from '@/components/navigation/header';
 import { FirebaseProvider } from '@/firebase/provider';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 export default function RootLayout({
   children,
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased pb-24 min-h-screen bg-background text-foreground">
         <FirebaseProvider>
+          <FirebaseErrorListener />
           <Header />
           <main className="md:max-w-md md:mx-auto w-full min-h-[calc(100vh-64px)]">
             {children}
