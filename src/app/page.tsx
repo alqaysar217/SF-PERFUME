@@ -149,8 +149,8 @@ export default function HomePage() {
         </section>
 
         <section className="px-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 ml-4 py-1">
+          <div className="flex items-center">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 py-1">
               {CATEGORIES_WITH_ICONS.map((cat, i) => {
                 const Icon = cat.icon
                 return (
@@ -170,9 +170,6 @@ export default function HomePage() {
                 )
               })}
             </div>
-            <button className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-luxury-black shadow-sm shrink-0">
-              <SlidersHorizontal className="w-4 h-4" />
-            </button>
           </div>
         </section>
 
