@@ -68,14 +68,22 @@ export function Header() {
 
   if (pathname.startsWith('/admin')) {
     return (
-      <header className="bg-luxury-black text-white sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-white/10 md:max-w-md md:mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+      <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
+        <div className="flex-1 flex items-center">
+          <button 
+            onClick={() => router.back()} 
+            className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform"
+          >
             <ArrowRight className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-black">{getTitle()}</h1>
         </div>
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-black text-xs text-luxury-black">ADMIN</div>
+        
+        <h1 className="text-sm font-black text-luxury-black text-center flex-[2]">{getTitle()}</h1>
+        
+        <div className="flex-1 flex justify-end">
+          {/* Hidden spacer to maintain perfect centering */}
+          <div className="w-10" />
+        </div>
       </header>
     )
   }
