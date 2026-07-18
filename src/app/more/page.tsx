@@ -1,6 +1,7 @@
+
 "use client"
 
-import { Info, Phone, Award, BookOpen, Share2, Instagram, Facebook, MessageCircle, ChevronLeft } from "lucide-react"
+import { Info, Phone, Award, BookOpen, Share2, Instagram, Facebook, MessageCircle, ChevronLeft, CreditCard, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
@@ -9,6 +10,8 @@ export default function MorePage() {
   const menuItems = [
     { name: "من نحن", icon: Info, href: "/about" },
     { name: "تواصل معنا", icon: Phone, href: "/contact" },
+    { name: "بيانات التحويل البنكي", icon: CreditCard, href: "/payment-info" },
+    { name: "الأسئلة الشائعة", icon: HelpCircle, href: "/faq" },
     { name: "الماركات العالمية", icon: Award, href: "/brands" },
     { name: "دليل اختيار العطور", icon: BookOpen, href: "/guide" },
   ]
@@ -82,24 +85,6 @@ export default function MorePage() {
           </div>
           <ChevronLeft className="w-5 h-5 text-gray-300" />
         </button>
-      </div>
-
-      {/* Contact Support Card */}
-      <div className="bg-primary p-8 rounded-[2.5rem] text-white flex flex-col gap-6 shadow-xl shadow-primary/20 relative overflow-hidden">
-         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
-         <div className="space-y-2">
-            <h3 className="text-lg font-black">هل تحتاج لمساعدة؟</h3>
-            <p className="text-white/70 text-xs">فريق الدعم الفني متواجد لخدمتك طوال اليوم.</p>
-         </div>
-         <Button 
-            asChild
-            className="bg-white text-primary hover:bg-white/90 rounded-2xl h-14 font-black gap-2 shadow-lg"
-          >
-            <Link href="https://wa.me/967777161451">
-              <MessageCircle className="w-5 h-5" />
-              تحدث معنا الآن
-            </Link>
-         </Button>
       </div>
 
       {/* Social Media */}
