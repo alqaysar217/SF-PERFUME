@@ -3,7 +3,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingBag, Tag, Maximize2, Award } from "lucide-react"
+import { Heart, ShoppingBag, Maximize2, Award, Star } from "lucide-react"
 import { Product } from "@/lib/mock-data"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
