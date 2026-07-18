@@ -118,11 +118,6 @@ export function Header() {
           </div>
         </div>
 
-        {/* Center: Title */}
-        <div className="flex-1 flex justify-center">
-           <h1 className="text-sm font-black text-luxury-black">{getTitle()}</h1>
-        </div>
-
         {/* Left Side: Sidebar Trigger */}
         <div className="flex justify-end">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -141,7 +136,7 @@ export function Header() {
                 <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg">SF</div>
                 <div>
                   <h2 className="font-black text-sm text-luxury-black">SF PERFUME</h2>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">Control Center</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">Admin Control Center</p>
                 </div>
               </div>
               
