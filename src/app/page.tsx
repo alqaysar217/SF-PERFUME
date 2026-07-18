@@ -37,18 +37,29 @@ export default function HomePage() {
     <div className="flex flex-col gap-8 animate-fade-in pb-24">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-4 py-4 flex items-center justify-between border-b border-gray-50">
-        <div className="flex flex-col">
-          <h1 className="text-xl font-black tracking-tighter text-luxury-black">SF PERFUME</h1>
-          <div className="flex items-center gap-1 text-[8px] text-gray-400 font-bold uppercase">
-            <MapPin className="w-2 h-2 text-primary" />
-            حضرموت - المكلا
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center overflow-hidden relative border border-primary/20">
+            <Image 
+              src="https://picsum.photos/seed/brand/200/200" 
+              alt="SF Logo" 
+              fill 
+              className="object-cover"
+              data-ai-hint="luxury brand"
+            />
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-black tracking-tighter text-luxury-black">SF PERFUME</h1>
+            <div className="flex items-center gap-1 text-[8px] text-gray-400 font-bold uppercase">
+              <MapPin className="w-2 h-2 text-primary" />
+              حضرموت - المكلا
+            </div>
           </div>
         </div>
+        
         <div className="flex items-center gap-4">
           <Link href="/search">
             <Search className="w-6 h-6 text-luxury-black" />
           </Link>
-          <div className="w-10 h-10 bg-luxury-black text-white rounded-xl flex items-center justify-center font-bold">SF</div>
         </div>
       </header>
 
@@ -143,7 +154,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-primary">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h4 className="text-xs font-black text-luxury-black">{feature.title}</h4>
+                  <h3 className="text-xs font-black text-luxury-black">{feature.title}</h3>
                   <p className="text-[9px] text-gray-400">{feature.desc}</p>
                 </div>
               )
