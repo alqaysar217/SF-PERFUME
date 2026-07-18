@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, MapPin, ShieldCheck, Star, ArrowLeft, Percent, Instagram, Facebook, Phone, SlidersHorizontal, Sparkles } from "lucide-react"
+import { Search, MapPin, ShieldCheck, Star, ArrowLeft, Percent, Instagram, Facebook, Phone, SlidersHorizontal, Sparkles, User, UserRound, Watch, LayoutGrid, Quote } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { PRODUCTS, BRANDS } from "@/lib/mock-data"
@@ -16,12 +16,24 @@ const BANNER_IMAGES = [
   { url: "https://picsum.photos/seed/sf3/1200/600", title: "عروض الموسم", sub: "خصومات تصل إلى ٤٠٪" }
 ]
 
+const CATEGORIES_WITH_ICONS = [
+  { name: "الكل", icon: LayoutGrid },
+  { name: "عطور رجالية", icon: User },
+  { name: "عطور نسائية", icon: UserRound },
+  { name: "ساعات", icon: Watch },
+]
+
+const REVIEWS = [
+  { name: "محمد العمري", review: "جودة العطور استثنائية والثبات يدوم طويلاً. فعلاً متجر يستحق الثقة.", rating: 5 },
+  { name: "سارة الحضرمي", review: "أحببت سرعة التعامل ورقي المنتجات. العطور أصلية ١٠٠٪.", rating: 5 },
+  { name: "أحمد باوزير", review: "أفضل مكان لشراء الهدايا الفاخرة في المكلا. الساعات رائعة جداً.", rating: 5 }
+]
+
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true)
   const [activeTab, setActiveTab] = useState("الكل")
   const [currentBanner, setCurrentBanner] = useState(0)
 
-  // Banner Auto-play
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % BANNER_IMAGES.length)
@@ -33,8 +45,6 @@ export default function HomePage() {
     const timer = setTimeout(() => setShowSplash(false), 2000)
     return () => clearTimeout(timer)
   }, [])
-
-  const categories = ["الكل", "عطور رجالية", "عطور نسائية", "ساعات"]
 
   const filteredProducts = activeTab === "الكل" 
     ? PRODUCTS 
@@ -64,7 +74,6 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col animate-fade-in pb-32 bg-background">
-      {/* Header */}
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-6 flex items-center justify-between border-b border-gray-100">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center border border-white/10 shadow-sm overflow-hidden">
@@ -93,7 +102,6 @@ export default function HomePage() {
 
       <main className="flex flex-col gap-10 pt-6">
         
-        {/* Banner Section - Optimized */}
         <section className="px-6">
           <div className="relative h-48 rounded-2xl overflow-hidden bg-luxury-black shadow-lg">
             {BANNER_IMAGES.map((img, idx) => (
@@ -120,7 +128,6 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-            {/* Dots */}
             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
               {BANNER_IMAGES.map((_, i) => (
                 <div key={i} className={cn(
@@ -132,42 +139,43 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Floating Search */}
-        <section className="px-6 -mt-10 relative z-10">
+        <section className="px-6 -mt-4 relative z-10">
           <Link href="/search" className="block">
-            <div className="bg-white h-14 rounded-xl shadow-xl shadow-black/5 flex items-center px-6 gap-4 border border-gray-50">
+            <div className="bg-white h-14 rounded-xl shadow-xl shadow-black/5 flex items-center px-6 gap-4 border border-gray-50 luxury-shadow">
               <Search className="w-5 h-5 text-primary" />
               <span className="text-gray-400 text-xs font-medium">ابحث عن عطرك المفضل...</span>
             </div>
           </Link>
         </section>
 
-        {/* Tab-style Categories */}
         <section className="px-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 ml-4">
-              {categories.map((cat, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveTab(cat)}
-                  className={cn(
-                    "shrink-0 px-5 py-2.5 rounded-xl text-xs font-black transition-all",
-                    activeTab === cat 
-                      ? "bg-luxury-black text-primary" 
-                      : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 ml-4 py-1">
+              {CATEGORIES_WITH_ICONS.map((cat, i) => {
+                const Icon = cat.icon
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTab(cat.name)}
+                    className={cn(
+                      "shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all flex items-center gap-2",
+                      activeTab === cat.name 
+                        ? "bg-luxury-black text-primary shadow-lg shadow-black/10 scale-105" 
+                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                    )}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {cat.name}
+                  </button>
+                )
+              })}
             </div>
-            <button className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-luxury-black shadow-sm">
+            <button className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-luxury-black shadow-sm shrink-0">
               <SlidersHorizontal className="w-4 h-4" />
             </button>
           </div>
         </section>
 
-        {/* Product List */}
         <section className="px-6 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-sm font-black text-luxury-black">المجموعة المختارة</h3>
@@ -175,36 +183,43 @@ export default function HomePage() {
               مشاهدة الكل <ArrowLeft className="w-3 h-3" />
             </Link>
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-6">
             {filteredProducts.slice(0, 6).map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
 
-        {/* Brands Section */}
-        <section className="px-6 space-y-4">
-          <h3 className="text-sm font-black text-luxury-black">ماركات عالمية</h3>
+        <section className="px-6 space-y-6">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-black text-luxury-black">الماركات العالمية</h3>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Global Luxury Brands</p>
+          </div>
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide items-center">
             {BRANDS.map(brand => (
-              <Link key={brand.id} href={`/brands/${brand.id}`} className="shrink-0 flex flex-col items-center gap-2">
-                <div className="w-14 h-14 rounded-full bg-white border border-gray-100 flex items-center justify-center p-2 shadow-sm">
-                  <Image src={brand.logo} alt={brand.name} width={36} height={36} className="grayscale" />
+              <Link key={brand.id} href={`/brands/${brand.id}`} className="shrink-0 group">
+                <div className="w-20 h-20 rounded-2xl bg-white border border-gray-100 flex items-center justify-center p-4 shadow-sm group-hover:border-primary transition-all group-active:scale-95">
+                  <Image 
+                    src={brand.logo} 
+                    alt={brand.name} 
+                    width={50} 
+                    height={50} 
+                    className="grayscale group-hover:grayscale-0 transition-all object-contain" 
+                  />
                 </div>
-                <p className="text-[8px] font-bold text-gray-400">{brand.name}</p>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* Features Card */}
         <section className="px-6">
-          <div className="bg-luxury-black rounded-2xl p-8 space-y-8 text-white">
-            <div className="text-center space-y-1">
-              <h3 className="text-sm font-black tracking-widest text-primary uppercase">لماذا SF PERFUME؟</h3>
-              <p className="text-[9px] text-white/50 font-bold uppercase">التميز في كل تفصيلة</p>
+          <div className="bg-luxury-black rounded-[2.5rem] p-10 space-y-10 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <div className="text-center space-y-2 relative z-10">
+              <h3 className="text-lg font-black tracking-tight text-primary">لماذا SF PERFUME؟</h3>
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-[0.2em]">Excellence In Every Detail</p>
             </div>
-            <div className="grid grid-cols-2 gap-y-8 gap-x-4">
+            <div className="grid grid-cols-2 gap-y-10 gap-x-6 relative z-10">
               {[
                 { title: "أصلي ١٠٠٪", desc: "ضمان جودة المصنع", icon: ShieldCheck },
                 { title: "خدمة راقية", desc: "نلبي تطلعاتك", icon: Star },
@@ -213,13 +228,13 @@ export default function HomePage() {
               ].map((feature, i) => {
                 const Icon = feature.icon
                 return (
-                  <div key={i} className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-primary border border-white/10">
-                      <Icon className="w-5 h-5" strokeWidth={1.5} />
+                  <div key={i} className="flex flex-col items-center text-center gap-3">
+                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-primary border border-white/10 shadow-lg shadow-black/20">
+                      <Icon className="w-6 h-6" strokeWidth={1.5} />
                     </div>
-                    <div className="space-y-0.5">
-                      <h4 className="text-[10px] font-black">{feature.title}</h4>
-                      <p className="text-[8px] text-white/40 font-bold">{feature.desc}</p>
+                    <div className="space-y-1">
+                      <h4 className="text-[11px] font-black">{feature.title}</h4>
+                      <p className="text-[9px] text-white/40 font-bold leading-none">{feature.desc}</p>
                     </div>
                   </div>
                 )
@@ -228,22 +243,51 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="pt-12 pb-16 px-6 border-t border-gray-100 mt-4 text-center space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-lg font-black text-luxury-black tracking-tighter">SF PERFUME</h2>
-            <span className="text-[8px] text-primary font-bold tracking-[0.3em]">LUXURY EXPERIENCE</span>
+        <section className="px-6 space-y-8">
+          <div className="text-center">
+            <h3 className="text-base font-black text-luxury-black">آراء العملاء</h3>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">What Our Clients Say</p>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-2">
+            {REVIEWS.map((rev, i) => (
+              <div key={i} className="min-w-[280px] bg-white p-8 rounded-[2.5rem] border border-gray-50 shadow-sm space-y-4">
+                <Quote className="w-8 h-8 text-primary/10" />
+                <p className="text-[12px] text-gray-500 font-medium leading-relaxed italic">"{rev.review}"</p>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                  <span className="text-[11px] font-black text-luxury-black">{rev.name}</span>
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: rev.rating }).map((_, j) => (
+                      <Star key={j} className="w-3 h-3 fill-primary text-primary" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <footer className="pt-20 pb-16 px-6 border-t border-gray-100 mt-10 text-center space-y-8 bg-gray-50/50">
+          <div className="space-y-3">
+            <h2 className="text-xl font-black text-luxury-black tracking-tighter">SF PERFUME</h2>
+            <div className="flex items-center justify-center gap-2">
+              <span className="h-px w-8 bg-primary/30"></span>
+              <span className="text-[9px] text-primary font-bold tracking-[0.4em] uppercase">Luxury Experience</span>
+              <span className="h-px w-8 bg-primary/30"></span>
+            </div>
           </div>
           <div className="flex justify-center gap-6">
             {[Instagram, Facebook, Phone].map((Icon, i) => (
-              <Link key={i} href="#" className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 bg-white">
-                <Icon className="w-5 h-5" strokeWidth={1.5} />
+              <Link key={i} href="#" className="w-12 h-12 rounded-2xl border border-gray-200 flex items-center justify-center text-gray-400 bg-white hover:text-primary transition-colors luxury-shadow">
+                <Icon className="w-6 h-6" strokeWidth={1.5} />
               </Link>
             ))}
           </div>
-          <p className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">
-            جميع الحقوق محفوظة © ٢٠٢٤
-          </p>
+          <div className="space-y-1">
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+              جميع الحقوق محفوظة © ٢٠٢٤
+            </p>
+            <p className="text-[8px] text-gray-300 font-medium">MADE WITH EXCELLENCE IN HADRAMOUT</p>
+          </div>
         </footer>
       </main>
     </div>
