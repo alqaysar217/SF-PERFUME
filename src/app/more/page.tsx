@@ -1,21 +1,42 @@
-
 "use client"
 
-import { Info, Phone, Award, Star, Share2, Instagram, Facebook, MessageCircle, ArrowLeft, ChevronLeft, MapPin } from "lucide-react"
+import { Info, Phone, Award, BookOpen, Share2, Instagram, Facebook, MessageCircle, ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/hooks/use-toast"
 
 export default function MorePage() {
   const menuItems = [
     { name: "من نحن", icon: Info, href: "/about" },
     { name: "تواصل معنا", icon: Phone, href: "/contact" },
     { name: "الماركات العالمية", icon: Award, href: "/brands" },
-    { name: "قيم التطبيق", icon: Star, href: "#" },
-    { name: "شارك المتجر", icon: Share2, href: "#" },
+    { name: "دليل اختيار العطور", icon: BookOpen, href: "/guide" },
   ]
 
+  const handleShare = async () => {
+    const shareData = {
+      title: 'SF PERFUME',
+      text: 'اكتشف عالم العطور الفاخرة والساعات الأصلية في متجر SF PERFUME',
+      url: 'https://sf-perfume.vercel.app/',
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        await navigator.clipboard.writeText(shareData.url)
+        toast({
+          title: "تم نسخ الرابط",
+          description: "تم نسخ رابط المتجر بنجاح، يمكنك مشاركته الآن.",
+        })
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-8 p-4 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
       {/* Profile Header */}
       <div className="flex flex-col items-center gap-4 py-8 bg-luxury-black rounded-[3rem] text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-primary/5 -z-10 animate-pulse" />
@@ -49,6 +70,18 @@ export default function MorePage() {
             </Link>
           )
         })}
+        <button 
+          onClick={handleShare}
+          className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black">
+              <Share2 className="w-5 h-5" />
+            </div>
+            <span className="text-sm font-bold text-luxury-black">شارك المتجر</span>
+          </div>
+          <ChevronLeft className="w-5 h-5 text-gray-300" />
+        </button>
       </div>
 
       {/* Contact Support Card */}
@@ -58,9 +91,14 @@ export default function MorePage() {
             <h3 className="text-lg font-black">هل تحتاج لمساعدة؟</h3>
             <p className="text-white/70 text-xs">فريق الدعم الفني متواجد لخدمتك طوال اليوم.</p>
          </div>
-         <Button className="bg-white text-primary hover:bg-white/90 rounded-2xl h-14 font-black gap-2">
-            <MessageCircle className="w-5 h-5" />
-            تحدث معنا الآن
+         <Button 
+            asChild
+            className="bg-white text-primary hover:bg-white/90 rounded-2xl h-14 font-black gap-2 shadow-lg"
+          >
+            <Link href="https://wa.me/967777161451">
+              <MessageCircle className="w-5 h-5" />
+              تحدث معنا الآن
+            </Link>
          </Button>
       </div>
 
@@ -69,11 +107,16 @@ export default function MorePage() {
         {[
           { icon: Instagram, link: "https://instagram.com/sf_perfume20" },
           { icon: Facebook, link: "https://facebook.com/sf_perfume" },
-          { icon: Phone, link: "tel:777161451" },
+          { icon: MessageCircle, link: "https://wa.me/967777161451" },
         ].map((social, i) => {
           const Icon = social.icon
           return (
-            <Link key={i} href={social.link} className="w-12 h-12 rounded-2xl border border-gray-100 flex items-center justify-center text-gray-400 hover:text-primary transition-colors bg-white shadow-sm">
+            <Link 
+              key={i} 
+              href={social.link} 
+              target="_blank"
+              className="w-12 h-12 rounded-2xl border border-gray-100 flex items-center justify-center text-gray-400 hover:text-primary transition-colors bg-white shadow-sm active:scale-90"
+            >
               <Icon className="w-6 h-6" />
             </Link>
           )
