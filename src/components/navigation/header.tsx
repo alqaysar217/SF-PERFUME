@@ -29,10 +29,12 @@ const PAGE_TITLES: { [key: string]: string } = {
 export function Header() {
   const pathname = usePathname()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  
   const isHome = pathname === "/"
-  const isAdmin = pathname.startsWith('/admin')
+  const isAdmin = pathname?.startsWith('/admin')
   const isAdminLogin = pathname === '/admin/login'
   
   const clickCount = useRef(0)
@@ -55,8 +57,8 @@ export function Header() {
   }
 
   const getTitle = () => {
-    if (pathname.startsWith("/products/")) return "تفاصيل المنتج"
-    return PAGE_TITLES[pathname] || ""
+    if (pathname?.startsWith("/products/")) return "تفاصيل المنتج"
+    return PAGE_TITLES[pathname || ""] || ""
   }
 
   const updateCartCount = () => {
@@ -66,6 +68,7 @@ export function Header() {
   }
 
   useEffect(() => {
+    setMounted(true)
     updateCartCount()
     window.addEventListener('cart-updated', updateCartCount)
     return () => window.removeEventListener('cart-updated', updateCartCount)
@@ -87,6 +90,9 @@ export function Header() {
     { name: "آراء العملاء", href: "/admin?tab=reviews", icon: Star },
     { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
   ]
+
+  // منع مشاكل Hydration عبر عدم عرض الهيدر إلا بعد التأكد من تركيب المكون في المتصفح
+  if (!mounted) return <header className="h-16 bg-white/95" />
 
   if (isAdmin && !isAdminLogin) {
     return (
