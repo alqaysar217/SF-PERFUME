@@ -12,7 +12,6 @@ import {
   Trash2, 
   Edit,
   TrendingUp,
-  Users,
   Star,
   Image as ImageIcon,
   ChevronLeft,

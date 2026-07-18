@@ -30,6 +30,7 @@ export function Header() {
   const router = useRouter()
   const [cartCount, setCartCount] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   
   const isHome = pathname === "/"
   const isAdmin = pathname?.startsWith('/admin')
@@ -37,6 +38,10 @@ export function Header() {
   
   const clickCount = useRef(0)
   const lastClickTime = useRef(0)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogoClick = () => {
     const now = Date.now()
@@ -88,12 +93,15 @@ export function Header() {
     { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
   ]
 
+  // منع مشاكل Hydration عبر عدم عرض الهيدر إلا بعد التأكد من تركيب المكون في المتصفح
+  if (!mounted) return <header className="h-16 bg-white/95" />
+
   if (isAdmin && !isAdminLogin) {
     return (
-      <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full" suppressHydrationWarning>
+      <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
         {/* Right Side: Logo & Info */}
-        <div className="flex items-center gap-2 flex-1">
-          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
              <Image 
               src="https://picsum.photos/seed/brand/200/200" 
               alt="SF Logo" 
@@ -111,12 +119,12 @@ export function Header() {
         </div>
 
         {/* Center Title */}
-        <div className="flex-[2] flex flex-col items-center">
+        <div className="absolute left-1/2 -translate-x-1/2 text-center">
           <p className="text-[9px] text-primary font-bold uppercase tracking-[0.2em]">{getTitle()}</p>
         </div>
 
         {/* Left Side: Sidebar Trigger */}
-        <div className="flex-1 flex justify-end">
+        <div className="flex justify-end">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <button className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform">
@@ -170,7 +178,7 @@ export function Header() {
   }
 
   return (
-    <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full" suppressHydrationWarning>
+    <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
       <div className="flex items-center gap-3">
         {isHome ? (
           <div onClick={handleLogoClick} className="flex items-center gap-2 group active:scale-95 transition-transform cursor-pointer">
