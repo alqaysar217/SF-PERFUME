@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -59,7 +58,7 @@ export default function CartPage() {
   if (!mounted) return null
 
   return (
-    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-48">
+    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-[320px]">
       {cart.length > 0 ? (
         <>
           <div className="space-y-4">
@@ -93,7 +92,7 @@ export default function CartPage() {
             ))}
           </div>
 
-          <div className="fixed bottom-24 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+          <div className="fixed bottom-24 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
             <div className="flex justify-between items-center mb-4 px-2">
               <span className="text-xs font-bold text-gray-400">إجمالي السلة</span>
               <span className="text-lg font-black text-luxury-black">{totalPrice.toLocaleString()} ر.ي</span>
