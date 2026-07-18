@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingBag } from "lucide-react"
+import { Heart, ShoppingBag, Tag, Maximize2, Award } from "lucide-react"
 import { Product } from "@/lib/mock-data"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
@@ -33,61 +33,83 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link 
       href={`/products/${product.id}`} 
-      className="group relative bg-white rounded-2xl overflow-hidden luxury-shadow border border-gray-50 flex flex-col transition-all duration-500 hover:-translate-y-1"
+      className="group relative bg-white rounded-[2rem] overflow-hidden border border-gray-100 luxury-shadow flex flex-col transition-all duration-500 hover:shadow-xl"
     >
-      {/* Product Image - Aspect Ratio 3:4 for luxury feel */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-50/50">
+      {/* Product Image Area */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-gray-50/30">
         <Image 
           src={product.image} 
           alt={product.name}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          sizes="(max-width: 768px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          sizes="100vw"
         />
         
-        {product.isOffer && (
-          <div className="absolute top-3 right-3 z-10">
-            <Badge className="gold-gradient text-white border-none px-2 py-0.5 text-[9px] font-black rounded-lg shadow-sm">
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+          {product.isOffer && (
+            <Badge className="gold-gradient text-white border-none px-3 py-1 text-[10px] font-black rounded-full shadow-lg">
               عرض خاص
             </Badge>
-          </div>
-        )}
+          )}
+        </div>
         
         <button 
           onClick={toggleFavorite}
-          className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-20 transition-all hover:scale-110 active:scale-90"
+          className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg z-20 transition-all active:scale-90"
         >
           <Heart 
             className={cn(
-              "w-4 h-4 transition-colors", 
+              "w-5 h-5 transition-colors", 
               isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-300'
             )} 
-            strokeWidth={2}
           />
         </button>
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 flex flex-col flex-1 gap-2.5">
-        <div className="flex justify-between items-start">
-          <span className="text-[9px] text-primary font-black uppercase tracking-[0.15em]">{product.brand}</span>
-          <span className="text-[9px] text-gray-400 font-bold">{product.size}</span>
+      {/* Structured Content Area */}
+      <div className="p-6 flex flex-col gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-primary">
+            <Award className="w-3 h-3" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{product.brand}</span>
+          </div>
+          <h3 className="text-lg font-black text-secondary leading-tight group-hover:text-primary transition-colors">
+            {product.name}
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 py-2 border-y border-gray-50">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
+              <Tag className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] text-gray-400 font-bold uppercase">السعر</span>
+              <span className="text-sm font-black text-secondary">{product.price.toLocaleString()} ر.ي</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
+              <Maximize2 className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] text-gray-400 font-bold uppercase">الحجم</span>
+              <span className="text-sm font-black text-secondary">{product.size}</span>
+            </div>
+          </div>
         </div>
         
-        <h3 className="text-[13px] font-bold text-secondary line-clamp-1 group-hover:text-primary transition-colors leading-snug">
-          {product.name}
-        </h3>
-        
-        <div className="mt-auto flex items-center justify-between pt-1">
-          <div className="flex flex-col">
-            <span className="text-sm font-black text-secondary">{product.price.toLocaleString()} ر.ي</span>
-            {product.oldPrice && (
-              <span className="text-[10px] text-gray-300 line-through font-medium">{product.oldPrice.toLocaleString()} ر.ي</span>
-            )}
-          </div>
-          
-          <div className="w-8 h-8 bg-secondary text-white rounded-lg flex items-center justify-center transition-all duration-300 group-hover:bg-primary shadow-sm group-hover:shadow-primary/20">
-            <ShoppingBag className="w-4 h-4" strokeWidth={2} />
+        <div className="flex items-center justify-between gap-4 mt-2">
+          {product.oldPrice && (
+            <div className="flex flex-col">
+              <span className="text-[9px] text-gray-300 font-bold uppercase">بدلاً من</span>
+              <span className="text-xs text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.ي</span>
+            </div>
+          )}
+          <div className="flex-1" />
+          <div className="flex items-center gap-3 bg-secondary text-white px-6 py-3 rounded-2xl group-hover:bg-primary transition-colors shadow-lg">
+             <span className="text-xs font-black">طلب المنتج</span>
+             <ShoppingBag className="w-4 h-4" />
           </div>
         </div>
       </div>

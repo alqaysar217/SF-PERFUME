@@ -17,7 +17,7 @@ export function BottomNav() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-50 px-4 pt-3 pb-8 z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] md:max-w-md md:mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-50 px-4 pt-3 pb-4 z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] md:max-w-md md:mx-auto">
       <div className="flex justify-around items-end">
         {navItems.map((item) => {
           const Icon = item.icon
@@ -33,7 +33,7 @@ export function BottomNav() {
             >
               <div className={cn(
                 "p-2.5 rounded-2xl transition-all duration-300 flex items-center justify-center",
-                isActive ? "bg-primary/10 shadow-inner scale-110" : "group-hover:bg-gray-50"
+                isActive ? "bg-primary/10 scale-110" : "group-hover:bg-gray-50"
               )}>
                 <Icon 
                   className={cn("w-6 h-6 transition-all", isActive && "fill-primary/20")} 
@@ -48,7 +48,7 @@ export function BottomNav() {
               </span>
               
               {isActive && (
-                <div className="absolute -top-3 w-1 h-1 bg-primary rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 w-1 h-1 bg-primary rounded-full animate-pulse"></div>
               )}
             </Link>
           )
