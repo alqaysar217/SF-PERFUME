@@ -57,14 +57,15 @@ export default function HomePage() {
     }
   }, [])
 
-  const filteredProducts = activeTab === "الكل" 
-    ? products 
-    : products.filter((p: any) => {
-        if (activeTab === "عطور رجالية") return p.category === 'men'
-        if (activeTab === "عطور نسائية") return p.category === 'women'
-        if (activeTab === "ساعات") return p.category === 'watches'
-        return true
-      })
+  const filteredProducts = useMemo(() => {
+    if (activeTab === "الكل") return products 
+    return products.filter((p: any) => {
+      if (activeTab === "عطور رجالية") return p.category === 'men'
+      if (activeTab === "عطور نسائية") return p.category === 'women'
+      if (activeTab === "ساعات") return p.category === 'watches'
+      return true
+    })
+  }, [products, activeTab])
 
   if (showSplash) {
     return (
@@ -159,7 +160,7 @@ export default function HomePage() {
             {brands.map((brand: any) => (
               <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 group">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-100 flex items-center justify-center p-4 shadow-sm group-hover:border-primary transition-all group-active:scale-95">
-                  <Image src={brand.logo || "https://picsum.photos/seed/brand/100/100"} alt={brand.name} width={50} height={50} className="grayscale group-hover:grayscale-0 transition-all object-contain" />
+                  <Image src={brand.logo || brand.image || "https://picsum.photos/seed/brand/100/100"} alt={brand.name} width={50} height={50} className="grayscale group-hover:grayscale-0 transition-all object-contain" />
                 </div>
               </Link>
             ))}
@@ -208,4 +209,4 @@ export default function HomePage() {
 }
 
 const Loader2 = ({ className }: { className?: string }) => <Loader2Icon className={cn("animate-spin", className)} />
-import { Loader2 as Loader2Icon } from "lucide-react"
+import { Loader2 as Loader2Icon, Sparkles as SparklesIcon, MapPin as MapPinIcon, ShieldCheck as ShieldCheckIcon, Star as StarIcon } from "lucide-react"

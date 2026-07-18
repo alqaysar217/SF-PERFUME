@@ -11,25 +11,18 @@ import {
   Plus, 
   Trash2, 
   Edit,
-  TrendingUp,
-  Star,
-  Image as ImageIcon,
   ChevronLeft,
-  X,
   Save,
   Loader2,
-  Zap,
-  Droplets,
-  FlaskConical,
-  AlignRight,
-  Maximize2,
   Upload,
-  Camera
+  LayoutDashboard,
+  LogOut,
+  Star,
+  Image as ImageIcon
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
 import { useFirestore } from "@/firebase/provider"
 import { 
   collection, 
@@ -84,6 +77,11 @@ export default function AdminDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Check file size (Base64 can be large, keep it under 1MB for Firestore performance)
+      if (file.size > 1024 * 1024) {
+        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 1 ميجابايت" })
+        return
+      }
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
@@ -95,7 +93,7 @@ export default function AdminDashboard() {
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!db) {
-      toast({ variant: "destructive", title: "خطأ", description: "قاعدة البيانات غير متصلة. يرجى التأكد من إعداد Firebase." })
+      toast({ variant: "destructive", title: "خطأ", description: "قاعدة البيانات غير متصلة." })
       return
     }
 
@@ -103,10 +101,13 @@ export default function AdminDashboard() {
     const formData = new FormData(e.currentTarget)
     const data: any = Object.fromEntries(formData.entries())
     
-    // Process image: use preview (Base64) if changed, otherwise keep old
-    data.image = imagePreview || editingItem?.image || ""
+    // Process image: use preview (Base64)
+    if (activeTab === 'products' || activeTab === 'brands') {
+      data.image = imagePreview || editingItem?.image || ""
+      if (activeTab === 'brands') data.logo = data.image // For brands schema
+    }
 
-    // Convert numeric fields and boolean
+    // Data cleaning
     if (activeTab === 'products') {
       data.price = Number(data.price)
       if (data.oldPrice) data.oldPrice = Number(data.oldPrice)
@@ -119,13 +120,13 @@ export default function AdminDashboard() {
           ...data,
           updatedAt: serverTimestamp()
         })
-        toast({ title: "تم التحديث", description: "تم حفظ التعديلات بنجاح" })
+        toast({ title: "تم التحديث", description: "تم حفظ التعديلات في السحاب" })
       } else {
         await addDoc(collection(db, activeTab), {
           ...data,
           createdAt: serverTimestamp()
         })
-        toast({ title: "تمت الإضافة", description: "تم إضافة العنصر الجديد بنجاح" })
+        toast({ title: "تمت الإضافة", description: "تمت إضافة البيانات بنجاح" })
       }
       setIsModalOpen(false)
       setEditingItem(null)
@@ -135,7 +136,7 @@ export default function AdminDashboard() {
       toast({ 
         variant: "destructive", 
         title: "خطأ في المزامنة", 
-        description: err.message || "تأكد من تفعيل Firestore في وضع الاختبار (Test Mode)" 
+        description: "تأكد من تفعيل قواعد البيانات (Firestore Rules) في الكونسول." 
       })
     } finally {
       setIsSaving(false)
@@ -143,12 +144,12 @@ export default function AdminDashboard() {
   }
 
   const handleDelete = async (id: string, collectionName: string) => {
-    if (!db || !confirm("هل أنت متأكد من الحذف؟")) return
+    if (!db || !confirm("هل أنت متأكد من الحذف النهائي؟")) return
     try {
       await deleteDoc(doc(db, collectionName, id))
-      toast({ title: "تم الحذف", description: "تمت إزالة العنصر بنجاح" })
+      toast({ title: "تم الحذف", description: "تمت إزالة العنصر من السحاب" })
     } catch (err) {
-      toast({ variant: "destructive", title: "خطأ", description: "فشل الحذف. تحقق من الصلاحيات." })
+      toast({ variant: "destructive", title: "خطأ", description: "فشل الحذف. تحقق من صلاحيات Firestore." })
     }
   }
 
@@ -160,8 +161,8 @@ export default function AdminDashboard() {
         <div className="space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-            <h2 className="text-xl font-black text-luxury-black">لوحة التحكم</h2>
-            <p className="text-gray-400 text-xs font-medium">مرحباً بك في نظام إدارة SF PERFUME. البيانات هنا حقيقية وتُخزن في السحاب.</p>
+            <h2 className="text-xl font-black text-luxury-black">نظام التحكم السحابي</h2>
+            <p className="text-gray-400 text-xs font-medium">مرحباً بك. كل البيانات التي تقوم بإضافتها هنا تُخزن بشكل دائم في مشروع Firebase الخاص بك.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -189,8 +190,9 @@ export default function AdminDashboard() {
             <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mr-1">الإدارة السريعة</h3>
             <div className="grid grid-cols-1 gap-4">
               {[
-                { name: "إدارة العطور والساعات", icon: Package, href: "?tab=products" },
-                { name: "إدارة الحسابات البنكية", icon: CreditCard, href: "?tab=accounts" },
+                { name: "إدارة المخزون (عطور وساعات)", icon: Package, href: "?tab=products" },
+                { name: "إدارة الماركات والشركاء", icon: Award, href: "?tab=brands" },
+                { name: "بيانات التحويل البنكي", icon: CreditCard, href: "?tab=accounts" },
               ].map((item, i) => (
                 <button 
                   key={i}
@@ -254,39 +256,39 @@ export default function AdminDashboard() {
         <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col">
           <DialogHeader className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تعديل البيانات" : "إضافة جديد"}
+              {editingItem ? "تعديل البيانات السحابية" : "إضافة بيانات جديدة"}
             </DialogTitle>
           </DialogHeader>
           
           <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 pb-24 space-y-8 pt-4 scrollbar-hide">
+            {(activeTab === "products" || activeTab === "brands") && (
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3">الصورة</h4>
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative aspect-video rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                >
+                  {imagePreview ? (
+                    <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-gray-300 mb-2" />
+                      <span className="text-[10px] font-black text-gray-400">اضغط لرفع صورة وحفظها في قاعدة البيانات</span>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                </div>
+              </div>
+            )}
+
             {activeTab === "products" && (
               <>
-                {/* Image Upload Block */}
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3">صورة المنتج</h4>
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-video rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
-                  >
-                    {imagePreview ? (
-                      <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                        <span className="text-[10px] font-black text-gray-400">اضغط لرفع صورة من جهازك</span>
-                      </>
-                    )}
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleFileChange} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
-                  </div>
-                </div>
-
-                {/* Fields */}
                 <div className="space-y-4">
                   <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3">المعلومات الأساسية</h4>
                   <div className="space-y-4">
@@ -321,7 +323,12 @@ export default function AdminDashboard() {
               </>
             )}
 
-            {/* Other tabs follow similar logic */}
+            {activeTab === "brands" && (
+               <div className="space-y-4">
+                 <Input name="name" defaultValue={editingItem?.name} placeholder="اسم الماركة" required className="h-12 rounded-xl bg-gray-50" />
+               </div>
+            )}
+
             {activeTab === "accounts" && (
               <div className="space-y-4">
                  <Input name="bank" defaultValue={editingItem?.bank} placeholder="اسم البنك" required className="h-12 rounded-xl bg-gray-50" />
@@ -333,7 +340,7 @@ export default function AdminDashboard() {
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                {editingItem ? "حفظ التعديلات" : "إضافة للمتجر"}
+                {editingItem ? "تزامن التعديلات" : "إضافة للسحاب"}
               </Button>
             </div>
           </form>
