@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ShoppingBag, Trash2, Plus, Minus, MessageCircle, ArrowRight } from "lucide-react"
+import { ShoppingBag, Trash2, Plus, Minus, MessageCircle, ArrowRight, ShoppingCart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -59,15 +59,7 @@ export default function CartPage() {
   if (!mounted) return null
 
   return (
-    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-32">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
-          <ArrowRight className="w-5 h-5" />
-        </Link>
-        <h1 className="text-lg font-black text-luxury-black">سلة التسوق</h1>
-        <div className="w-10" />
-      </div>
-
+    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-48">
       {cart.length > 0 ? (
         <>
           <div className="space-y-4">
@@ -101,16 +93,16 @@ export default function CartPage() {
             ))}
           </div>
 
-          <div className="fixed bottom-24 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full">
+          <div className="fixed bottom-24 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
             <div className="flex justify-between items-center mb-4 px-2">
-              <span className="text-sm font-black text-gray-400">الإجمالي التقريبي</span>
+              <span className="text-xs font-bold text-gray-400">إجمالي السلة</span>
               <span className="text-lg font-black text-luxury-black">{totalPrice.toLocaleString()} ر.ي</span>
             </div>
             <Button 
               onClick={handleCheckout}
-              className="w-full h-14 bg-[#25D366] hover:bg-[#1ebd5d] text-white rounded-xl text-md font-black gap-3 shadow-lg active:scale-95 transition-all"
+              className="w-full h-14 bg-[#25D366] hover:bg-[#1ebd5d] text-white rounded-2xl text-md font-black gap-3 shadow-lg active:scale-95 transition-all"
             >
-              <MessageCircle className="w-5 h-5 fill-current" />
+              <MessageCircle className="w-6 h-6 fill-current" />
               تأكيد الطلب عبر واتساب
             </Button>
           </div>
@@ -118,7 +110,7 @@ export default function CartPage() {
       ) : (
         <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
           <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center text-gray-200">
-            <ShoppingBag className="w-12 h-12" />
+            <ShoppingCart className="w-12 h-12" />
           </div>
           <div className="space-y-2">
             <h2 className="text-xl font-black text-luxury-black">سلتك فارغة</h2>

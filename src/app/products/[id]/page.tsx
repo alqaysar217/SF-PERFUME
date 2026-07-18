@@ -4,7 +4,7 @@
 import { useParams } from "next/navigation"
 import { PRODUCTS } from "@/lib/mock-data"
 import Image from "next/image"
-import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus } from "lucide-react"
+import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
@@ -49,6 +49,11 @@ export default function ProductDetails() {
     })
   }
 
+  const directOrder = () => {
+    const message = `مرحباً SF PERFUME، أود الاستفسار عن/طلب المنتج التالي:\n\nالمنتج: ${product.name}\nالماركة: ${product.brand}\nالسعر: ${product.price.toLocaleString()} ر.ي\n\nيرجى تزويدي بمزيد من المعلومات.`
+    window.open(`https://wa.me/967777161451?text=${encodeURIComponent(message)}`, '_blank')
+  }
+
   const toggleFavorite = () => {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
     let updated
@@ -63,7 +68,7 @@ export default function ProductDetails() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-32 animate-fade-in">
+    <div className="flex flex-col min-h-screen bg-background pb-48 animate-fade-in">
       <div className="relative w-full aspect-[4/3] bg-white overflow-hidden">
         <Image src={product.image} alt={product.name} fill className="object-cover" priority />
         <button 
@@ -152,14 +157,25 @@ export default function ProductDetails() {
         </section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl z-40 border-t border-gray-100 flex justify-center md:max-w-md md:mx-auto w-full">
-        <Button 
-          onClick={addToCart}
-          className="w-full h-14 bg-luxury-black hover:bg-black text-primary rounded-xl text-md font-black gap-3 shadow-xl active:scale-95 transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          إضافة المنتج للسلة
-        </Button>
+      {/* Sticky Bottom Actions */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+        <div className="flex gap-3">
+          <Button 
+            onClick={directOrder}
+            className="flex-1 h-14 bg-[#25D366] hover:bg-[#1ebd5d] text-white rounded-2xl text-sm font-black gap-2 shadow-lg active:scale-95 transition-all"
+          >
+            <MessageCircle className="w-5 h-5" />
+            اطلب عبر واتساب
+          </Button>
+          <Button 
+            onClick={addToCart}
+            variant="outline"
+            className="w-14 h-14 border-luxury-black text-luxury-black rounded-2xl p-0 active:scale-95 transition-all flex items-center justify-center hover:bg-gray-50"
+            title="إضافة للسلة"
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -27,7 +27,6 @@ export function Header() {
   const [cartCount, setCartCount] = useState(0)
   const isHome = pathname === "/"
   
-  // Handle dynamic titles for product details
   const getTitle = () => {
     if (pathname.startsWith("/products/")) return "تفاصيل المنتج"
     return PAGE_TITLES[pathname] || ""
@@ -50,7 +49,7 @@ export function Header() {
       <div className="flex items-center gap-3">
         {isHome ? (
           <Link href="/" className="flex items-center gap-2 group active:scale-95 transition-transform">
-            <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center border border-white/10 shadow-sm overflow-hidden relative">
+            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
                <Image 
                 src="https://picsum.photos/seed/brand/200/200" 
                 alt="SF Logo" 
@@ -83,7 +82,7 @@ export function Header() {
         <Link href="/products" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform">
           <Search className="w-5 h-5" strokeWidth={1.5} />
         </Link>
-        <Link href="/cart" className="w-10 h-10 rounded-xl bg-luxury-black text-primary flex items-center justify-center relative active:scale-90 transition-transform shadow-lg shadow-black/10">
+        <Link href="/cart" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center relative active:scale-90 transition-transform text-luxury-black border border-gray-100">
           <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
