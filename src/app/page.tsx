@@ -41,8 +41,18 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2000)
-    return () => clearTimeout(timer)
+    // التحقق مما إذا كانت شاشة الترحيب قد ظهرت بالفعل في هذه الجلسة
+    const hasShownSplash = sessionStorage.getItem('hasShownSplash')
+    
+    if (hasShownSplash) {
+      setShowSplash(false)
+    } else {
+      const timer = setTimeout(() => {
+        setShowSplash(false)
+        sessionStorage.setItem('hasShownSplash', 'true')
+      }, 1200) // تقليل الوقت لـ 1.2 ثانية لتكون سريعة وخاطفة
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   const filteredProducts = activeTab === "الكل" 
