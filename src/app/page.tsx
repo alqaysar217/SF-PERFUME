@@ -2,13 +2,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, MapPin, Phone, Instagram, Facebook, ShieldCheck, Star, ArrowLeft, Watch, Smartphone, Heart } from "lucide-react"
+import { Search, MapPin, ShieldCheck, Star, ArrowLeft, Percent, Instagram, Facebook, Phone } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { PRODUCTS, BRANDS } from "@/lib/mock-data"
 import { ProductCard } from "@/components/shared/product-card"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true)
@@ -34,7 +34,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+    <div className="flex flex-col gap-8 animate-fade-in pb-24">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-4 py-4 flex items-center justify-between border-b border-gray-50">
         <div className="flex flex-col">
@@ -52,7 +52,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Slider */}
+      {/* Hero Banner */}
       <section className="px-4">
         <div className="relative h-48 rounded-[2rem] overflow-hidden luxury-gradient group">
           <Image 
@@ -69,8 +69,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Big Search Bar */}
-      <section className="px-4 -mt-12 relative z-10">
+      {/* Quick Search */}
+      <section className="px-4 -mt-10 relative z-10">
         <Link href="/search" className="block">
           <div className="bg-white h-14 rounded-2xl shadow-xl flex items-center px-6 gap-4 border border-gray-50 luxury-border">
             <Search className="w-5 h-5 text-primary" />
@@ -111,21 +111,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Best Sellers */}
-      <section className="bg-luxury-black py-12 px-4">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-black text-white">الأكثر مبيعاً</h3>
-          <Link href="/products" className="text-primary text-xs font-bold">مشاهدة الكل</Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {PRODUCTS.map(product => (
-            <div key={product.id} className="min-w-[200px]">
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Global Brands */}
       <section className="px-4">
         <h3 className="text-lg font-black text-luxury-black mb-4">الماركات العالمية</h3>
@@ -133,7 +118,7 @@ export default function HomePage() {
           {BRANDS.map(brand => (
             <Link key={brand.id} href={`/brands/${brand.id}`} className="shrink-0 group">
               <div className="w-16 h-16 rounded-full bg-white border border-gray-100 flex items-center justify-center p-2 shadow-sm group-hover:border-primary transition-colors">
-                <Image src={brand.logo} alt={brand.name} width={40} height={40} className="grayscale group-hover:grayscale-0 transition-all" />
+                <Image src={brand.logo} alt={brand.name} width={40} height={40} className="grayscale group-hover:grayscale-0 transition-all rounded-full" />
               </div>
               <p className="text-[10px] text-center mt-2 font-bold text-gray-500">{brand.name}</p>
             </Link>
@@ -168,17 +153,15 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 pt-12 pb-8 px-4">
+      <footer className="bg-white border-t border-gray-100 pt-12 pb-8 px-4 mt-8">
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="flex flex-col">
             <h2 className="text-2xl font-black text-luxury-black tracking-tighter">SF PERFUME</h2>
             <span className="text-[10px] text-primary font-bold tracking-[0.3em]">LUXURY FRAGRANCE</span>
           </div>
-          
           <p className="text-gray-400 text-xs leading-relaxed max-w-xs">
             متجركم الأول في حضرموت للأناقة والتميز. نوفر لكم تشكيلة مختارة من أرقى العطور العالمية والساعات الفاخرة.
           </p>
-
           <div className="flex gap-4">
             {[
               { icon: Instagram, link: "https://instagram.com/sf_perfume20" },
@@ -193,10 +176,7 @@ export default function HomePage() {
               )
             })}
           </div>
-
-          <div className="w-full h-px bg-gray-50 my-4" />
-          
-          <p className="text-[10px] text-gray-300 font-bold">
+          <p className="text-[10px] text-gray-300 font-bold border-t border-gray-50 pt-4 w-full">
             جميع الحقوق محفوظة لـ SF PERFUME © 2024
           </p>
         </div>

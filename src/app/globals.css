@@ -24,7 +24,7 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 46 67% 47%;
-    --radius: 1rem;
+    --radius: 1.5rem;
   }
 }
 
@@ -42,12 +42,12 @@
 }
 
 .gold-glow {
-  box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -57,4 +57,13 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

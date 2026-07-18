@@ -31,7 +31,7 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Link href={`/products/${product.id}`} className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-50 flex flex-col">
+    <Link href={`/products/${product.id}`} className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-50 flex flex-col">
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
         <Image 
           src={product.image} 
@@ -46,7 +46,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
         <button 
           onClick={toggleFavorite}
-          className="absolute top-3 left-3 w-8 h-8 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 transition-colors"
+          className="absolute top-3 left-3 w-9 h-9 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 transition-colors"
         >
           <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
         </button>
@@ -66,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="text-[10px] text-gray-400 line-through">{product.oldPrice} ر.ي</span>
             )}
           </div>
-          <div className="w-8 h-8 bg-luxury-black text-white rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors">
+          <div className="w-9 h-9 bg-luxury-black text-white rounded-xl flex items-center justify-center group-hover:bg-primary transition-colors shadow-lg">
             <ShoppingCart className="w-4 h-4" />
           </div>
         </div>
