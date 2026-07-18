@@ -1,0 +1,79 @@
+
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Fragrance or watch product details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "price": { "type": "number" },
+        "oldPrice": { "type": "number" },
+        "image": { "type": "string" },
+        "size": { "type": "string" },
+        "category": { "type": "string", "enum": ["men", "women", "watches"] },
+        "description": { "type": "string" },
+        "ingredients": { "type": "string" },
+        "projection": { "type": "string" },
+        "longevity": { "type": "string" },
+        "isOffer": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "brand", "price", "category"]
+    },
+    "Brand": {
+      "title": "Brand",
+      "description": "Global brands list",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "logo": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "BankAccount": {
+      "title": "Bank Account",
+      "description": "Local bank account details for transfers",
+      "type": "object",
+      "properties": {
+        "bank": { "type": "string" },
+        "name": { "type": "string" },
+        "account": { "type": "string" },
+        "type": { "type": "string", "enum": ["bank", "exchange", "wallet"] }
+      },
+      "required": ["bank", "name", "account"]
+    },
+    "FAQ": {
+      "title": "FAQ",
+      "description": "Frequently asked questions",
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" },
+        "answer": { "type": "string" }
+      },
+      "required": ["question", "answer"]
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "#/backend/entities/Product",
+      "description": "Collection of all products"
+    },
+    "/brands/{brandId}": {
+      "schema": "#/backend/entities/Brand",
+      "description": "Global luxury brands"
+    },
+    "/accounts/{accountId}": {
+      "schema": "#/backend/entities/BankAccount",
+      "description": "Payment bank accounts"
+    },
+    "/faqs/{faqId}": {
+      "schema": "#/backend/entities/FAQ",
+      "description": "Frequently asked questions list"
+    }
+  }
+}
