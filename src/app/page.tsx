@@ -74,6 +74,7 @@ export default function HomePage() {
               alt="Luxury Banner"
               fill
               className="object-cover opacity-50 group-hover:scale-105 transition-transform duration-1000"
+              data-ai-hint="luxury perfume"
             />
             <div className="absolute inset-0 p-8 flex flex-col justify-center gap-2">
               <Badge className="w-fit gold-gradient text-white border-none mb-1 text-[10px] font-black px-3 py-1">جديدنا</Badge>
@@ -84,7 +85,7 @@ export default function HomePage() {
         </section>
 
         {/* Floating Search - 32px Vertical Gap */}
-        <section className="px-6 -mt-12 relative z-10">
+        <section className="px-6 relative z-10">
           <Link href="/search" className="block">
             <div className="bg-white h-14 rounded-2xl shadow-xl shadow-black/5 flex items-center px-6 gap-4 border border-gray-50 luxury-border transition-transform active:scale-95">
               <Search className="w-5 h-5 text-primary" strokeWidth={2} />
