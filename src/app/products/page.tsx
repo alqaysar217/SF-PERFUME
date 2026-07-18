@@ -1,8 +1,7 @@
-
 "use client"
 
 import { useState } from "react"
-import { Search, SlidersHorizontal, ArrowRight, X } from "lucide-react"
+import { Search, SlidersHorizontal, ArrowRight, X, User, UserRound, Watch, LayoutGrid } from "lucide-react"
 import { PRODUCTS } from "@/lib/mock-data"
 import { ProductCard } from "@/components/shared/product-card"
 import { Input } from "@/components/ui/input"
@@ -23,6 +22,13 @@ export default function ProductsPage() {
     return matchesSearch && matchesFilter
   })
 
+  const filterOptions = [
+    { name: "الكل", icon: LayoutGrid },
+    { name: "رجالي", icon: User },
+    { name: "نسائي", icon: UserRound },
+    { name: "ساعات", icon: Watch },
+  ]
+
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
       {/* Page Header */}
@@ -39,7 +45,7 @@ export default function ProductsPage() {
         <div className="relative flex-1">
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
           <Input 
-            placeholder="ابحث عن عطرك..."
+            placeholder="ابحث عن الماركة أو العطر..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-12 pr-10 rounded-xl border-none bg-white shadow-sm font-medium text-xs"
@@ -52,7 +58,7 @@ export default function ProductsPage() {
               <SlidersHorizontal className="w-5 h-5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-[2.5rem] p-8 h-[50vh]">
+          <SheetContent side="bottom" className="rounded-t-[2.5rem] p-8 h-fit min-h-[40vh]">
             <SheetHeader className="mb-8">
               <SheetTitle className="text-right font-black text-xl">تصفية المنتجات</SheetTitle>
             </SheetHeader>
@@ -60,23 +66,27 @@ export default function ProductsPage() {
               <div className="space-y-4">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">التصنيف</p>
                 <div className="grid grid-cols-2 gap-3">
-                  {["الكل", "رجالي", "نسائي", "ساعات"].map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveFilter(cat)}
-                      className={`h-12 rounded-xl text-xs font-black transition-all border ${
-                        activeFilter === cat 
-                        ? 'bg-luxury-black text-primary border-luxury-black shadow-lg' 
-                        : 'bg-white text-gray-400 border-gray-100'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                  {filterOptions.map((opt) => {
+                    const Icon = opt.icon
+                    return (
+                      <button
+                        key={opt.name}
+                        onClick={() => setActiveFilter(opt.name)}
+                        className={`h-12 rounded-xl text-[11px] font-black transition-all border flex items-center justify-center gap-2 ${
+                          activeFilter === opt.name 
+                          ? 'bg-luxury-black text-primary border-luxury-black shadow-lg' 
+                          : 'bg-white text-gray-400 border-gray-100'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {opt.name}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
               <Button className="w-full h-14 rounded-xl bg-primary text-white font-black text-md shadow-xl shadow-primary/20">
-                تطبيق الفلتر
+                تطبيق التغييرات
               </Button>
             </div>
           </SheetContent>
@@ -113,3 +123,4 @@ export default function ProductsPage() {
       )}
     </div>
   )
+}
