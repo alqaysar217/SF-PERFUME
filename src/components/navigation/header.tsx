@@ -93,7 +93,6 @@ export function Header() {
     { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
   ]
 
-  // منع مشاكل Hydration عبر عدم عرض الهيدر إلا بعد التأكد من تركيب المكون في المتصفح
   if (!mounted) return <header className="h-16 bg-white/95" />
 
   if (isAdmin && !isAdminLogin) {
@@ -116,11 +115,6 @@ export function Header() {
               المكلا، حضرموت
             </div>
           </div>
-        </div>
-
-        {/* Center Title */}
-        <div className="absolute left-1/2 -translate-x-1/2 text-center">
-          <p className="text-[9px] text-primary font-bold uppercase tracking-[0.2em]">{getTitle()}</p>
         </div>
 
         {/* Left Side: Sidebar Trigger */}
