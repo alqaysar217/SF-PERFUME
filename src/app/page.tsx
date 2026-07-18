@@ -1,13 +1,15 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
-import { MapPin, ShieldCheck, Star, ArrowLeft, SlidersHorizontal, Sparkles, User, UserRound, Watch, LayoutGrid, Quote } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { MapPin, ShieldCheck, Star, ArrowLeft, Sparkles, User, UserRound, Watch, LayoutGrid } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { PRODUCTS, BRANDS } from "@/lib/mock-data"
 import { ProductCard } from "@/components/shared/product-card"
 import { cn } from "@/lib/utils"
+import { useFirestore } from "@/firebase/provider"
+import { collection, query, orderBy, limit } from "firebase/firestore"
+import { useCollection } from "@/firebase/firestore/use-collection"
 
 const BANNER_IMAGES = [
   { url: "https://picsum.photos/seed/sf1/1200/600", title: "عطور تجسد أناقتك", sub: "مجموعة حصرية" },
@@ -22,16 +24,18 @@ const CATEGORIES_WITH_ICONS = [
   { name: "ساعات", icon: Watch },
 ]
 
-const REVIEWS = [
-  { name: "محمد العمري", review: "جودة العطور استثنائية والثبات يدوم طويلاً. فعلاً متجر يستحق الثقة.", rating: 5 },
-  { name: "سارة الحضرمي", review: "أحببت سرعة التعامل ورقي المنتجات. العطور أصلية ١٠٠٪.", rating: 5 },
-  { name: "أحمد باوزير", review: "أفضل مكان لشراء الهدايا الفاخرة في المكلا. الساعات رائعة جداً.", rating: 5 }
-]
-
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true)
   const [activeTab, setActiveTab] = useState("الكل")
   const [currentBanner, setCurrentBanner] = useState(0)
+  const db = useFirestore()
+
+  // Firestore Data
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(10)) : null, [db])
+  const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
+  
+  const { data: products, loading: productsLoading } = useCollection(productsQuery)
+  const { data: brands } = useCollection(brandsQuery)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,23 +45,21 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    // التحقق مما إذا كانت شاشة الترحيب قد ظهرت بالفعل في هذه الجلسة
     const hasShownSplash = sessionStorage.getItem('hasShownSplash')
-    
     if (hasShownSplash) {
       setShowSplash(false)
     } else {
       const timer = setTimeout(() => {
         setShowSplash(false)
         sessionStorage.setItem('hasShownSplash', 'true')
-      }, 1200) // تقليل الوقت لـ 1.2 ثانية لتكون سريعة وخاطفة
+      }, 1200)
       return () => clearTimeout(timer)
     }
   }, [])
 
   const filteredProducts = activeTab === "الكل" 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => {
+    ? products 
+    : products.filter((p: any) => {
         if (activeTab === "عطور رجالية") return p.category === 'men'
         if (activeTab === "عطور نسائية") return p.category === 'women'
         if (activeTab === "ساعات") return p.category === 'watches'
@@ -106,15 +108,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-4 -mt-4 relative z-10">
-          <Link href="/products" className="block active:scale-[0.98] transition-transform">
-            <div className="bg-white h-14 rounded-2xl shadow-xl shadow-black/5 flex items-center px-6 gap-4 border border-gray-50 luxury-shadow">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <span className="text-gray-400 text-xs font-bold">عن ماذا تبحث اليوم؟</span>
-            </div>
-          </Link>
-        </section>
-
         <section className="px-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1">
             {CATEGORIES_WITH_ICONS.map((cat, i) => {
@@ -146,9 +139,15 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="flex flex-col gap-8">
-            {filteredProducts.slice(0, 6).map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {productsLoading ? (
+              <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="text-center py-10 text-gray-400 font-bold text-xs uppercase tracking-widest">لا توجد منتجات حالياً</div>
+            )}
           </div>
         </section>
 
@@ -157,10 +156,10 @@ export default function HomePage() {
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide items-center">
-            {BRANDS.map(brand => (
+            {brands.map((brand: any) => (
               <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 group">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-100 flex items-center justify-center p-4 shadow-sm group-hover:border-primary transition-all group-active:scale-95">
-                  <Image src={brand.logo} alt={brand.name} width={50} height={50} className="grayscale group-hover:grayscale-0 transition-all object-contain" />
+                  <Image src={brand.logo || "https://picsum.photos/seed/brand/100/100"} alt={brand.name} width={50} height={50} className="grayscale group-hover:grayscale-0 transition-all object-contain" />
                 </div>
               </Link>
             ))}
@@ -168,7 +167,7 @@ export default function HomePage() {
         </section>
 
         <section className="px-4">
-          <div className="bg-luxury-black rounded-[2.5rem] p-10 space-y-10 text-white relative overflow-hidden">
+          <div className="bg-luxury-black rounded-[2.5rem] p-10 space-y-10 text-white relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <div className="text-center space-y-2 relative z-10">
               <h3 className="text-lg font-black tracking-tight text-primary uppercase tracking-[0.2em]">لماذا SF PERFUME؟</h3>
@@ -197,42 +196,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-4 space-y-8">
-          <div className="text-center">
-            <h3 className="text-base font-black text-luxury-black uppercase tracking-widest">آراء العملاء</h3>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-2">
-            {REVIEWS.map((rev, i) => (
-              <div key={i} className="min-w-[280px] bg-white p-8 rounded-[2.5rem] border border-gray-50 shadow-sm space-y-4">
-                <p className="text-[12px] text-gray-500 font-medium leading-relaxed italic">"{rev.review}"</p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                  <span className="text-[11px] font-black text-luxury-black">{rev.name}</span>
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: rev.rating }).map((_, j) => (
-                      <Star key={j} className="w-3 h-3 fill-primary text-primary" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <footer className="pt-20 pb-16 px-4 border-t border-gray-100 mt-10 text-center space-y-8 bg-gray-50/50">
           <div className="space-y-3">
             <h2 className="text-xl font-black text-luxury-black tracking-tighter">SF PERFUME</h2>
-            <div className="flex items-center justify-center gap-2 opacity-30">
-              <span className="h-px w-8 bg-primary"></span>
-              <span className="text-[9px] text-primary font-bold tracking-[0.4em] uppercase">Luxury Experience</span>
-              <span className="h-px w-8 bg-primary"></span>
-            </div>
-          </div>
-          <div className="space-y-1">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">جميع الحقوق محفوظة © ٢٠٢٤</p>
-            <p className="text-[8px] text-gray-300 font-medium">MADE WITH EXCELLENCE IN HADRAMOUT</p>
           </div>
         </footer>
       </main>
     </div>
   )
 }
+
+const Loader2 = ({ className }: { className?: string }) => <Loader2Icon className={cn("animate-spin", className)} />
+import { Loader2 as Loader2Icon } from "lucide-react"

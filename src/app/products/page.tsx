@@ -1,20 +1,26 @@
 
 "use client"
 
-import { useState } from "react"
-import { Search, SlidersHorizontal, X, User, UserRound, Watch, LayoutGrid } from "lucide-react"
-import { PRODUCTS } from "@/lib/mock-data"
+import { useState, useMemo } from "react"
+import { Search, SlidersHorizontal, X, User, UserRound, Watch, LayoutGrid, Loader2 } from "lucide-react"
 import { ProductCard } from "@/components/shared/product-card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { useFirestore } from "@/firebase/provider"
+import { collection, query, orderBy } from "firebase/firestore"
+import { useCollection } from "@/firebase/firestore/use-collection"
 
 export default function ProductsPage() {
   const [search, setSearch] = useState("")
   const [activeFilter, setActiveFilter] = useState("الكل")
+  const db = useFirestore()
 
-  const filtered = PRODUCTS.filter(p => {
-    const matchesSearch = p.name.includes(search) || p.brand.includes(search)
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc")) : null, [db])
+  const { data: products, loading } = useCollection(productsQuery)
+
+  const filtered = products.filter((p: any) => {
+    const matchesSearch = p.name?.includes(search) || p.brand?.includes(search)
     const matchesFilter = activeFilter === "الكل" || 
       (activeFilter === "رجالي" && p.category === 'men') ||
       (activeFilter === "نسائي" && p.category === 'women') ||
@@ -48,9 +54,9 @@ export default function ProductsPage() {
               <SlidersHorizontal className="w-5 h-5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-[2.5rem] p-8 h-fit min-h-[40vh]">
-            <SheetHeader className="mb-8 relative">
-              <SheetTitle className="text-right font-black text-xl">تصفية المنتجات</SheetTitle>
+          <SheetContent side="bottom" className="rounded-t-[2.5rem] p-8 h-fit min-h-[40vh] border-none">
+            <SheetHeader className="mb-8">
+              <SheetTitle className="text-right font-black text-xl text-luxury-black">تصفية المنتجات</SheetTitle>
             </SheetHeader>
             <div className="space-y-8">
               <div className="space-y-4">
@@ -62,11 +68,12 @@ export default function ProductsPage() {
                       <button
                         key={opt.name}
                         onClick={() => setActiveFilter(opt.name)}
-                        className={`h-12 rounded-xl text-[11px] font-black transition-all border flex items-center justify-center gap-2 ${
+                        className={cn(
+                          "h-12 rounded-xl text-[11px] font-black transition-all border flex items-center justify-center gap-2",
                           activeFilter === opt.name 
                           ? 'bg-luxury-black text-primary border-luxury-black shadow-lg' 
                           : 'bg-white text-gray-400 border-gray-100'
-                        }`}
+                        )}
                       >
                         <Icon className="w-4 h-4" />
                         {opt.name}
@@ -85,7 +92,7 @@ export default function ProductsPage() {
 
       <div className="flex items-center justify-between px-1">
         <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-          عرض: {activeFilter} ({filtered.length} منتج)
+          {loading ? "جاري التحميل..." : `عرض: ${activeFilter} (${filtered.length} منتج)`}
         </p>
         {activeFilter !== "الكل" && (
           <button 
@@ -98,12 +105,14 @@ export default function ProductsPage() {
       </div>
 
       <div className="flex flex-col gap-8">
-        {filtered.map(product => (
+        {loading ? (
+          <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
+        ) : filtered.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-300">
           <Search className="w-16 h-16 opacity-10" />
           <p className="text-sm font-bold">لم نجد أي منتجات تطابق بحثك</p>
