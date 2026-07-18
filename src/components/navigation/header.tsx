@@ -91,7 +91,32 @@ export function Header() {
   if (isAdmin && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
-        <div className="flex-1">
+        {/* Right Side: Logo & Info */}
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
+             <Image 
+              src="https://picsum.photos/seed/brand/200/200" 
+              alt="SF Logo" 
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-sm font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
+            <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
+              <MapPin className="w-2 h-2 text-primary" />
+              المكلا، حضرموت
+            </div>
+          </div>
+        </div>
+
+        {/* Center Title (Optional) */}
+        <div className="absolute left-1/2 -translate-x-1/2 text-center pointer-events-none hidden xs:block">
+          <p className="text-[9px] text-primary font-bold uppercase tracking-[0.2em]">{getTitle()}</p>
+        </div>
+
+        {/* Left Side: Sidebar Trigger */}
+        <div className="flex items-center">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <button className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black active:scale-90 transition-transform">
@@ -105,7 +130,7 @@ export function Header() {
               <div className="bg-luxury-black p-8 text-white space-y-4">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-luxury-black font-black text-xl shadow-xl">SF</div>
                 <div>
-                  <h2 className="font-black text-lg">SF PERFUME</h2>
+                  <h2 className="font-black text-lg">لوحة الإدارة</h2>
                   <p className="text-primary text-[10px] font-bold uppercase tracking-widest">Admin Control Center</p>
                 </div>
               </div>
@@ -139,17 +164,6 @@ export function Header() {
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-
-        <div className="flex-[2] flex flex-col items-center">
-          <h1 className="text-xs font-black text-luxury-black uppercase tracking-tighter">SF Dashboard</h1>
-          <p className="text-[8px] text-primary font-bold uppercase tracking-[0.2em]">{getTitle()}</p>
-        </div>
-
-        <div className="flex-1 flex justify-end">
-          <button onClick={() => router.push('/')} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400">
-            <LogOut className="w-5 h-5 rotate-180" />
-          </button>
         </div>
       </header>
     )
