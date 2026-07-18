@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -5,7 +6,7 @@ import { Search, Menu, X, Globe, User, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -80,12 +81,14 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[350px] p-8 border-none bg-background">
-              <div className="flex items-center gap-3 mb-10">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center luxury-border">
-                  <span className="text-white font-headline font-bold text-xl">S</span>
-                </div>
-                <span className="text-xl font-headline font-bold text-primary">سراج</span>
-              </div>
+              <SheetHeader>
+                <SheetTitle className="text-right flex items-center gap-3 mb-10">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center luxury-border">
+                    <span className="text-white font-headline font-bold text-xl">S</span>
+                  </div>
+                  <span className="text-xl font-headline font-bold text-primary">سراج</span>
+                </SheetTitle>
+              </SheetHeader>
               <nav className="flex flex-col gap-2">
                 {navLinks.map((link) => (
                   <Link

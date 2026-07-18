@@ -99,6 +99,9 @@ export function Header() {
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="rounded-l-[2.5rem] p-0 overflow-hidden border-none bg-background w-72">
+              <SheetHeader className="sr-only">
+                <SheetTitle>قائمة التحكم بالإدارة</SheetTitle>
+              </SheetHeader>
               <div className="bg-luxury-black p-8 text-white space-y-4">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-luxury-black font-black text-xl shadow-xl">SF</div>
                 <div>
