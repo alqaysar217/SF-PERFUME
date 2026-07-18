@@ -94,7 +94,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        <Link href="/search" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black">
+        <Link href="/products" className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black">
           <Search className="w-5 h-5" strokeWidth={1.5} />
         </Link>
       </header>
@@ -138,7 +138,7 @@ export default function HomePage() {
         </section>
 
         <section className="px-6 -mt-4 relative z-10">
-          <Link href="/search" className="block">
+          <Link href="/products" className="block">
             <div className="bg-white h-14 rounded-xl shadow-xl shadow-black/5 flex items-center px-6 gap-4 border border-gray-50 luxury-shadow">
               <Search className="w-5 h-5 text-primary" />
               <span className="text-gray-400 text-xs font-medium">ابحث عن عطرك المفضل...</span>
