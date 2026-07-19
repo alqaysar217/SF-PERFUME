@@ -130,19 +130,14 @@ export function Header() {
               </button>
             </SheetTrigger>
             <SheetContent side="right" dir="rtl" className="rounded-l-2xl p-0 overflow-hidden border-none bg-white w-72 flex flex-col shadow-2xl">
-              <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0 bg-white">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
-                    SF
-                  </div>
-                  <div className="text-right">
-                    <SheetTitle className="font-black text-sm text-luxury-black m-0">SF PERFUME</SheetTitle>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
-                  </div>
+              <div className="p-6 border-b border-gray-100 flex items-center gap-4 shrink-0 bg-white">
+                <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
+                  SF
                 </div>
-                <SheetClose className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
-                  <X className="w-4 h-4" />
-                </SheetClose>
+                <div className="text-right">
+                  <SheetTitle className="font-black text-sm text-luxury-black m-0">SF PERFUME</SheetTitle>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
+                </div>
               </div>
               
               <ScrollArea className="flex-1">

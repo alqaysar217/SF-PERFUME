@@ -77,6 +77,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (tabParam) setActiveTab(tabParam)
+    else setActiveTab("dashboard")
   }, [tabParam])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +204,6 @@ export default function AdminDashboard() {
             ) : trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="flex items-center gap-4 text-right flex-1">
-                  {/* Icon first from the right */}
                   <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
@@ -255,7 +255,6 @@ export default function AdminDashboard() {
             ) : filteredItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
                 <div className="flex items-center gap-4 text-right flex-1">
-                  {/* Icon/Image first from the right */}
                   {(item.image || item.logo) ? (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                       <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
@@ -271,7 +270,10 @@ export default function AdminDashboard() {
                     </div>
                   )}
                   <div className="text-right overflow-hidden">
-                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
+                    <div className="flex items-center gap-1.5">
+                       {item.isOffer && <Percent className="w-3 h-3 text-primary" />}
+                       <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
+                    </div>
                     <p className="text-[10px] font-bold text-primary">
                       {item.price ? `${item.price.toLocaleString()} ر.ي` : 
                        item.account ? item.account : 
@@ -293,7 +295,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Item Modal (Shared Form) */}
       <AdminItemModal 
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
@@ -306,7 +307,6 @@ export default function AdminDashboard() {
         brands={brands}
       />
 
-      {/* Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-[2rem]">
           <AlertDialogHeader className="space-y-6">
