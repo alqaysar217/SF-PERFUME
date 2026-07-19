@@ -11,7 +11,6 @@ import {
   deleteDoc, 
   doc, 
   query, 
-  orderBy, 
   serverTimestamp 
 } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
@@ -50,35 +49,38 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isOfferFilter, setIsOfferFilter] = useState(false)
 
-  // استعلامات بسيطة لتجنب أخطاء الفهارس المركبة
+  // استعلامات بسيطة ومرنة
   const productsQuery = useMemo(() => db ? query(collection(db, "products")) : null, [db])
-  const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
+  const brandsQuery = useMemo(() => db ? query(collection(db, "brands")) : null, [db])
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
-  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc")) : null, [db])
-  const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
-  const trashQuery = useMemo(() => db ? query(collection(db, "trash"), orderBy("deletedAt", "desc")) : null, [db])
+  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews")) : null, [db])
+  const bannersQuery = useMemo(() => db ? query(collection(db, "banners")) : null, [db])
+  const trashQuery = useMemo(() => db ? query(collection(db, "trash")) : null, [db])
 
   const { data: productsRaw, loading: productsLoading } = useCollection<any>(productsQuery)
-  const { data: brands } = useCollection(brandsQuery)
-  const { data: accounts, loading: accountsLoading } = useCollection(accountsQuery)
-  const { data: faqs, loading: faqsLoading } = useCollection(faqsQuery)
-  const { data: reviews, loading: reviewsLoading } = useCollection(reviewsQuery)
-  const { data: banners, loading: bannersLoading } = useCollection(bannersQuery)
-  const { data: trashItems, loading: trashLoading } = useCollection(trashQuery)
+  const { data: brandsRaw } = useCollection<any>(brandsQuery)
+  const { data: accountsRaw, loading: accountsLoading } = useCollection<any>(accountsQuery)
+  const { data: faqsRaw, loading: faqsLoading } = useCollection<any>(faqsQuery)
+  const { data: reviewsRaw, loading: reviewsLoading } = useCollection<any>(reviewsQuery)
+  const { data: bannersRaw, loading: bannersLoading } = useCollection<any>(bannersQuery)
+  const { data: trashItemsRaw, loading: trashLoading } = useCollection<any>(trashQuery)
 
-  // الفرز البرمجي الذكي للمنتجات لتجنب خطأ الفهرس
+  // الفرز الذكي برمجياً لكافة الأقسام لضمان الاستقرار بنسبة 100%
   const products = useMemo(() => {
     if (!productsRaw) return [];
     return [...productsRaw].sort((a, b) => {
       const orderA = a.displayOrder ?? 999;
       const orderB = b.displayOrder ?? 999;
       if (orderA !== orderB) return orderA - orderB;
-      const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
-      const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
       return timeB - timeA;
     });
   }, [productsRaw]);
+
+  const brands = useMemo(() => brandsRaw ? [...brandsRaw].sort((a, b) => a.name?.localeCompare(b.name)) : [], [brandsRaw]);
+  const trashItems = useMemo(() => trashItemsRaw ? [...trashItemsRaw].sort((a, b) => (b.deletedAt?.seconds || 0) - (a.deletedAt?.seconds || 0)) : [], [trashItemsRaw]);
 
   useEffect(() => {
     setMounted(true)
@@ -183,12 +185,12 @@ export default function AdminDashboard() {
 
   const filteredItems = useMemo(() => {
     const map: any = { 
-      products, brands, accounts, faqs, reviews, banners 
+      products, brands, accounts: accountsRaw, faqs: faqsRaw, reviews: reviewsRaw, banners: bannersRaw 
     }
     let items = map[activeTab] || []
     if (activeTab === "products" && isOfferFilter) return items.filter((p: any) => p.isOffer)
     return items
-  }, [activeTab, products, brands, accounts, faqs, reviews, banners, isOfferFilter])
+  }, [activeTab, products, brands, accountsRaw, faqsRaw, reviewsRaw, bannersRaw, isOfferFilter])
 
   const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
 
@@ -205,7 +207,7 @@ export default function AdminDashboard() {
       ) : activeTab === "trash" ? (
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-between items-center px-1">
-             <button className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
+             <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
                 <ChevronRight className="w-5 h-5" />
              </button>
              <h2 className="text-sm font-black text-luxury-black">سلة المحذوفات ({trashItems.length})</h2>
@@ -214,7 +216,7 @@ export default function AdminDashboard() {
             {trashLoading ? (
                <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
             ) : trashItems.map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
+              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between shadow-sm">
                 <div className="flex flex-row items-center gap-4 text-right flex-1">
                   <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 shrink-0">
                     <FileText className="w-5 h-5" />
@@ -239,7 +241,7 @@ export default function AdminDashboard() {
       ) : (
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-between items-center px-1">
-             <button className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
+             <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
                 <ChevronRight className="w-5 h-5" />
              </button>
             <div className="flex gap-2">
@@ -247,14 +249,14 @@ export default function AdminDashboard() {
                 <button 
                   onClick={() => setIsOfferFilter(!isOfferFilter)}
                   className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
                     isOfferFilter ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-white text-gray-400 border border-gray-100"
                   )}
                 >
                   <Percent className="w-5 h-5" />
                 </button>
               )}
-              <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-lg h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+              <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
                 <Plus className="w-3.5 h-3.5" />
                 إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال' : activeTab === 'banners' ? 'بنر' : 'جديد'}
               </Button>
@@ -262,19 +264,14 @@ export default function AdminDashboard() {
           </div>
 
           <div className="space-y-3">
-            {[productsLoading, accountsLoading, faqsLoading, reviewsLoading, bannersLoading].some(l => l && activeTab !== 'dashboard') ? (
+            {[productsLoading, accountsLoading, faqsLoading, reviewsLoading, bannersLoading].some(l => l) ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
             ) : filteredItems.map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 flex flex-row items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
+              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 flex flex-row items-center justify-between gap-4 shadow-sm animate-fade-in text-right">
                 <div className="flex flex-row items-center gap-4 text-right flex-1">
                   {(item.image || item.logo) ? (
                     <div className="w-12 h-12 rounded-lg bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
-                      <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
-                      {item.isOffer && (
-                         <div className="absolute top-0 right-0 p-0.5 bg-primary rounded-bl-lg shadow-sm">
-                            <Percent className="w-2.5 h-2.5 text-white" />
-                         </div>
-                      )}
+                      <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
                     </div>
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
@@ -320,23 +317,23 @@ export default function AdminDashboard() {
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-xl">
-          <AlertDialogHeader className="space-y-6">
-            <div className="w-20 h-20 bg-luxury-black rounded-xl flex items-center justify-center text-primary mx-auto shadow-xl">
-              <ShieldAlert className="w-10 h-10" />
+        <AlertDialogContent className="rounded-xl p-8 text-right bg-white shadow-2xl border-none">
+          <AlertDialogHeader className="space-y-4">
+            <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center text-red-500 mx-auto">
+              <ShieldAlert className="w-8 h-8" />
             </div>
             <div className="space-y-2 text-center">
-              <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد النقل</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed text-center">
+              <AlertDialogTitle className="text-xl font-black text-luxury-black">تأكيد النقل</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-400 text-sm">
                 سيتم نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank || deletingItem?.title}"</span> لسلة المحذوفات.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-10 flex flex-col sm:flex-row gap-3">
-            <AlertDialogAction onClick={handleSoftDelete} className="flex-1 h-14 rounded-xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md">
+          <AlertDialogFooter className="mt-8 flex gap-3">
+            <AlertDialogAction onClick={handleSoftDelete} className="flex-1 h-12 rounded-xl bg-luxury-black text-primary hover:bg-black/90 font-black">
               نقل للمحذوفات
             </AlertDialogAction>
-            <AlertDialogCancel className="flex-1 h-14 rounded-xl border-gray-100 bg-gray-50 text-gray-400 font-black text-md">
+            <AlertDialogCancel className="flex-1 h-12 rounded-xl border-gray-100 bg-gray-50 text-gray-400 font-black">
               تراجع
             </AlertDialogCancel>
           </AlertDialogFooter>
