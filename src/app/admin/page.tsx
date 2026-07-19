@@ -321,7 +321,7 @@ export default function AdminDashboard() {
              </button>
             <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
               <Plus className="w-3.5 h-3.5" />
-              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : 'جديد'}
+              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : 'جديد'}
             </Button>
           </div>
 
@@ -356,7 +356,7 @@ export default function AdminDashboard() {
         <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : 'جديد'}`}
+              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : 'جديد'}`}
             </DialogTitle>
           </div>
           
@@ -538,15 +538,38 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === "brands" && (
-              <div className="space-y-6">
-                <div className="space-y-2 text-right">
-                  <label className="text-[10px] font-bold text-gray-400 px-1">اسم الماركة</label>
-                  <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: ديور" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <Award className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">بيانات الماركة</span>
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <label className="text-[10px] font-bold text-gray-400 px-1">اسم الماركة</label>
+                    <div className="relative">
+                      <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: ديور" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                      <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2 text-right">
-                  <label className="text-[10px] font-bold text-gray-400 px-1">شعار الماركة</label>
-                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer">
-                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-contain p-2" alt="" /> : <Upload className="w-6 h-6 text-gray-300" />}
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">شعار الماركة</span>
+                  </div>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()} 
+                    className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    {imagePreview ? (
+                      <img src={imagePreview} className="w-full h-full object-contain p-2" alt="Preview" />
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-gray-300 mb-2" />
+                        <span className="text-[8px] font-black text-gray-400 text-center px-2">ارفع الشعار</span>
+                      </>
+                    )}
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   </div>
                 </div>
