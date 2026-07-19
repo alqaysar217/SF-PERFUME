@@ -6,12 +6,14 @@ import { useFirestore } from "@/firebase/provider"
 import { collection, query, where, orderBy } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { ProductCard } from "@/components/shared/product-card"
-import { Percent, Loader2 } from "lucide-react"
+import { Percent, Loader2, ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 export default function OffersPage() {
   const db = useFirestore()
 
-  // استعلام لجلب المنتجات التي عليها عروض فقط من قاعدة البيانات الحقيقية
+  // استعلام لجلب المنتجات التي عليها عروض فقط مرتبة حسب الأحدث
+  // يتطلب هذا الاستعلام الفهرس المركب الذي قمت بإنشائه
   const offersQuery = useMemo(() => 
     db ? query(
       collection(db, "products"), 
@@ -32,7 +34,7 @@ export default function OffersPage() {
         </div>
         <div className="space-y-1 relative z-10">
           <h2 className="text-xl font-black text-luxury-black">وفر أكثر مع عروضنا الحصرية</h2>
-          <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Exclusive Luxury Deals</p>
+          <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Exclusive Luxury Deals</p>
         </div>
       </div>
 
@@ -41,16 +43,23 @@ export default function OffersPage() {
         {loading ? (
           <div className="py-20 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
-            <p className="text-xs font-bold text-gray-400 mt-4">جاري تحميل العروض الحصرية...</p>
+            <p className="text-xs font-bold text-gray-400 mt-4">جاري جلب العروض الحصرية...</p>
           </div>
         ) : offers.length > 0 ? (
           offers.map(product => (
             <ProductCard key={product.id} product={product} />
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-300">
+          <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
             <Percent className="w-16 h-16 opacity-10" />
-            <p className="text-sm font-bold">لا توجد عروض حصرية نشطة حالياً</p>
+            <div className="space-y-2">
+              <p className="text-sm font-black text-luxury-black">لا توجد عروض نشطة حالياً</p>
+              <p className="text-xs text-gray-400">تابعنا باستمرار لتصلك أحدث الخصومات</p>
+            </div>
+            <Link href="/products" className="text-primary text-xs font-black flex items-center gap-2">
+              تصفح كافة المنتجات
+              <ArrowRight className="w-4 h-4 rotate-180" />
+            </Link>
           </div>
         )}
       </div>

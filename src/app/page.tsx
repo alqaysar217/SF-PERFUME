@@ -109,7 +109,7 @@ export default function HomePage() {
               ))
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/20 font-black text-xs uppercase tracking-widest">SF PERFUME Collection</p>
+                <p className="text-white/20 font-black text-xs uppercase tracking-widest text-center">SF PERFUME Collection</p>
               </div>
             )}
             {banners.length > 1 && (
@@ -177,7 +177,7 @@ export default function HomePage() {
         </section>
 
         {/* الماركات العالمية (في الأسفل) */}
-        <section className="px-4 space-y-4 pt-4">
+        <section className="px-4 space-y-4 pt-4 pb-12">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
             <Link href="/brands" className="text-primary text-[10px] font-black flex items-center gap-1">
@@ -187,21 +187,25 @@ export default function HomePage() {
           <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2">
             {brandsLoading ? (
               <div className="flex gap-4 w-full justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-            ) : brands.map((brand: any) => (
-              <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
-                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
-                  <div className="relative w-full h-full">
-                    <Image 
-                      src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
-                      alt={brand.name} 
-                      fill 
-                      className="object-contain grayscale group-hover:grayscale-0 transition-all" 
-                    />
+            ) : brands.length > 0 ? (
+              brands.map((brand: any) => (
+                <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
+                  <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
+                    <div className="relative w-full h-full">
+                      <Image 
+                        src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
+                        alt={brand.name} 
+                        fill 
+                        className="object-contain grayscale group-hover:grayscale-0 transition-all" 
+                      />
+                    </div>
                   </div>
-                </div>
-                <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
-              </Link>
-            ))}
+                  <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center py-4 w-full text-gray-300 font-bold text-[10px]">لا توجد ماركات مسجلة</div>
+            )}
           </div>
         </section>
 
@@ -230,16 +234,16 @@ export default function HomePage() {
                         <User className="w-5 h-5" />
                       )}
                     </div>
-                    <div>
+                    <div className="text-right">
                       <h4 className="text-xs font-black text-luxury-black">{review.name}</h4>
-                      <div className="flex gap-0.5 mt-0.5">
+                      <div className="flex gap-0.5 mt-0.5 justify-end">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star key={i} className={cn("w-2.5 h-2.5", i < (review.rating || 5) ? "fill-primary text-primary" : "text-gray-200")} />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2">
+                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2 text-right">
                     "{review.content}"
                   </p>
                 </div>
