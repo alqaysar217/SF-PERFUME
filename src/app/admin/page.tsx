@@ -26,7 +26,8 @@ import {
   Maximize2,
   List,
   AlignLeft,
-  AlertTriangle
+  AlertTriangle,
+  ChevronRight
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -256,7 +257,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <div className="flex justify-between items-center px-1">
              <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5" />
              </button>
             <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
               <Plus className="w-3.5 h-3.5" />
@@ -267,24 +268,24 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.8rem] border border-gray-50 flex items-center justify-between luxury-shadow">
-                <div className="flex gap-2">
+                <div className="flex items-center gap-4 text-right">
+                  {(item.image || item.logo) && (
+                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
+                      <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
+                    </div>
+                  )}
+                  <div className="flex flex-col items-start text-right">
+                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
+                    <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || 'تفاصيل'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 shrink-0">
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
                     <Edit className="w-4 h-4" />
                   </button>
                   <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500">
                     <Trash2 className="w-4 h-4" />
                   </button>
-                </div>
-                <div className="flex items-center gap-4 text-right">
-                  <div className="flex flex-col items-end">
-                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
-                    <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || 'تفاصيل'}</p>
-                  </div>
-                  {(item.image || item.logo) && (
-                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100">
-                      <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
@@ -305,25 +306,25 @@ export default function AdminDashboard() {
             {activeTab === "products" && (
               <>
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary">
-                    <Tag className="w-4 h-4" />
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
+                    <Tag className="w-4 h-4" />
                   </div>
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">اسم المنتج</label>
                       <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: سوفاج إليكسير" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                      <div className="space-y-2 text-right">
                         <label className="text-[10px] font-bold text-gray-400 px-1">الماركة</label>
                         <div className="relative">
                           <Input name="brand" defaultValue={editingItem?.brand} placeholder="شانيل، ديور..." required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
                           <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 text-right">
                         <label className="text-[10px] font-bold text-gray-400 px-1">التصنيف</label>
                         <div className="relative">
                           <select name="category" defaultValue={editingItem?.category || 'men'} className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
@@ -339,33 +340,33 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary">
-                    <Banknote className="w-4 h-4" />
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
+                    <Banknote className="w-4 h-4" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">السعر الحالي</label>
                       <div className="relative">
                         <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="0.00" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">ر.ي</span>
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">السعر القديم</label>
                       <div className="relative">
                         <Input name="oldPrice" type="number" defaultValue={editingItem?.oldPrice} placeholder="0.00" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
                         <History className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">الثبات</label>
                       <div className="relative">
                         <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="مثال: 12 ساعة" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
                         <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">الحجم</label>
                       <div className="relative">
                         <Input name="size" defaultValue={editingItem?.size} placeholder="مثال: 100 مل" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
@@ -373,25 +374,25 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10">
-                    <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
+                  <div className="flex items-center gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10 justify-end">
                     <span className="text-xs font-black text-luxury-black">تفعيل وسم "عرض خاص" على المنتج</span>
+                    <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
                   </div>
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary">
-                    <AlignLeft className="w-4 h-4" />
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
+                    <AlignLeft className="w-4 h-4" />
                   </div>
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center gap-1">
-                        <List className="w-3 h-3" /> المكونات (افصل بينها بفاصلة)
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center justify-end gap-1">
+                        المكونات (افصل بينها بفاصلة) <List className="w-3 h-3" />
                       </label>
                       <Textarea name="ingredients" defaultValue={editingItem?.ingredients} placeholder="قرفة، لافندر، خشب صندل..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[80px]" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">وصف العطر</label>
                       <Textarea name="description" defaultValue={editingItem?.description} placeholder="اكتب وصفاً جذاباً للعملاء..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[100px]" />
                     </div>
@@ -399,9 +400,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary">
-                    <ImageIcon className="w-4 h-4" />
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
+                    <ImageIcon className="w-4 h-4" />
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
@@ -423,11 +424,11 @@ export default function AdminDashboard() {
 
             {activeTab === "brands" && (
               <div className="space-y-6">
-                <div className="space-y-2">
+                <div className="space-y-2 text-right">
                   <label className="text-[10px] font-bold text-gray-400 px-1">اسم الماركة</label>
                   <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: ديور" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 text-right">
                   <label className="text-[10px] font-bold text-gray-400 px-1">شعار الماركة</label>
                   <div onClick={() => fileInputRef.current?.click()} className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer">
                     {imagePreview ? <img src={imagePreview} className="w-full h-full object-contain p-2" alt="" /> : <Upload className="w-6 h-6 text-gray-300" />}
@@ -438,7 +439,7 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === "accounts" && (
-              <div className="space-y-4">
+              <div className="space-y-4 text-right">
                  <Input name="bank" defaultValue={editingItem?.bank} placeholder="اسم البنك / المحفظة" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
                  <Input name="name" defaultValue={editingItem?.name} placeholder="اسم صاحب الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
                  <Input name="account" defaultValue={editingItem?.account} placeholder="رقم الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
