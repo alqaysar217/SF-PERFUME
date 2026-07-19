@@ -30,7 +30,6 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
         <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
       </div>
 
-      {/* Stats Cards - Updated to show 3 columns */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white p-4 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
           <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
