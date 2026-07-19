@@ -8,7 +8,7 @@ import Link from "next/link"
 import { ProductCard } from "@/components/shared/product-card"
 import { cn } from "@/lib/utils"
 import { useFirestore } from "@/firebase/provider"
-import { collection, query, orderBy, limit } from "firebase/firestore"
+import { collection, query, limit } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 
 const CATEGORIES_WITH_ICONS = [
@@ -24,16 +24,16 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const db = useFirestore()
 
-  // Updated query to order by displayOrder first
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc"), limit(5)) : null, [db])
-  const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
-  const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
-  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(3)) : null, [db])
+  // استعلامات بسيطة لتجنب أخطاء الفهارس المركبة
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(50)) : null, [db])
+  const brandsQuery = useMemo(() => db ? query(collection(db, "brands")) : null, [db])
+  const bannersQuery = useMemo(() => db ? query(collection(db, "banners")) : null, [db])
+  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), limit(3)) : null, [db])
   
-  const { data: products, loading: productsLoading } = useCollection<any>(productsQuery)
+  const { data: productsRaw, loading: productsLoading } = useCollection<any>(productsQuery)
   const { data: brands, loading: brandsLoading } = useCollection<any>(brandsQuery)
   const { data: banners } = useCollection<any>(bannersQuery)
-  const { data: reviews, loading: reviewsLoading } = useCollection<any>(reviewsQuery)
+  const { data: reviews } = useCollection<any>(reviewsQuery)
 
   useEffect(() => {
     if (banners.length === 0) return
@@ -56,15 +56,28 @@ export default function HomePage() {
     }
   }, [])
 
-  const filteredProducts = useMemo(() => {
-    if (activeTab === "الكل") return products 
-    return products.filter((p: any) => {
+  // الفرز الذكي برمجياً
+  const sortedAndFilteredProducts = useMemo(() => {
+    if (!productsRaw) return [];
+    
+    let items = [...productsRaw].sort((a, b) => {
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
+
+    if (activeTab === "الكل") return items.slice(0, 5);
+    
+    return items.filter((p: any) => {
       if (activeTab === "عطور رجالية") return p.category === 'men'
       if (activeTab === "عطور نسائية") return p.category === 'women'
       if (activeTab === "ساعات") return p.category === 'watches'
       return true
-    })
-  }, [products, activeTab])
+    }).slice(0, 5);
+  }, [productsRaw, activeTab])
 
   if (showSplash) {
     return (
@@ -86,18 +99,12 @@ export default function HomePage() {
   return (
     <div className="flex flex-col animate-fade-in pb-32 bg-background">
       <main className="flex flex-col gap-8 pt-6">
-        {/* البنر المتحرك */}
         <section className="px-4">
           <div className="relative h-48 rounded-xl overflow-hidden bg-luxury-black shadow-lg border border-gray-100/10">
             {banners.length > 0 ? (
               banners.map((banner: any, idx: number) => (
                 <div key={idx} className={cn("absolute inset-0 transition-opacity duration-1000", currentBanner === idx ? "opacity-100" : "opacity-0")}>
-                  <Image 
-                    src={banner.image || "https://picsum.photos/seed/sf/1200/600"} 
-                    alt={banner.title} 
-                    fill 
-                    className="object-cover opacity-60" 
-                  />
+                  <Image src={banner.image || "https://picsum.photos/seed/sf/1200/600"} alt={banner.title} fill className="object-cover opacity-60" />
                   <div className="absolute inset-0 p-8 flex flex-col justify-center gap-2">
                     <div className="flex items-center gap-2 bg-primary/20 backdrop-blur-sm w-fit px-3 py-1 rounded-full border border-primary/30">
                       <Sparkles className="w-3 h-3 text-primary" />
@@ -122,22 +129,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* أقسام المتجر */}
         <section className="px-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1">
             {CATEGORIES_WITH_ICONS.map((cat, i) => {
               const Icon = cat.icon
               return (
-                <button
-                  key={i}
-                  onClick={() => setActiveTab(cat.name)}
-                  className={cn(
-                    "shrink-0 px-5 py-3 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 border",
-                    activeTab === cat.name 
-                      ? "bg-luxury-black text-primary border-luxury-black shadow-lg shadow-black/10 scale-105" 
-                      : "bg-white text-gray-400 border-gray-100 hover:bg-gray-50"
-                  )}
-                >
+                <button key={i} onClick={() => setActiveTab(cat.name)} className={cn("shrink-0 px-5 py-3 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 border", activeTab === cat.name ? "bg-luxury-black text-primary border-luxury-black shadow-lg shadow-black/10 scale-105" : "bg-white text-gray-400 border-gray-100 hover:bg-gray-50")}>
                   <Icon className="w-4 h-4" />
                   {cat.name}
                 </button>
@@ -146,7 +143,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* قائمة المنتجات (أحدث 5) */}
         <section className="px-4 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">المجموعة المختارة</h3>
@@ -157,15 +153,12 @@ export default function HomePage() {
           <div className="flex flex-col gap-8">
             {productsLoading ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
-            ) : filteredProducts.length > 0 ? (
+            ) : sortedAndFilteredProducts.length > 0 ? (
               <>
-                {filteredProducts.map((product: any) => (
+                {sortedAndFilteredProducts.map((product: any) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
-                <Link 
-                  href="/products" 
-                  className="w-full h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center gap-3 text-luxury-black font-black text-xs shadow-sm hover:bg-gray-50 active:scale-95 transition-all mt-4"
-                >
+                <Link href="/products" className="w-full h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center gap-3 text-luxury-black font-black text-xs shadow-sm hover:bg-gray-50 active:scale-95 transition-all mt-4">
                   تصفح كافة المنتجات
                   <ArrowLeft className="w-4 h-4" />
                 </Link>
@@ -176,7 +169,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* الماركات العالمية (في الأسفل) */}
         <section className="px-4 space-y-4 pt-4 pb-12">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
@@ -192,12 +184,7 @@ export default function HomePage() {
                 <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
                   <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
                     <div className="relative w-full h-full">
-                      <Image 
-                        src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
-                        alt={brand.name} 
-                        fill 
-                        className="object-contain grayscale group-hover:grayscale-0 transition-all" 
-                      />
+                      <Image src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} alt={brand.name} fill className="object-contain grayscale group-hover:grayscale-0 transition-all" />
                     </div>
                   </div>
                   <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
@@ -209,7 +196,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* آراء العملاء */}
         <section className="px-4 pb-12 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">آراء العملاء</h3>
@@ -220,19 +206,13 @@ export default function HomePage() {
           </div>
           
           <div className="space-y-4">
-            {reviewsLoading ? (
-              <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
-            ) : reviews.length > 0 ? (
+            {reviews.length > 0 ? (
               reviews.map((review: any) => (
                 <div key={review.id} className="bg-white p-6 rounded-xl border border-gray-50 shadow-sm space-y-4 relative overflow-hidden">
                   <Quote className="absolute top-4 left-4 w-8 h-8 text-primary/5 -scale-x-100" />
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-primary border border-gray-100 overflow-hidden relative">
-                      {review.image ? (
-                         <Image src={review.image} alt={review.name} fill className="object-cover" />
-                      ) : (
-                        <User className="w-5 h-5" />
-                      )}
+                      {review.image ? <Image src={review.image} alt={review.name} fill className="object-cover" /> : <User className="w-5 h-5" />}
                     </div>
                     <div className="text-right">
                       <h4 className="text-xs font-black text-luxury-black">{review.name}</h4>
@@ -243,9 +223,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2 text-right">
-                    "{review.content}"
-                  </p>
+                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2 text-right">"{review.content}"</p>
                 </div>
               ))
             ) : (

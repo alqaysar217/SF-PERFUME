@@ -3,7 +3,7 @@
 
 import { useMemo } from "react"
 import { useFirestore } from "@/firebase/provider"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { ProductCard } from "@/components/shared/product-card"
 import { Percent, Loader2, ArrowRight } from "lucide-react"
@@ -12,26 +12,28 @@ import Link from "next/link"
 export default function OffersPage() {
   const db = useFirestore()
 
-  // Updated query to order by displayOrder ASC, then createdAt DESC
+  // استعلام بسيط لا يحتاج لفهرس مركب
   const offersQuery = useMemo(() => 
     db ? query(
       collection(db, "products"), 
-      where("isOffer", "==", true),
-      orderBy("displayOrder", "asc")
+      where("isOffer", "==", true)
     ) : null
   , [db])
 
   const { data: offersRaw, loading } = useCollection<any>(offersQuery)
 
-  // Smart Sorting: Fallback to createdAt if displayOrder is same (done via query mostly, but handled here for safety)
+  // الترتيب الذكي برمجياً: حسب رقم الترتيب أولاً ثم الأحدث
   const offers = useMemo(() => {
     if (!offersRaw) return [];
     return [...offersRaw].sort((a, b) => {
-      // Primary Sort: displayOrder ASC
-      if (a.displayOrder !== b.displayOrder) {
-        return (a.displayOrder || 999) - (b.displayOrder || 999);
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
       }
-      // Secondary Sort: createdAt DESC
+      
+      // في حال تساوي الرقم، الأحدث أولاً
       const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
       const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
       return timeB - timeA;
@@ -40,7 +42,6 @@ export default function OffersPage() {
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
-      {/* رأس صفحة العروض */}
       <div className="bg-primary/10 p-8 rounded-xl flex flex-col items-center gap-4 text-center border border-primary/20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
         <div className="w-16 h-16 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 relative z-10">
@@ -52,7 +53,6 @@ export default function OffersPage() {
         </div>
       </div>
 
-      {/* عرض المنتجات */}
       <div className="flex flex-col gap-8">
         {loading ? (
           <div className="py-20 text-center">

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useFirestore } from "@/firebase/provider"
-import { collection, query, orderBy } from "firebase/firestore"
+import { collection, query } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { cn } from "@/lib/utils"
 
@@ -17,18 +17,31 @@ export default function ProductsPage() {
   const [activeFilter, setActiveFilter] = useState("الكل")
   const db = useFirestore()
 
-  // Updated query to order by displayOrder first
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc")) : null, [db])
-  const { data: products, loading } = useCollection(productsQuery)
+  const productsQuery = useMemo(() => db ? query(collection(db, "products")) : null, [db])
+  const { data: productsRaw, loading } = useCollection(productsQuery)
 
-  const filtered = products.filter((p: any) => {
-    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase()) || p.brand?.toLowerCase().includes(search.toLowerCase())
-    const matchesFilter = activeFilter === "الكل" || 
-      (activeFilter === "رجالي" && p.category === 'men') ||
-      (activeFilter === "نسائي" && p.category === 'women') ||
-      (activeFilter === "ساعات" && p.category === 'watches')
-    return matchesSearch && matchesFilter
-  })
+  // الترتيب الذكي برمجياً لتجنب أخطاء الفهارس
+  const filteredAndSorted = useMemo(() => {
+    if (!productsRaw) return [];
+    
+    let items = [...productsRaw].sort((a, b) => {
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
+
+    return items.filter((p: any) => {
+      const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase()) || p.brand?.toLowerCase().includes(search.toLowerCase())
+      const matchesFilter = activeFilter === "الكل" || 
+        (activeFilter === "رجالي" && p.category === 'men') ||
+        (activeFilter === "نسائي" && p.category === 'women') ||
+        (activeFilter === "ساعات" && p.category === 'watches')
+      return matchesSearch && matchesFilter
+    });
+  }, [productsRaw, search, activeFilter])
 
   const filterOptions = [
     { name: "الكل", icon: LayoutGrid },
@@ -94,13 +107,10 @@ export default function ProductsPage() {
 
       <div className="flex items-center justify-between px-1">
         <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-          {loading ? "جاري التحميل..." : `عرض: ${activeFilter} (${filtered.length} منتج)`}
+          {loading ? "جاري التحميل..." : `عرض: ${activeFilter} (${filteredAndSorted.length} منتج)`}
         </p>
         {activeFilter !== "الكل" && (
-          <button 
-            onClick={() => setActiveFilter("الكل")}
-            className="text-[10px] font-bold text-primary flex items-center gap-1"
-          >
+          <button onClick={() => setActiveFilter("الكل")} className="text-[10px] font-bold text-primary flex items-center gap-1">
             إعادة تعيين <X className="w-3 h-3" />
           </button>
         )}
@@ -109,12 +119,12 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-8">
         {loading ? (
           <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
-        ) : filtered.map((product: any) => (
+        ) : filteredAndSorted.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
-      {!loading && filtered.length === 0 && (
+      {!loading && filteredAndSorted.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-300">
           <Search className="w-16 h-16 opacity-10" />
           <p className="text-sm font-bold">لم نجد أي منتجات تطابق بحثك</p>
