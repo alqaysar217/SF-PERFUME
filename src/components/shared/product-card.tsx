@@ -3,8 +3,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingBag, Maximize2, Award, Star, Plus } from "lucide-react"
-import { Product } from "@/lib/mock-data"
+import { Heart, Award, Star, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -54,6 +53,7 @@ export function ProductCard({ product }: { product: any }) {
     })
   }
 
+  // تأمين وجود رابط صورة صالح
   const imageSrc = product.image && product.image.trim() !== "" 
     ? product.image 
     : "https://picsum.photos/seed/product/600/400"
@@ -61,15 +61,15 @@ export function ProductCard({ product }: { product: any }) {
   return (
     <Link 
       href={`/products/${product.id}`} 
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98]"
+      className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98]"
     >
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-50">
         <Image 
           src={imageSrc} 
-          alt={product.name}
+          alt={product.name || "Product Image"}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, 400px"
         />
         <div className="absolute top-3 right-3 z-10">
           {product.isOffer && (
@@ -113,7 +113,6 @@ export function ProductCard({ product }: { product: any }) {
         <div className="flex items-center justify-between pt-4 border-t border-gray-50">
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-1.5 text-gray-400">
-                <Maximize2 className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold">{product.size}</span>
              </div>
              <div className="h-4 w-px bg-gray-100" />
@@ -125,7 +124,7 @@ export function ProductCard({ product }: { product: any }) {
           
           <button 
             onClick={addToCart}
-            className="flex items-center gap-2 bg-luxury-black text-primary px-5 py-2.5 rounded-xl shadow-lg transition-all active:scale-90 hover:shadow-primary/10"
+            className="flex items-center gap-2 bg-luxury-black text-primary px-5 py-2.5 rounded-lg shadow-lg transition-all active:scale-90 hover:shadow-primary/10"
           >
              <span className="text-[10px] font-black uppercase tracking-wider">أضف للسلة</span>
              <Plus className="w-4 h-4" />

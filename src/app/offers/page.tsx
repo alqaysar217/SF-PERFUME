@@ -3,7 +3,7 @@
 
 import { useMemo } from "react"
 import { useFirestore } from "@/firebase/provider"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { ProductCard } from "@/components/shared/product-card"
 import { Percent, Loader2, ArrowRight } from "lucide-react"
@@ -12,17 +12,25 @@ import Link from "next/link"
 export default function OffersPage() {
   const db = useFirestore()
 
-  // استعلام لجلب المنتجات التي عليها عروض فقط مرتبة حسب الأحدث
-  // يتطلب هذا الاستعلام الفهرس المركب الذي قمت بإنشائه
+  // جلب العروض بدون ترتيب لتجنب الحاجة لفهرس مركب حالياً
   const offersQuery = useMemo(() => 
     db ? query(
       collection(db, "products"), 
-      where("isOffer", "==", true),
-      orderBy("createdAt", "desc")
+      where("isOffer", "==", true)
     ) : null
   , [db])
 
-  const { data: offers, loading } = useCollection<any>(offersQuery)
+  const { data: offersRaw, loading } = useCollection<any>(offersQuery)
+
+  // ترتيب العروض برمجياً من الأحدث إلى الأقدم
+  const offers = useMemo(() => {
+    if (!offersRaw) return [];
+    return [...offersRaw].sort((a, b) => {
+      const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
+      const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+      return timeB - timeA;
+    });
+  }, [offersRaw]);
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
