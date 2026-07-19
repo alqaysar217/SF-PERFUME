@@ -100,8 +100,9 @@ export function Header() {
   if (isAdmin && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
+        {/* Logo and Brand on Right */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
              <Image 
               src="https://picsum.photos/seed/brand/200/200" 
               alt="SF Logo" 
@@ -140,17 +141,17 @@ export function Header() {
                 </div>
               </div>
               
-              <ScrollArea className="flex-1 px-3 py-4">
-                <div className="space-y-1">
+              <ScrollArea className="flex-1">
+                <div className="px-3 py-4 space-y-1">
                   {adminMenuItems.map((item) => (
                     <Link 
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                     >
-                      <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
-                        <item.icon className="w-4 h-4" />
+                      <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
+                        <item.icon className="w-5 h-5" />
                       </div>
                       <span className="text-xs font-bold text-luxury-black">
                         {item.name}
@@ -162,10 +163,10 @@ export function Header() {
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group"
+                    className="w-full flex items-center gap-4 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group"
                   >
-                    <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                      <LogOut className="w-4 h-4" />
+                    <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                      <LogOut className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-bold">تسجيل الخروج</span>
                   </button>
@@ -182,7 +183,7 @@ export function Header() {
     <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
       <div className="flex items-center gap-3">
         {isHome ? (
-          <div onClick={handleLogoClick} className="flex items-center gap-2 group active:scale-95 transition-transform cursor-pointer">
+          <div onClick={handleLogoClick} className="flex items-center gap-3 group active:scale-95 transition-transform cursor-pointer">
             <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
                <Image 
                 src="https://picsum.photos/seed/brand/200/200" 
