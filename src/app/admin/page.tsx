@@ -30,7 +30,7 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog"
-import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, Award, CreditCard, Star, Image as ImageIcon, RotateCcw } from "lucide-react"
+import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, Award, CreditCard, Star, Image as ImageIcon, RotateCcw, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -196,9 +196,14 @@ export default function AdminDashboard() {
                <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
             ) : trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
-                <div className="text-right">
-                  <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.originalData.name || item.originalData.bank || item.originalData.question || item.originalData.title}</h4>
-                  <p className="text-[9px] text-gray-400">حُذف من: {item.originalCollection}</p>
+                <div className="flex items-center gap-4 text-right flex-1">
+                  <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="text-right overflow-hidden">
+                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.originalData.name || item.originalData.bank || item.originalData.question || item.originalData.title}</h4>
+                    <p className="text-[9px] text-gray-400">حُذف من: {item.originalCollection}</p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => handleRestore(item)} className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center text-green-600 active:scale-90 transition-transform">

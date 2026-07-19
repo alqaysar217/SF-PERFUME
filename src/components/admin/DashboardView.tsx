@@ -59,13 +59,13 @@ export function DashboardView({ productsCount, trashCount }: DashboardViewProps)
               onClick={() => router.push(`/admin${item.href}`)}
               className="bg-white p-5 rounded-[1.2rem] border border-gray-50 flex items-center justify-between group luxury-shadow"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-200" />
               <div className="flex items-center gap-4">
-                <h4 className="text-sm font-black text-luxury-black">{item.name}</h4>
-                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary transition-all">
+                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
                   <item.icon className="w-6 h-6" />
                 </div>
+                <h4 className="text-sm font-black text-luxury-black">{item.name}</h4>
               </div>
+              <ChevronLeft className="w-5 h-5 text-gray-200" />
             </button>
           ))}
         </div>
