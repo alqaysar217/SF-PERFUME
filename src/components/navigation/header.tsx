@@ -31,7 +31,7 @@ export function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const currentTab = searchParams.get('tab') || 'dashboard'
+  const currentTab = searchParams.get('tab')
   
   const [cartCount, setCartCount] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -144,7 +144,7 @@ export function Header() {
                 <div className="px-3 py-6 space-y-1.5">
                   {adminMenuItems.map((item) => {
                     const isActive = item.id === "dashboard" 
-                      ? (currentTab === "dashboard" || !searchParams.get('tab'))
+                      ? (!currentTab || currentTab === 'dashboard')
                       : currentTab === item.id;
                     return (
                       <Link 
