@@ -63,12 +63,12 @@ export function AdminItemModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none shadow-2xl rounded-[2rem] p-0 overflow-hidden flex flex-col bg-white max-h-[90vh]">
+      <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none shadow-2xl rounded-xl p-0 overflow-hidden flex flex-col bg-white max-h-[90vh]">
         <div className="p-6 border-b border-gray-50 bg-white sticky top-0 z-10 flex items-center justify-between">
           <DialogTitle className="text-right font-black text-xl text-luxury-black">
             {editingItem ? "تحديث البيانات" : `إضافة جديد`}
           </DialogTitle>
-          <DialogClose className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+          <DialogClose className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
             <X className="w-5 h-5" />
           </DialogClose>
         </div>
@@ -76,16 +76,15 @@ export function AdminItemModal({
         <form onSubmit={onSave} className="flex-1 overflow-y-auto px-6 pb-32 space-y-8 pt-6 scrollbar-hide text-right">
           {renderForm()}
 
-          {/* Shared Image Upload Section */}
           {activeTab !== "faqs" && (
             <div className="space-y-6">
-              <div className="flex items-center justify-start gap-2 text-primary">
+              <div className="flex flex-row items-center justify-start gap-2 text-primary">
                 <ImageIcon className="w-4 h-4" />
                 <span className="text-[11px] font-black uppercase tracking-widest">الصورة المرفقة</span>
               </div>
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="relative aspect-[16/9] rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-primary/50 transition-colors group"
+                className="relative aspect-[16/9] rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-primary/50 transition-colors group"
               >
                 {imagePreview ? (
                   <img src={imagePreview} className="w-full h-full object-cover group-hover:opacity-80 transition-opacity" alt="Preview" />
@@ -100,9 +99,8 @@ export function AdminItemModal({
             </div>
           )}
 
-          {/* Floating Save Button */}
           <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
-            <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3 active:scale-95 transition-all">
+            <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-xl font-black text-md shadow-xl gap-3 active:scale-95 transition-all">
               {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               {editingItem ? "حفظ التغييرات" : "إضافة للمتجر"}
             </Button>

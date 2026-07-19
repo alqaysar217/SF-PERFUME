@@ -50,8 +50,8 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isOfferFilter, setIsOfferFilter] = useState(false)
 
-  // Firestore Queries - Updated products query to use displayOrder
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc")) : null, [db])
+  // استعلامات بسيطة لتجنب أخطاء الفهارس المركبة
+  const productsQuery = useMemo(() => db ? query(collection(db, "products")) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
@@ -59,13 +59,26 @@ export default function AdminDashboard() {
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
   const trashQuery = useMemo(() => db ? query(collection(db, "trash"), orderBy("deletedAt", "desc")) : null, [db])
 
-  const { data: products, loading: productsLoading } = useCollection(productsQuery)
+  const { data: productsRaw, loading: productsLoading } = useCollection<any>(productsQuery)
   const { data: brands } = useCollection(brandsQuery)
   const { data: accounts, loading: accountsLoading } = useCollection(accountsQuery)
   const { data: faqs, loading: faqsLoading } = useCollection(faqsQuery)
   const { data: reviews, loading: reviewsLoading } = useCollection(reviewsQuery)
   const { data: banners, loading: bannersLoading } = useCollection(bannersQuery)
   const { data: trashItems, loading: trashLoading } = useCollection(trashQuery)
+
+  // الفرز البرمجي الذكي للمنتجات لتجنب خطأ الفهرس
+  const products = useMemo(() => {
+    if (!productsRaw) return [];
+    return [...productsRaw].sort((a, b) => {
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
+      const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+      return timeB - timeA;
+    });
+  }, [productsRaw]);
 
   useEffect(() => {
     setMounted(true)
@@ -113,9 +126,9 @@ export default function AdminDashboard() {
     try {
       if (editingItem?.id) {
         const docRef = doc(db, activeTab, editingItem.id)
-        await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
+        updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
       } else {
-        await addDoc(collection(db, activeTab), { ...data, createdAt: serverTimestamp() })
+        addDoc(collection(db, activeTab), { ...data, createdAt: serverTimestamp() })
       }
       toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح" })
       setIsModalOpen(false)
@@ -132,12 +145,12 @@ export default function AdminDashboard() {
     if (!db || !deletingItem) return
     
     try {
-      await addDoc(collection(db, "trash"), {
+      addDoc(collection(db, "trash"), {
         originalData: deletingItem,
         originalCollection: activeTab,
         deletedAt: serverTimestamp()
       })
-      await deleteDoc(doc(db, activeTab, deletingItem.id))
+      deleteDoc(doc(db, activeTab, deletingItem.id))
       toast({ title: "نُقل للمحذوفات" })
     } catch (err) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: activeTab, operation: 'delete' }))
@@ -150,8 +163,8 @@ export default function AdminDashboard() {
   const handleRestore = async (item: any) => {
     if (!db) return
     try {
-      await addDoc(collection(db, item.originalCollection), item.originalData)
-      await deleteDoc(doc(db, "trash", item.id))
+      addDoc(collection(db, item.originalCollection), item.originalData)
+      deleteDoc(doc(db, "trash", item.id))
       toast({ title: "تمت الاستعادة" })
     } catch (err) {
       toast({ variant: "destructive", title: "خطأ في الاستعادة" })
@@ -161,7 +174,7 @@ export default function AdminDashboard() {
   const handlePermanentDelete = async (itemId: string) => {
     if (!db) return
     try {
-      await deleteDoc(doc(db, "trash", itemId))
+      deleteDoc(doc(db, "trash", itemId))
       toast({ title: "حذف نهائي" })
     } catch (err) {
       toast({ variant: "destructive", title: "فشل الحذف" })
@@ -177,7 +190,6 @@ export default function AdminDashboard() {
     return items
   }, [activeTab, products, brands, accounts, faqs, reviews, banners, isOfferFilter])
 
-  // Calculate additional stats
   const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
 
   if (!mounted) return null
@@ -193,7 +205,7 @@ export default function AdminDashboard() {
       ) : activeTab === "trash" ? (
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-between items-center px-1">
-             <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
+             <button className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
                 <ChevronRight className="w-5 h-5" />
              </button>
              <h2 className="text-sm font-black text-luxury-black">سلة المحذوفات ({trashItems.length})</h2>
@@ -203,7 +215,7 @@ export default function AdminDashboard() {
                <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
             ) : trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
-                <div className="flex items-center gap-4 text-right flex-1">
+                <div className="flex flex-row items-center gap-4 text-right flex-1">
                   <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
@@ -213,10 +225,10 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleRestore(item)} className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center text-green-600 active:scale-90 transition-transform">
+                  <button onClick={() => handleRestore(item)} className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center text-green-600 active:scale-90 transition-transform">
                     <RotateCcw className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handlePermanentDelete(item.id)} className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center text-red-600 active:scale-90 transition-transform">
+                  <button onClick={() => handlePermanentDelete(item.id)} className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center text-red-600 active:scale-90 transition-transform">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -227,7 +239,7 @@ export default function AdminDashboard() {
       ) : (
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-between items-center px-1">
-             <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
+             <button className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
                 <ChevronRight className="w-5 h-5" />
              </button>
             <div className="flex gap-2">
@@ -235,14 +247,14 @@ export default function AdminDashboard() {
                 <button 
                   onClick={() => setIsOfferFilter(!isOfferFilter)}
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                    "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
                     isOfferFilter ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-white text-gray-400 border border-gray-100"
                   )}
                 >
                   <Percent className="w-5 h-5" />
                 </button>
               )}
-              <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+              <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-lg h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
                 <Plus className="w-3.5 h-3.5" />
                 إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال' : activeTab === 'banners' ? 'بنر' : 'جديد'}
               </Button>
@@ -253,8 +265,8 @@ export default function AdminDashboard() {
             {[productsLoading, accountsLoading, faqsLoading, reviewsLoading, bannersLoading].some(l => l && activeTab !== 'dashboard') ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
             ) : filteredItems.map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
-                <div className="flex items-center gap-4 text-right flex-1">
+              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 flex flex-row items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
+                <div className="flex flex-row items-center gap-4 text-right flex-1">
                   {(item.image || item.logo) ? (
                     <div className="w-12 h-12 rounded-lg bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                       <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
@@ -308,7 +320,7 @@ export default function AdminDashboard() {
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-2xl">
+        <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-xl">
           <AlertDialogHeader className="space-y-6">
             <div className="w-20 h-20 bg-luxury-black rounded-xl flex items-center justify-center text-primary mx-auto shadow-xl">
               <ShieldAlert className="w-10 h-10" />
