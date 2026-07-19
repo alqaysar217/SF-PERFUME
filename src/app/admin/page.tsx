@@ -30,7 +30,10 @@ import {
   AlertTriangle,
   ChevronRight,
   ShieldAlert,
-  RotateCcw
+  RotateCcw,
+  User as UserIcon,
+  Hash,
+  Building2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -126,7 +129,8 @@ export default function AdminDashboard() {
     const formData = new FormData(e.currentTarget)
     const data: any = Object.fromEntries(formData.entries())
     
-    if (activeTab === 'products' || activeTab === 'brands') {
+    // Handle image for multiple tabs
+    if (['products', 'brands', 'accounts'].includes(activeTab)) {
       data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
       if (activeTab === 'brands') data.logo = data.image
     }
@@ -317,13 +321,13 @@ export default function AdminDashboard() {
              </button>
             <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
               <Plus className="w-3.5 h-3.5" />
-              إضافة {activeTab === 'products' ? 'منتج' : 'جديد'}
+              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : 'جديد'}
             </Button>
           </div>
 
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-50 flex items-center justify-start gap-4 luxury-shadow">
+              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-start gap-4 luxury-shadow">
                 {(item.image || item.logo) && (
                   <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                     <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
@@ -347,12 +351,12 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Product/Item Modal */}
+      {/* Item Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تحديث البيانات" : "إضافة منتج جديد"}
+              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : 'جديد'}`}
             </DialogTitle>
           </div>
           
@@ -478,6 +482,61 @@ export default function AdminDashboard() {
               </>
             )}
 
+            {activeTab === "accounts" && (
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <Building2 className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">بيانات الحساب</span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم البنك / المحفظة</label>
+                      <div className="relative">
+                        <Input name="bank" defaultValue={editingItem?.bank} placeholder="مثال: بنك الكريمي" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم صاحب الحساب</label>
+                      <div className="relative">
+                        <Input name="name" defaultValue={editingItem?.name} placeholder="الاسم الكامل كما يظهر في السند" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">رقم الحساب / الجوال</label>
+                      <div className="relative">
+                        <Input name="account" defaultValue={editingItem?.account} placeholder="أدخل الرقم بدقة" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">لوجو البنك</span>
+                  </div>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    {imagePreview ? (
+                      <img src={imagePreview} className="w-full h-full object-contain p-2" alt="Preview" />
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-gray-300 mb-2" />
+                        <span className="text-[8px] font-black text-gray-400 text-center px-2">ارفع شعار البنك</span>
+                      </>
+                    )}
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {activeTab === "brands" && (
               <div className="space-y-6">
                 <div className="space-y-2 text-right">
@@ -491,14 +550,6 @@ export default function AdminDashboard() {
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   </div>
                 </div>
-              </div>
-            )}
-
-            {activeTab === "accounts" && (
-              <div className="space-y-4 text-right">
-                 <Input name="bank" defaultValue={editingItem?.bank} placeholder="اسم البنك / المحفظة" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
-                 <Input name="name" defaultValue={editingItem?.name} placeholder="اسم صاحب الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
-                 <Input name="account" defaultValue={editingItem?.account} placeholder="رقم الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
               </div>
             )}
 
