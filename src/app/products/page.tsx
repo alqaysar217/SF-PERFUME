@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useFirestore } from "@/firebase/provider"
 import { collection, query, orderBy } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
+import { cn } from "@/lib/utils"
 
 export default function ProductsPage() {
   const [search, setSearch] = useState("")
@@ -20,7 +21,7 @@ export default function ProductsPage() {
   const { data: products, loading } = useCollection(productsQuery)
 
   const filtered = products.filter((p: any) => {
-    const matchesSearch = p.name?.includes(search) || p.brand?.includes(search)
+    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase()) || p.brand?.toLowerCase().includes(search.toLowerCase())
     const matchesFilter = activeFilter === "الكل" || 
       (activeFilter === "رجالي" && p.category === 'men') ||
       (activeFilter === "نسائي" && p.category === 'women') ||
@@ -44,7 +45,7 @@ export default function ProductsPage() {
             placeholder="ابحث عن الماركة أو العطر..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-12 pr-10 rounded-xl border-none bg-white shadow-sm font-medium text-xs"
+            className="h-12 pr-10 rounded-xl border-none bg-white shadow-sm font-medium text-xs text-right"
           />
         </div>
         
