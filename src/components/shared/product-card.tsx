@@ -3,7 +3,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Award, Star, Plus } from "lucide-react"
+import { Heart, Award, Star, Plus, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast"
 
 export function ProductCard({ product }: { product: any }) {
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isImageLoading, setIsImageLoading] = useState(true)
 
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
@@ -53,7 +54,6 @@ export function ProductCard({ product }: { product: any }) {
     })
   }
 
-  // تأمين وجود رابط صورة صالح
   const imageSrc = product.image && product.image.trim() !== "" 
     ? product.image 
     : "https://picsum.photos/seed/product/600/400"
@@ -61,15 +61,25 @@ export function ProductCard({ product }: { product: any }) {
   return (
     <Link 
       href={`/products/${product.id}`} 
-      className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98]"
+      className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98] luxury-shadow"
     >
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-50">
+        {isImageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50/50 z-10 animate-pulse">
+            <Loader2 className="w-5 h-5 animate-spin text-primary/30" />
+          </div>
+        )}
         <Image 
           src={imageSrc} 
           alt={product.name || "Product Image"}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className={cn(
+            "object-cover transition-all duration-700 group-hover:scale-105",
+            isImageLoading ? "scale-110 blur-sm" : "scale-100 blur-0"
+          )}
+          onLoadingComplete={() => setIsImageLoading(false)}
           sizes="(max-width: 768px) 100vw, 400px"
+          priority={false}
         />
         <div className="absolute top-3 right-3 z-10">
           {product.isOffer && (

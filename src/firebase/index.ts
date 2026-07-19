@@ -2,7 +2,13 @@
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { 
+  initializeFirestore, 
+  getFirestore, 
+  Firestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
 
@@ -12,7 +18,17 @@ export function initializeFirebase(): {
   auth: Auth;
 } {
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  
+  // تفعيل التخزين المحلي لضمان عمل التطبيق في حالة ضعف الإنترنت أو انقطاعه
+  // يتم تخزين البيانات في ذاكرة المتصفح لفتح المتجر فوراً
+  const db = getApps().length > 0 
+    ? getFirestore(app) 
+    : initializeFirestore(app, {
+        localCache: persistentLocalCache({
+          tabManager: persistentMultipleTabManager()
+        })
+      });
+
   const auth = getAuth(app);
 
   return { app, db, auth };
