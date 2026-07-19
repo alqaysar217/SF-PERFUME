@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { MapPin, ShieldCheck, Star, ArrowLeft, Sparkles, User, UserRound, Watch, LayoutGrid, Loader2 } from "lucide-react"
+import { MapPin, ShieldCheck, Star, ArrowLeft, Sparkles, User, UserRound, Watch, LayoutGrid, Loader2, Quote, Award } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductCard } from "@/components/shared/product-card"
@@ -28,10 +28,12 @@ export default function HomePage() {
   const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(10)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
+  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(3)) : null, [db])
   
   const { data: products, loading: productsLoading } = useCollection(productsQuery)
-  const { data: brands } = useCollection(brandsQuery)
+  const { data: brands, loading: brandsLoading } = useCollection(brandsQuery)
   const { data: banners } = useCollection(bannersQuery)
+  const { data: reviews, loading: reviewsLoading } = useCollection(reviewsQuery)
 
   useEffect(() => {
     if (banners.length === 0) return
@@ -84,8 +86,9 @@ export default function HomePage() {
   return (
     <div className="flex flex-col animate-fade-in pb-32 bg-background">
       <main className="flex flex-col gap-8 pt-6">
+        {/* Banner Slider */}
         <section className="px-4">
-          <div className="relative h-48 rounded-2xl overflow-hidden bg-luxury-black shadow-lg border border-gray-100/10">
+          <div className="relative h-48 rounded-xl overflow-hidden bg-luxury-black shadow-lg border border-gray-100/10">
             {banners.length > 0 ? (
               banners.map((img: any, idx: number) => (
                 <div key={idx} className={cn("absolute inset-0 transition-opacity duration-1000", currentBanner === idx ? "opacity-100" : "opacity-0")}>
@@ -114,6 +117,36 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Brands Section */}
+        <section className="px-4 space-y-4">
+          <div className="flex justify-between items-center px-1">
+            <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
+            <Link href="/brands" className="text-primary text-[10px] font-black flex items-center gap-1">
+              المزيد <ArrowLeft className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2">
+            {brandsLoading ? (
+              <div className="flex gap-4 w-full justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+            ) : brands.map((brand: any) => (
+              <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
+                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
+                  <div className="relative w-full h-full">
+                    <Image 
+                      src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
+                      alt={brand.name} 
+                      fill 
+                      className="object-contain grayscale group-hover:grayscale-0 transition-all" 
+                    />
+                  </div>
+                </div>
+                <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Categories Section */}
         <section className="px-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1">
             {CATEGORIES_WITH_ICONS.map((cat, i) => {
@@ -137,6 +170,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Products Section */}
         <section className="px-4 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">المجموعة المختارة</h3>
@@ -153,6 +187,51 @@ export default function HomePage() {
               ))
             ) : (
               <div className="text-center py-10 text-gray-400 font-bold text-xs uppercase tracking-widest">لا توجد منتجات حالياً</div>
+            )}
+          </div>
+        </section>
+
+        {/* Reviews Section */}
+        <section className="px-4 pb-12 space-y-6">
+          <div className="flex justify-between items-center px-1">
+            <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">آراء العملاء</h3>
+            <div className="flex items-center gap-1 text-primary">
+              <Star className="w-3.5 h-3.5 fill-current" />
+              <span className="text-[11px] font-black">4.9 / 5</span>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            {reviewsLoading ? (
+              <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
+            ) : reviews.length > 0 ? (
+              reviews.map((review: any) => (
+                <div key={review.id} className="bg-white p-6 rounded-xl border border-gray-50 shadow-sm space-y-4 relative overflow-hidden">
+                  <Quote className="absolute top-4 left-4 w-8 h-8 text-primary/5 -scale-x-100" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-primary border border-gray-100 overflow-hidden relative">
+                      {review.image ? (
+                         <Image src={review.image} alt={review.name} fill className="object-cover" />
+                      ) : (
+                        <User className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-luxury-black">{review.name}</h4>
+                      <div className="flex gap-0.5 mt-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className={cn("w-2.5 h-2.5", i < (review.rating || 5) ? "fill-primary text-primary" : "text-gray-200")} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2">
+                    "{review.content}"
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-300 font-bold text-[10px] uppercase tracking-widest">نعتز دائماً برأيكم</div>
             )}
           </div>
         </section>
