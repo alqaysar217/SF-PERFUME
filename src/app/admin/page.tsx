@@ -34,7 +34,9 @@ import {
   User as UserIcon,
   Hash,
   Building2,
-  MessageSquare
+  MessageSquare,
+  Quote,
+  StarHalf
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -88,12 +90,14 @@ export default function AdminDashboard() {
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
+  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc")) : null, [db])
   const trashQuery = useMemo(() => db ? query(collection(db, "trash"), orderBy("deletedAt", "desc")) : null, [db])
 
   const { data: products } = useCollection(productsQuery)
   const { data: brands } = useCollection(brandsQuery)
   const { data: accounts } = useCollection(accountsQuery)
   const { data: faqs } = useCollection(faqsQuery)
+  const { data: reviews } = useCollection(reviewsQuery)
   const { data: trashItems } = useCollection(trashQuery)
 
   useEffect(() => {
@@ -131,7 +135,7 @@ export default function AdminDashboard() {
     const data: any = Object.fromEntries(formData.entries())
     
     // Handle images
-    if (['products', 'brands', 'accounts'].includes(activeTab)) {
+    if (['products', 'brands', 'accounts', 'reviews'].includes(activeTab)) {
       data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
       if (activeTab === 'brands') data.logo = data.image
     }
@@ -140,6 +144,10 @@ export default function AdminDashboard() {
       data.price = Number(data.price)
       if (data.oldPrice) data.oldPrice = Number(data.oldPrice)
       data.isOffer = data.isOffer === 'on' || data.isOffer === 'true'
+    }
+
+    if (activeTab === 'reviews') {
+      data.rating = Number(data.rating)
     }
 
     const collectionRef = collection(db, activeTab)
@@ -267,6 +275,7 @@ export default function AdminDashboard() {
                 { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
                 { name: "إدارة الماركات", icon: Award, href: "?tab=brands" },
                 { name: "الحسابات البنكية", icon: CreditCard, href: "?tab=accounts" },
+                { name: "آراء العملاء", icon: Star, href: "?tab=reviews" },
                 { name: "سلة المحذوفات", icon: Trash2, href: "?tab=trash" },
               ].map((item, i) => (
                 <button 
@@ -322,12 +331,12 @@ export default function AdminDashboard() {
              </button>
             <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
               <Plus className="w-3.5 h-3.5" />
-              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال جديد' : 'جديد'}
+              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال جديد' : activeTab === 'reviews' ? 'رأي عميل' : 'جديد'}
             </Button>
           </div>
 
           <div className="space-y-3">
-            {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
+            {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : activeTab === "faqs" ? faqs : reviews).map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-start gap-4 luxury-shadow">
                 {(item.image || item.logo) ? (
                   <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
@@ -340,7 +349,7 @@ export default function AdminDashboard() {
                 )}
                 <div className="flex-1 text-right">
                   <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
-                  <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || 'تفاصيل'}</p>
+                  <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || item.role || 'تفاصيل'}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
@@ -361,7 +370,7 @@ export default function AdminDashboard() {
         <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : activeTab === 'faqs' ? 'سؤال جديد' : 'جديد'}`}
+              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : activeTab === 'faqs' ? 'سؤال جديد' : activeTab === 'reviews' ? 'رأي عميل جديد' : 'جديد'}`}
             </DialogTitle>
           </div>
           
@@ -600,6 +609,65 @@ export default function AdminDashboard() {
                       <label className="text-[10px] font-bold text-gray-400 px-1">الإجابة</label>
                       <Textarea name="answer" defaultValue={editingItem?.answer} placeholder="اكتب الإجابة الواضحة للعملاء هنا..." required className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[120px]" />
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "reviews" && (
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <Quote className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">تفاصيل رأي العميل</span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم العميل</label>
+                      <div className="relative">
+                        <Input name="name" defaultValue={editingItem?.name} placeholder="الاسم كما سيظهر" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">الوظيفة / الدور</label>
+                      <div className="relative">
+                        <Input name="role" defaultValue={editingItem?.role} placeholder="مثال: مصممة ديكور" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">التقييم (من 1 إلى 5)</label>
+                      <div className="relative">
+                        <Input name="rating" type="number" step="0.5" min="1" max="5" defaultValue={editingItem?.rating || 5} placeholder="5" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Star className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">نص الشهادة / الرأي</label>
+                      <Textarea name="content" defaultValue={editingItem?.content} placeholder="اكتب ما قاله العميل عن تجربته..." required className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[100px]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة العميل (اختياري)</span>
+                  </div>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative aspect-square w-24 mx-auto rounded-full bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    {imagePreview ? (
+                      <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-gray-300 mb-1" />
+                        <span className="text-[8px] font-black text-gray-400">رفع صورة</span>
+                      </>
+                    )}
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   </div>
                 </div>
               </div>

@@ -54,6 +54,20 @@
       },
       "required": ["question", "answer"]
     },
+    "Review": {
+      "title": "Customer Review",
+      "description": "Testimonials from customers",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "content": { "type": "string" },
+        "image": { "type": "string" },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "content", "rating"]
+    },
     "TrashItem": {
       "title": "Trash Item",
       "description": "Temporarily deleted items",
@@ -84,6 +98,10 @@
     "/faqs/{faqId}": {
       "schema": "#/backend/entities/FAQ",
       "description": "Frequently asked questions list"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "#/backend/entities/Review",
+      "description": "Customer testimonials"
     },
     "/trash/{trashId}": {
       "schema": "#/backend/entities/TrashItem",
