@@ -10,6 +10,7 @@
         "brand": { "type": "string" },
         "price": { "type": "number" },
         "oldPrice": { "type": "number" },
+        "displayOrder": { "type": "number", "description": "Manual display order/priority" },
         "image": { "type": "string" },
         "size": { "type": "string" },
         "category": { "type": "string", "enum": ["men", "women", "watches"] },

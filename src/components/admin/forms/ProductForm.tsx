@@ -3,7 +3,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Tag, Banknote, Sparkles, Maximize2, Droplets, Zap, ShieldCheck } from "lucide-react"
+import { Tag, Banknote, Sparkles, Maximize2, Droplets, Zap, ShieldCheck, Hash } from "lucide-react"
 
 interface ProductFormProps {
   editingItem: any
@@ -26,6 +26,14 @@ export function ProductForm({ editingItem, brands }: ProductFormProps) {
             <div className="relative">
               <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: سوفاج إليكسير" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
               <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            </div>
+          </div>
+
+          <div className="space-y-2 text-right">
+            <label className="text-[10px] font-bold text-gray-400 px-1">رقم الترتيب (يحدد أولوية الظهور - 1 يظهر أولاً)</label>
+            <div className="relative">
+              <Input name="displayOrder" type="number" defaultValue={editingItem?.displayOrder || 1} placeholder="1" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+              <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
             </div>
           </div>
           

@@ -30,7 +30,7 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog"
-import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, Award, CreditCard, Star, Image as ImageIcon, RotateCcw, FileText } from "lucide-react"
+import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, Award, CreditCard, Star, Image as ImageIcon, RotateCcw, FileText, Hash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -50,8 +50,8 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isOfferFilter, setIsOfferFilter] = useState(false)
 
-  // Firestore Queries
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc")) : null, [db])
+  // Firestore Queries - Updated products query to use displayOrder
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc")) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
@@ -104,6 +104,7 @@ export default function AdminDashboard() {
     if (activeTab === 'brands') data.logo = data.image
     if (activeTab === 'products') {
       data.price = Number(data.price)
+      data.displayOrder = Number(data.displayOrder) || 1
       if (data.oldPrice) data.oldPrice = Number(data.oldPrice)
       data.isOffer = data.isOffer === 'on' || data.isOffer === 'true'
     }
@@ -270,7 +271,7 @@ export default function AdminDashboard() {
                   )}
                   <div className="text-right overflow-hidden">
                     <div className="flex items-center gap-1.5">
-                       {item.isOffer && <Percent className="w-3 h-3 text-primary" />}
+                       {item.displayOrder && <span className="bg-primary/10 text-primary text-[8px] px-1.5 py-0.5 rounded-full font-black">#{item.displayOrder}</span>}
                        <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
                     </div>
                     <p className="text-[10px] font-bold text-primary">

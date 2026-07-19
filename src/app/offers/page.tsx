@@ -3,7 +3,7 @@
 
 import { useMemo } from "react"
 import { useFirestore } from "@/firebase/provider"
-import { collection, query, where } from "firebase/firestore"
+import { collection, query, where, orderBy } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { ProductCard } from "@/components/shared/product-card"
 import { Percent, Loader2, ArrowRight } from "lucide-react"
@@ -12,20 +12,26 @@ import Link from "next/link"
 export default function OffersPage() {
   const db = useFirestore()
 
-  // جلب العروض بدون ترتيب لتجنب الحاجة لفهرس مركب حالياً
+  // Updated query to order by displayOrder ASC, then createdAt DESC
   const offersQuery = useMemo(() => 
     db ? query(
       collection(db, "products"), 
-      where("isOffer", "==", true)
+      where("isOffer", "==", true),
+      orderBy("displayOrder", "asc")
     ) : null
   , [db])
 
   const { data: offersRaw, loading } = useCollection<any>(offersQuery)
 
-  // ترتيب العروض برمجياً من الأحدث إلى الأقدم
+  // Smart Sorting: Fallback to createdAt if displayOrder is same (done via query mostly, but handled here for safety)
   const offers = useMemo(() => {
     if (!offersRaw) return [];
     return [...offersRaw].sort((a, b) => {
+      // Primary Sort: displayOrder ASC
+      if (a.displayOrder !== b.displayOrder) {
+        return (a.displayOrder || 999) - (b.displayOrder || 999);
+      }
+      // Secondary Sort: createdAt DESC
       const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
       const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
       return timeB - timeA;

@@ -24,8 +24,8 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const db = useFirestore()
 
-  // استعلامات Firestore الحقيقية
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(5)) : null, [db])
+  // Updated query to order by displayOrder first
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc"), limit(5)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
   const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(3)) : null, [db])

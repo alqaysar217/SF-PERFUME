@@ -17,7 +17,8 @@ export default function ProductsPage() {
   const [activeFilter, setActiveFilter] = useState("الكل")
   const db = useFirestore()
 
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc")) : null, [db])
+  // Updated query to order by displayOrder first
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("displayOrder", "asc"), orderBy("createdAt", "desc")) : null, [db])
   const { data: products, loading } = useCollection(productsQuery)
 
   const filtered = products.filter((p: any) => {
