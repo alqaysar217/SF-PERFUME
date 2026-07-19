@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { MapPin, ShieldCheck, Star, ArrowLeft, Sparkles, User, UserRound, Watch, LayoutGrid, Loader2, Quote, Award } from "lucide-react"
+import { LayoutGrid, User, UserRound, Watch, Sparkles, ArrowLeft, Loader2, Star, Quote, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductCard } from "@/components/shared/product-card"
@@ -12,10 +12,10 @@ import { collection, query, orderBy, limit } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 
 const CATEGORIES_WITH_ICONS = [
-  { name: "الكل", icon: LayoutGrid },
-  { name: "عطور رجالية", icon: User },
-  { name: "عطور نسائية", icon: UserRound },
-  { name: "ساعات", icon: Watch },
+  { name: "الكل", icon: LayoutGrid, id: 'all' },
+  { name: "عطور رجالية", icon: User, id: 'men' },
+  { name: "عطور نسائية", icon: UserRound, id: 'women' },
+  { name: "ساعات", icon: Watch, id: 'watches' },
 ]
 
 export default function HomePage() {
@@ -24,16 +24,16 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const db = useFirestore()
 
-  // Firestore Data - Limited to 5 for home page
+  // استعلامات Firestore الحقيقية
   const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(5)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
   const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(3)) : null, [db])
   
-  const { data: products, loading: productsLoading } = useCollection(productsQuery)
-  const { data: brands, loading: brandsLoading } = useCollection(brandsQuery)
-  const { data: banners } = useCollection(bannersQuery)
-  const { data: reviews, loading: reviewsLoading } = useCollection(reviewsQuery)
+  const { data: products, loading: productsLoading } = useCollection<any>(productsQuery)
+  const { data: brands, loading: brandsLoading } = useCollection<any>(brandsQuery)
+  const { data: banners } = useCollection<any>(bannersQuery)
+  const { data: reviews, loading: reviewsLoading } = useCollection<any>(reviewsQuery)
 
   useEffect(() => {
     if (banners.length === 0) return
@@ -86,25 +86,30 @@ export default function HomePage() {
   return (
     <div className="flex flex-col animate-fade-in pb-32 bg-background">
       <main className="flex flex-col gap-8 pt-6">
-        {/* Banner Slider */}
+        {/* البنر المتحرك */}
         <section className="px-4">
           <div className="relative h-48 rounded-xl overflow-hidden bg-luxury-black shadow-lg border border-gray-100/10">
             {banners.length > 0 ? (
-              banners.map((img: any, idx: number) => (
+              banners.map((banner: any, idx: number) => (
                 <div key={idx} className={cn("absolute inset-0 transition-opacity duration-1000", currentBanner === idx ? "opacity-100" : "opacity-0")}>
-                  <Image src={img.image || "https://picsum.photos/seed/sf/1200/600"} alt={img.title} fill className="object-cover opacity-50" />
+                  <Image 
+                    src={banner.image || "https://picsum.photos/seed/sf/1200/600"} 
+                    alt={banner.title} 
+                    fill 
+                    className="object-cover opacity-60" 
+                  />
                   <div className="absolute inset-0 p-8 flex flex-col justify-center gap-2">
                     <div className="flex items-center gap-2 bg-primary/20 backdrop-blur-sm w-fit px-3 py-1 rounded-full border border-primary/30">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      <span className="text-[8px] font-black text-white uppercase tracking-widest">{img.subtitle || 'حصري'}</span>
+                      <span className="text-[8px] font-black text-white uppercase tracking-widest">{banner.subtitle || 'حصري'}</span>
                     </div>
-                    <h2 className="text-xl font-black text-white leading-tight">{img.title}</h2>
+                    <h2 className="text-xl font-black text-white leading-tight">{banner.title}</h2>
                   </div>
                 </div>
               ))
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/20 font-black text-xs uppercase tracking-widest">SF PERFUME Slider</p>
+                <p className="text-white/20 font-black text-xs uppercase tracking-widest">SF PERFUME Collection</p>
               </div>
             )}
             {banners.length > 1 && (
@@ -117,7 +122,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Categories Section */}
+        {/* أقسام المتجر */}
         <section className="px-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1">
             {CATEGORIES_WITH_ICONS.map((cat, i) => {
@@ -141,7 +146,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Products Section - Limited to 5 with "View All" */}
+        {/* قائمة المنتجات (أحدث 5) */}
         <section className="px-4 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">المجموعة المختارة</h3>
@@ -171,7 +176,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Brands Section - Moved to bottom */}
+        {/* الماركات العالمية (في الأسفل) */}
         <section className="px-4 space-y-4 pt-4">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
@@ -200,7 +205,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Reviews Section */}
+        {/* آراء العملاء */}
         <section className="px-4 pb-12 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">آراء العملاء</h3>
