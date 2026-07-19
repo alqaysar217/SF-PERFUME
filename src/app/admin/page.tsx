@@ -173,7 +173,6 @@ export default function AdminDashboard() {
   const handleSoftDelete = () => {
     if (!db || !deletingItem) return
     
-    // منع حذف الماركة إذا كان لها منتجات
     if (activeTab === 'brands') {
       const hasProducts = products.some((p: any) => p.brand === deletingItem.name)
       if (hasProducts) {
@@ -187,7 +186,6 @@ export default function AdminDashboard() {
       }
     }
 
-    // نقل لسلة المحذوفات
     const trashRef = collection(db, "trash")
     addDoc(trashRef, {
       originalData: deletingItem,
@@ -325,17 +323,15 @@ export default function AdminDashboard() {
 
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-50 flex items-center justify-between luxury-shadow">
-                <div className="flex items-center gap-4 text-right">
-                  {(item.image || item.logo) && (
-                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
-                      <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-start text-right">
-                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
-                    <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || 'تفاصيل'}</p>
+              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-50 flex items-center justify-start gap-4 luxury-shadow">
+                {(item.image || item.logo) && (
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
+                    <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
                   </div>
+                )}
+                <div className="flex-1 text-right">
+                  <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
+                  <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || 'تفاصيل'}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
@@ -378,8 +374,14 @@ export default function AdminDashboard() {
                       <div className="space-y-2 text-right">
                         <label className="text-[10px] font-bold text-gray-400 px-1">الماركة</label>
                         <div className="relative">
-                          <Input name="brand" defaultValue={editingItem?.brand} placeholder="شانيل، ديور..." required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                          <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                          <select name="brand" defaultValue={editingItem?.brand} required className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
+                            <option value="" disabled>اختر الماركة</option>
+                            {brands.map((b: any) => (
+                              <option key={b.id} value={b.name}>{b.name}</option>
+                            ))}
+                            {brands.length === 0 && <option value="" disabled>لا توجد ماركات، أضف ماركة أولاً</option>}
+                          </select>
+                          <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
                         </div>
                       </div>
                       <div className="space-y-2 text-right">
@@ -510,7 +512,6 @@ export default function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Modern & Unique Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="fixed left-[50%] top-[50%] z-50 grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-[1.5rem]">
           <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />

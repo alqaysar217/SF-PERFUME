@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard } from "lucide-react"
+import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "@/hooks/use-toast"
@@ -88,18 +88,17 @@ export function Header() {
     { name: "المنتجات", href: "/admin?tab=products", icon: Package },
     { name: "الماركات", href: "/admin?tab=brands", icon: Award },
     { name: "الحسابات البنكية", href: "/admin?tab=accounts", icon: CreditCard },
+    { name: "سلة المحذوفات", href: "/admin?tab=trash", icon: Trash2 },
     { name: "الأسئلة الشائعة", href: "/admin?tab=faqs", icon: HelpCircle },
     { name: "آراء العملاء", href: "/admin?tab=reviews", icon: Star },
     { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
   ]
 
-  // منع مشاكل Hydration عبر عدم عرض الهيدر إلا بعد التأكد من تركيب المكون في المتصفح
   if (!mounted) return <header className="h-16 bg-white/95" />
 
   if (isAdmin && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
-        {/* Right Side: Logo & Info */}
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative">
              <Image 
@@ -118,7 +117,6 @@ export function Header() {
           </div>
         </div>
 
-        {/* Left Side: Sidebar Trigger */}
         <div className="flex justify-end">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
@@ -131,7 +129,6 @@ export function Header() {
                 <SheetTitle>قائمة التحكم بالإدارة</SheetTitle>
               </SheetHeader>
               
-              {/* Sidebar Header - Compact Row */}
               <div className="p-5 border-b border-gray-100 flex items-center gap-3">
                 <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg">SF</div>
                 <div>
