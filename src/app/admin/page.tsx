@@ -27,7 +27,8 @@ import {
   List,
   AlignLeft,
   AlertTriangle,
-  ChevronRight
+  ChevronRight,
+  ShieldAlert
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -283,7 +284,7 @@ export default function AdminDashboard() {
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500">
+                  <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-primary transition-colors">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -297,7 +298,10 @@ export default function AdminDashboard() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <DialogHeader className="p-6 pb-2">
-            <DialogTitle className="text-right font-black text-xl text-luxury-black">
+            <DialogClose className="absolute left-6 top-6 w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black opacity-100 border-none ring-0">
+              <ChevronLeft className="w-5 h-5" />
+            </DialogClose>
+            <DialogTitle className="text-right font-black text-xl text-luxury-black pr-12">
               {editingItem ? "تحديث البيانات" : "إضافة منتج جديد"}
             </DialogTitle>
           </DialogHeader>
@@ -307,8 +311,8 @@ export default function AdminDashboard() {
               <>
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
                     <Tag className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -341,8 +345,8 @@ export default function AdminDashboard() {
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
                     <Banknote className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2 text-right">
@@ -382,8 +386,8 @@ export default function AdminDashboard() {
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
                     <AlignLeft className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -401,8 +405,8 @@ export default function AdminDashboard() {
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
                     <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
@@ -456,26 +460,43 @@ export default function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Modern Delete Confirmation */}
+      {/* Modern & Unique Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-[2.5rem] border-none p-8 text-right bg-white">
-          <AlertDialogHeader className="space-y-4">
-            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mx-auto">
-              <AlertTriangle className="w-8 h-8" />
+        <AlertDialogContent className="rounded-[3rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />
+          
+          <AlertDialogHeader className="space-y-6">
+            <div className="w-20 h-20 bg-luxury-black rounded-[2rem] flex items-center justify-center text-primary mx-auto shadow-xl relative group">
+              <div className="absolute inset-0 bg-primary/20 rounded-[2rem] animate-pulse blur-xl group-hover:blur-2xl transition-all" />
+              <ShieldAlert className="w-10 h-10 relative z-10" strokeWidth={1.5} />
             </div>
-            <AlertDialogTitle className="text-xl font-black text-luxury-black text-center">هل أنت متأكد من الحذف؟</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400 text-sm font-medium text-center leading-relaxed">
-              سيتم إزالة <span className="text-luxury-black font-bold">"{deletingItem?.name || deletingItem?.bank}"</span> نهائياً من قاعدة البيانات. لا يمكن التراجع عن هذا الإجراء.
-            </AlertDialogDescription>
+            
+            <div className="space-y-2 text-center">
+              <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد الإجراء</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed max-w-[260px] mx-auto">
+                أنت على وشك حذف <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank}"</span> نهائياً.
+                <br />
+                هذا الإجراء غير قابل للتراجع.
+              </AlertDialogDescription>
+            </div>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-8 flex gap-3 sm:justify-center">
-            <AlertDialogCancel className="flex-1 h-12 rounded-xl border-gray-100 font-bold">تراجع</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="flex-1 h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold border-none">
+
+          <AlertDialogFooter className="mt-10 flex flex-col sm:flex-row gap-3">
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              className="flex-1 h-14 rounded-2xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md border-none shadow-xl active:scale-95 transition-all order-1 sm:order-2"
+            >
               تأكيد الحذف
             </AlertDialogAction>
+            <AlertDialogCancel className="flex-1 h-14 rounded-2xl border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-400 font-black text-md active:scale-95 transition-all order-2 sm:order-1">
+              تراجع
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
   )
 }
+
+const Loader2 = ({ className }: { className?: string }) => <Loader2Icon className={cn("animate-spin", className)} />
+import { Loader2 as Loader2Icon, Sparkles as SparklesIcon, MapPin as MapPinIcon, ShieldCheck as ShieldCheckIcon, Star as StarIcon, DialogClose } from "lucide-react"
