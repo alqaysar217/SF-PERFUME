@@ -54,6 +54,11 @@ export function ProductCard({ product }: { product: Product }) {
     })
   }
 
+  // استخدام صورة بديلة في حال كان الرابط فارغاً لتجنب خطأ Next.js
+  const imageSrc = product.image && product.image.trim() !== "" 
+    ? product.image 
+    : "https://picsum.photos/seed/product/600/400"
+
   return (
     <Link 
       href={`/products/${product.id}`} 
@@ -61,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-50">
         <Image 
-          src={product.image} 
+          src={imageSrc} 
           alt={product.name}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -87,7 +92,7 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="p-5 space-y-4 text-right">
         <div className="flex justify-between items-start gap-2">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-primary">

@@ -1,11 +1,19 @@
+
 "use client"
 
-import { BRANDS } from "@/lib/mock-data"
-import { ArrowRight, Award } from "lucide-react"
+import { useFirestore } from "@/firebase/provider"
+import { collection, query, orderBy } from "firebase/firestore"
+import { useCollection } from "@/firebase/firestore/use-collection"
+import { ArrowRight, Award, Loader2 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useMemo } from "react"
 
 export default function BrandsPage() {
+  const db = useFirestore()
+  const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
+  const { data: brands, loading } = useCollection(brandsQuery)
+
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32">
       {/* Page Header */}
@@ -28,27 +36,31 @@ export default function BrandsPage() {
       </div>
 
       {/* Brands Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {BRANDS.map(brand => (
-          <Link 
-            key={brand.id} 
-            href={`/products?brand=${brand.name}`}
-            className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all group"
-          >
-            <div className="relative w-20 h-20">
-              <Image 
-                src={brand.logo} 
-                alt={brand.name} 
-                fill
-                className="object-contain grayscale group-hover:grayscale-0 transition-all"
-              />
-            </div>
-            <span className="text-sm font-black text-luxury-black">{brand.name}</span>
-          </Link>
-        ))}
-      </div>
+      {loading ? (
+        <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          {brands.map((brand: any) => (
+            <Link 
+              key={brand.id} 
+              href={`/products?brand=${brand.name}`}
+              className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all group"
+            >
+              <div className="relative w-20 h-20">
+                <Image 
+                  src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
+                  alt={brand.name} 
+                  fill
+                  className="object-contain grayscale group-hover:grayscale-0 transition-all"
+                />
+              </div>
+              <span className="text-sm font-black text-luxury-black">{brand.name}</span>
+            </Link>
+          ))}
+        </div>
+      )}
 
-      {BRANDS.length === 0 && (
+      {!loading && brands.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-300 text-center">
           <Award className="w-16 h-16 opacity-10" />
           <p className="text-sm font-bold">لا توجد ماركات مسجلة حالياً</p>

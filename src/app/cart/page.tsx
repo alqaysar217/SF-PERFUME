@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -58,14 +59,19 @@ export default function CartPage() {
   if (!mounted) return null
 
   return (
-    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-[320px]">
+    <div className="flex flex-col gap-6 p-4 animate-fade-in pb-[320px] text-right">
       {cart.length > 0 ? (
         <>
           <div className="space-y-4">
             {cart.map((item) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.5rem] border border-gray-50 shadow-sm flex gap-4 items-center">
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  <Image 
+                    src={item.image || "https://picsum.photos/seed/product/600/400"} 
+                    alt={item.name} 
+                    fill 
+                    className="object-cover" 
+                  />
                 </div>
                 
                 <div className="flex-1 space-y-1">
