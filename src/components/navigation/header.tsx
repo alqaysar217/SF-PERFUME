@@ -130,7 +130,7 @@ export function Header() {
                 <SheetTitle>قائمة التحكم بالإدارة</SheetTitle>
               </SheetHeader>
               
-              <div className="p-5 border-b border-gray-100 flex items-center gap-4 shrink-0 flex-row-reverse justify-end">
+              <div className="p-5 border-b border-gray-100 flex items-center gap-4 shrink-0">
                 <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">SF</div>
                 <div className="text-right">
                   <h2 className="font-black text-sm text-luxury-black">SF PERFUME</h2>
@@ -145,12 +145,12 @@ export function Header() {
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group flex-row-reverse justify-end"
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                     >
-                      <span className="text-xs font-bold text-luxury-black flex-1 text-right">{item.name}</span>
                       <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                         <item.icon className="w-4 h-4" />
                       </div>
+                      <span className="text-xs font-bold text-luxury-black flex-1 text-right">{item.name}</span>
                     </Link>
                   ))}
                   
@@ -158,12 +158,12 @@ export function Header() {
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group flex-row-reverse justify-end"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group"
                   >
-                    <span className="text-xs font-bold flex-1 text-right">تسجيل الخروج</span>
                     <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
                       <LogOut className="w-4 h-4" />
                     </div>
+                    <span className="text-xs font-bold flex-1 text-right">تسجيل الخروج</span>
                   </button>
                 </div>
               </ScrollArea>
