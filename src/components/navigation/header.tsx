@@ -3,12 +3,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2 } from "lucide-react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2, X } from "lucide-react"
 import Image from "next/image"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 const PAGE_TITLES: { [key: string]: string } = {
   "/products": "المتجر الكامل",
@@ -29,6 +30,9 @@ const PAGE_TITLES: { [key: string]: string } = {
 export function Header() {
   const pathname = usePathname()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const currentTab = searchParams.get('tab') || 'dashboard'
+  
   const [cartCount, setCartCount] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -85,14 +89,14 @@ export function Header() {
   }
 
   const adminMenuItems = [
-    { name: "الداشبورد", href: "/admin", icon: LayoutDashboard },
-    { name: "المنتجات", href: "/admin?tab=products", icon: Package },
-    { name: "الماركات", href: "/admin?tab=brands", icon: Award },
-    { name: "الحسابات البنكية", href: "/admin?tab=accounts", icon: CreditCard },
-    { name: "سلة المحذوفات", href: "/admin?tab=trash", icon: Trash2 },
-    { name: "الأسئلة الشائعة", href: "/admin?tab=faqs", icon: HelpCircle },
-    { name: "آراء العملاء", href: "/admin?tab=reviews", icon: Star },
-    { name: "البنرات والعروض", href: "/admin?tab=banners", icon: ImageIcon },
+    { name: "الداشبورد", id: "dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "المنتجات", id: "products", href: "/admin?tab=products", icon: Package },
+    { name: "الماركات", id: "brands", href: "/admin?tab=brands", icon: Award },
+    { name: "الحسابات البنكية", id: "accounts", href: "/admin?tab=accounts", icon: CreditCard },
+    { name: "سلة المحذوفات", id: "trash", href: "/admin?tab=trash", icon: Trash2 },
+    { name: "الأسئلة الشائعة", id: "faqs", href: "/admin?tab=faqs", icon: HelpCircle },
+    { name: "آراء العملاء", id: "reviews", href: "/admin?tab=reviews", icon: Star },
+    { name: "البنرات والعروض", id: "banners", href: "/admin?tab=banners", icon: ImageIcon },
   ]
 
   if (!mounted) return <header className="h-16 bg-white/95" />
@@ -100,7 +104,6 @@ export function Header() {
   if (isAdmin && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
-        {/* Logo and branding on the right side of the header */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
              <Image 
@@ -126,50 +129,73 @@ export function Header() {
                 <Menu className="w-5 h-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" dir="rtl" className="rounded-l-[2rem] p-0 overflow-hidden border-none bg-background w-72 flex flex-col">
-              {/* Sidebar Branding: Logo first (Right) then text */}
-              <div className="p-6 border-b border-gray-100 flex items-center gap-4 shrink-0 bg-white">
-                <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
-                  SF
+            <SheetContent side="right" dir="rtl" className="rounded-l-2xl p-0 overflow-hidden border-none bg-white w-72 flex flex-col shadow-2xl">
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0 bg-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
+                    SF
+                  </div>
+                  <div className="text-right">
+                    <SheetTitle className="font-black text-sm text-luxury-black m-0">SF PERFUME</SheetTitle>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <SheetTitle className="font-black text-sm text-luxury-black m-0">SF PERFUME</SheetTitle>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
-                </div>
+                <SheetClose className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+                  <X className="w-4 h-4" />
+                </SheetClose>
               </div>
               
               <ScrollArea className="flex-1">
-                <div className="px-3 py-4 space-y-1">
-                  {adminMenuItems.map((item) => (
-                    <Link 
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group justify-start"
-                    >
-                      {/* Icon first from the right */}
-                      <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
-                        <item.icon className="w-5 h-5" />
-                      </div>
-                      <span className="text-xs font-bold text-luxury-black">
-                        {item.name}
-                      </span>
-                    </Link>
-                  ))}
+                <div className="px-3 py-6 space-y-1.5">
+                  {adminMenuItems.map((item) => {
+                    const isActive = currentTab === item.id;
+                    return (
+                      <Link 
+                        key={item.id}
+                        href={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={cn(
+                          "flex items-center gap-4 p-3.5 rounded-xl transition-all group justify-start",
+                          isActive 
+                            ? "bg-primary/10 text-primary shadow-sm" 
+                            : "hover:bg-gray-50 text-gray-500 hover:text-luxury-black"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-9 h-9 rounded-lg flex items-center justify-center transition-all shrink-0",
+                          isActive 
+                            ? "bg-primary text-white shadow-md shadow-primary/20" 
+                            : "bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-primary group-hover:shadow-sm"
+                        )}>
+                          <item.icon className="w-5 h-5" />
+                        </div>
+                        <span className={cn(
+                          "text-xs font-black transition-colors",
+                          isActive ? "text-primary" : "group-hover:text-luxury-black"
+                        )}>
+                          {item.name}
+                        </span>
+                      </Link>
+                    );
+                  })}
                   
-                  <div className="h-px bg-gray-50 my-4 mx-3" />
+                  <div className="h-px bg-gray-100 my-4 mx-4" />
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-4 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group justify-start"
+                    className="w-full flex items-center gap-4 p-3.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors group justify-start"
                   >
-                    <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                       <LogOut className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-bold">تسجيل الخروج</span>
+                    <span className="text-xs font-black">تسجيل الخروج</span>
                   </button>
                 </div>
               </ScrollArea>
+              
+              <div className="p-6 border-t border-gray-50 bg-gray-50/50">
+                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest text-center">Cloud Management v1.0</p>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
