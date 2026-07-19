@@ -10,12 +10,12 @@ import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: { product: any }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
-    setIsFavorite(favorites.some((f: Product) => f.id === product.id))
+    setIsFavorite(favorites.some((f: any) => f.id === product.id))
   }, [product.id])
 
   const toggleFavorite = (e: React.MouseEvent) => {
@@ -23,7 +23,7 @@ export function ProductCard({ product }: { product: Product }) {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
     let updated
     if (isFavorite) {
-      updated = favorites.filter((f: Product) => f.id !== product.id)
+      updated = favorites.filter((f: any) => f.id !== product.id)
     } else {
       updated = [...favorites, product]
     }
@@ -54,7 +54,6 @@ export function ProductCard({ product }: { product: Product }) {
     })
   }
 
-  // استخدام صورة بديلة في حال كان الرابط فارغاً لتجنب خطأ Next.js
   const imageSrc = product.image && product.image.trim() !== "" 
     ? product.image 
     : "https://picsum.photos/seed/product/600/400"
@@ -62,7 +61,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link 
       href={`/products/${product.id}`} 
-      className="group bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98]"
+      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transition-all active:scale-[0.98]"
     >
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-50">
         <Image 
@@ -104,7 +103,7 @@ export function ProductCard({ product }: { product: Product }) {
             </h3>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-base font-black text-luxury-black">{product.price.toLocaleString()} ر.ي</span>
+            <span className="text-base font-black text-luxury-black">{product.price?.toLocaleString()} ر.ي</span>
             {product.oldPrice && (
               <span className="text-[10px] text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.ي</span>
             )}

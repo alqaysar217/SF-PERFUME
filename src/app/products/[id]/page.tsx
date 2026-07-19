@@ -23,11 +23,6 @@ export default function ProductDetails() {
   const productRef = useMemo(() => db && typeof id === 'string' ? doc(db, "products", id) : null, [db, id])
   const { data: product, loading } = useDoc<any>(productRef)
 
-  /**
-   * منطق المنتجات المشابهة:
-   * يتم البحث عن منتجات تشترك في نفس "الفئة" (Category) لضمان أن العميل
-   * الذي يشاهد عطوراً رجالية تظهر له اقتراحات رجالية أخرى.
-   */
   const similarQuery = useMemo(() => 
     db && product?.category ? query(
       collection(db, "products"), 
@@ -112,7 +107,7 @@ export default function ProductDetails() {
       </div>
 
       <div className="relative z-10 -mt-6 px-4 space-y-4">
-        <section className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-50 space-y-3 luxury-shadow">
+        <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 space-y-3 luxury-shadow">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 text-primary">
               <Sparkles className="w-4 h-4" />
@@ -135,7 +130,7 @@ export default function ProductDetails() {
         </section>
 
         {product.description && (
-          <section className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-50 space-y-3 luxury-shadow">
+          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 space-y-3 luxury-shadow">
             <h3 className="text-[11px] font-black text-luxury-black flex items-center gap-2 uppercase tracking-[0.2em]">
               <ShieldCheck className="w-5 h-5 text-primary" />
               وصف العبير
@@ -145,8 +140,8 @@ export default function ProductDetails() {
         )}
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
-             <div className="w-11 h-11 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shrink-0">
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
+             <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
                 <Zap className="w-5 h-5" />
              </div>
              <div>
@@ -154,8 +149,8 @@ export default function ProductDetails() {
                 <p className="text-[13px] font-black text-luxury-black">{product.longevity || 'عالي'}</p>
              </div>
           </div>
-          <div className="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
-             <div className="w-11 h-11 bg-primary/5 rounded-2xl flex items-center justify-center text-primary shrink-0">
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
+             <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
                 <Droplets className="w-5 h-5" />
              </div>
              <div>
@@ -166,7 +161,7 @@ export default function ProductDetails() {
         </div>
 
         {product.ingredients && (
-          <section className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-50 space-y-4 luxury-shadow">
+          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 space-y-4 luxury-shadow">
             <h3 className="text-[11px] font-black text-luxury-black uppercase tracking-[0.2em]">المكونات الأساسية</h3>
             <div className="flex flex-wrap gap-2">
               {product.ingredients.split('،').map((ing: string, i: number) => (
@@ -184,7 +179,7 @@ export default function ProductDetails() {
             <ArrowRight className="w-4 h-4 text-primary rotate-180" />
           </div>
           <div className="flex flex-col gap-8">
-            {similarProducts.filter((p: any) => p.id !== product.id).slice(0, 3).map((p: any) => (
+            {similarProducts?.filter((p: any) => p.id !== product.id).slice(0, 3).map((p: any) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
@@ -195,7 +190,7 @@ export default function ProductDetails() {
         <div className="flex gap-3">
           <Button 
             onClick={directOrder}
-            className="flex-1 h-14 bg-[#25D366] hover:bg-[#1ebd5d] text-white rounded-2xl text-sm font-black gap-2 shadow-lg active:scale-95 transition-all"
+            className="flex-1 h-14 bg-[#25D366] hover:bg-[#1ebd5d] text-white rounded-xl text-sm font-black gap-2 shadow-lg active:scale-95 transition-all"
           >
             <MessageCircle className="w-5 h-5" />
             اطلب عبر واتساب
@@ -203,7 +198,7 @@ export default function ProductDetails() {
           <Button 
             onClick={addToCart}
             variant="outline"
-            className="w-14 h-14 border-luxury-black text-luxury-black rounded-2xl p-0 active:scale-95 transition-all flex items-center justify-center hover:bg-gray-50"
+            className="w-14 h-14 border-luxury-black text-luxury-black rounded-xl p-0 active:scale-95 transition-all flex items-center justify-center hover:bg-gray-50"
             title="إضافة للسلة"
           >
             <Plus className="w-6 h-6" />

@@ -85,7 +85,7 @@ export default function HomePage() {
     <div className="flex flex-col animate-fade-in pb-32 bg-background">
       <main className="flex flex-col gap-8 pt-6">
         <section className="px-4">
-          <div className="relative h-48 rounded-[2rem] overflow-hidden bg-luxury-black shadow-lg">
+          <div className="relative h-48 rounded-2xl overflow-hidden bg-luxury-black shadow-lg border border-gray-100/10">
             {banners.length > 0 ? (
               banners.map((img: any, idx: number) => (
                 <div key={idx} className={cn("absolute inset-0 transition-opacity duration-1000", currentBanner === idx ? "opacity-100" : "opacity-0")}>
@@ -123,7 +123,7 @@ export default function HomePage() {
                   key={i}
                   onClick={() => setActiveTab(cat.name)}
                   className={cn(
-                    "shrink-0 px-5 py-3 rounded-2xl text-[10px] font-black transition-all flex items-center gap-2 border",
+                    "shrink-0 px-5 py-3 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 border",
                     activeTab === cat.name 
                       ? "bg-luxury-black text-primary border-luxury-black shadow-lg shadow-black/10 scale-105" 
                       : "bg-white text-gray-400 border-gray-100 hover:bg-gray-50"
@@ -156,8 +156,6 @@ export default function HomePage() {
             )}
           </div>
         </section>
-
-        {/* ... Rest of the sections ... */}
       </main>
     </div>
   )
