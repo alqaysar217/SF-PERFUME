@@ -33,7 +33,8 @@ import {
   RotateCcw,
   User as UserIcon,
   Hash,
-  Building2
+  Building2,
+  MessageSquare
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -129,7 +130,7 @@ export default function AdminDashboard() {
     const formData = new FormData(e.currentTarget)
     const data: any = Object.fromEntries(formData.entries())
     
-    // Handle image for multiple tabs
+    // Handle images
     if (['products', 'brands', 'accounts'].includes(activeTab)) {
       data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
       if (activeTab === 'brands') data.logo = data.image
@@ -298,7 +299,7 @@ export default function AdminDashboard() {
             {trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="text-right">
-                  <h4 className="text-xs font-black text-luxury-black">{item.originalData.name || item.originalData.bank}</h4>
+                  <h4 className="text-xs font-black text-luxury-black">{item.originalData.name || item.originalData.bank || item.originalData.question}</h4>
                   <p className="text-[9px] text-gray-400">حُذف من: {item.originalCollection}</p>
                 </div>
                 <div className="flex gap-2">
@@ -321,16 +322,20 @@ export default function AdminDashboard() {
              </button>
             <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
               <Plus className="w-3.5 h-3.5" />
-              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : 'جديد'}
+              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال جديد' : 'جديد'}
             </Button>
           </div>
 
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-start gap-4 luxury-shadow">
-                {(item.image || item.logo) && (
+                {(item.image || item.logo) ? (
                   <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                     <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
+                    {activeTab === 'faqs' ? <HelpCircle className="w-6 h-6" /> : <Package className="w-6 h-6" />}
                   </div>
                 )}
                 <div className="flex-1 text-right">
@@ -356,7 +361,7 @@ export default function AdminDashboard() {
         <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : 'جديد'}`}
+              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : activeTab === 'faqs' ? 'سؤال جديد' : 'جديد'}`}
             </DialogTitle>
           </div>
           
@@ -576,6 +581,30 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {activeTab === "faqs" && (
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-2 text-primary">
+                    <HelpCircle className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">إضافة سؤال وجواب</span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">السؤال</label>
+                      <div className="relative">
+                        <Input name="question" defaultValue={editingItem?.question} placeholder="مثال: أين موقعكم بالتحديد؟" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">الإجابة</label>
+                      <Textarea name="answer" defaultValue={editingItem?.answer} placeholder="اكتب الإجابة الواضحة للعملاء هنا..." required className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[120px]" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
@@ -599,7 +628,7 @@ export default function AdminDashboard() {
             <div className="space-y-2 text-center">
               <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد الإجراء</AlertDialogTitle>
               <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed max-w-[260px] mx-auto">
-                أنت على وشك نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank}"</span> لسلة المحذوفات.
+                أنت على وشك نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank || deletingItem?.question}"</span> لسلة المحذوفات.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
