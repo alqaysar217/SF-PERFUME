@@ -24,8 +24,8 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const db = useFirestore()
 
-  // Firestore Data
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(10)) : null, [db])
+  // Firestore Data - Limited to 5 for home page
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), orderBy("createdAt", "desc"), limit(5)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
   const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(3)) : null, [db])
@@ -96,7 +96,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 p-8 flex flex-col justify-center gap-2">
                     <div className="flex items-center gap-2 bg-primary/20 backdrop-blur-sm w-fit px-3 py-1 rounded-full border border-primary/30">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      <span className="text-[8px] font-black text-white uppercase tracking-widest">{img.subtitle}</span>
+                      <span className="text-[8px] font-black text-white uppercase tracking-widest">{img.subtitle || 'حصري'}</span>
                     </div>
                     <h2 className="text-xl font-black text-white leading-tight">{img.title}</h2>
                   </div>
@@ -114,35 +114,6 @@ export default function HomePage() {
                 ))}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Brands Section */}
-        <section className="px-4 space-y-4">
-          <div className="flex justify-between items-center px-1">
-            <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
-            <Link href="/brands" className="text-primary text-[10px] font-black flex items-center gap-1">
-              المزيد <ArrowLeft className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2">
-            {brandsLoading ? (
-              <div className="flex gap-4 w-full justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-            ) : brands.map((brand: any) => (
-              <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
-                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
-                  <div className="relative w-full h-full">
-                    <Image 
-                      src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
-                      alt={brand.name} 
-                      fill 
-                      className="object-contain grayscale group-hover:grayscale-0 transition-all" 
-                    />
-                  </div>
-                </div>
-                <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
-              </Link>
-            ))}
           </div>
         </section>
 
@@ -170,7 +141,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Products Section */}
+        {/* Products Section - Limited to 5 with "View All" */}
         <section className="px-4 space-y-6">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">المجموعة المختارة</h3>
@@ -182,12 +153,50 @@ export default function HomePage() {
             {productsLoading ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
             ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product: any) => (
-                <ProductCard key={product.id} product={product} />
-              ))
+              <>
+                {filteredProducts.map((product: any) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+                <Link 
+                  href="/products" 
+                  className="w-full h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center gap-3 text-luxury-black font-black text-xs shadow-sm hover:bg-gray-50 active:scale-95 transition-all mt-4"
+                >
+                  تصفح كافة المنتجات
+                  <ArrowLeft className="w-4 h-4" />
+                </Link>
+              </>
             ) : (
               <div className="text-center py-10 text-gray-400 font-bold text-xs uppercase tracking-widest">لا توجد منتجات حالياً</div>
             )}
+          </div>
+        </section>
+
+        {/* Brands Section - Moved to bottom */}
+        <section className="px-4 space-y-4 pt-4">
+          <div className="flex justify-between items-center px-1">
+            <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
+            <Link href="/brands" className="text-primary text-[10px] font-black flex items-center gap-1">
+              المزيد <ArrowLeft className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2">
+            {brandsLoading ? (
+              <div className="flex gap-4 w-full justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+            ) : brands.map((brand: any) => (
+              <Link key={brand.id} href={`/products?brand=${brand.name}`} className="shrink-0 flex flex-col items-center gap-2 group">
+                <div className="w-16 h-16 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm transition-transform active:scale-95">
+                  <div className="relative w-full h-full">
+                    <Image 
+                      src={brand.logo || brand.image || "https://picsum.photos/seed/brand/200/200"} 
+                      alt={brand.name} 
+                      fill 
+                      className="object-contain grayscale group-hover:grayscale-0 transition-all" 
+                    />
+                  </div>
+                </div>
+                <span className="text-[9px] font-black text-gray-400 group-hover:text-luxury-black transition-colors">{brand.name}</span>
+              </Link>
+            ))}
           </div>
         </section>
 
