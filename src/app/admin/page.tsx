@@ -36,7 +36,8 @@ import {
   Building2,
   MessageSquare,
   Quote,
-  StarHalf
+  StarHalf,
+  X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -241,10 +242,10 @@ export default function AdminDashboard() {
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background">
       {activeTab === "dashboard" ? (
         <div className="space-y-8">
-          <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
+          <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden text-right">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-            <h2 className="text-lg font-black text-luxury-black text-right">نظام التحكم السحابي</h2>
-            <p className="text-gray-400 text-xs font-medium text-right leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
+            <h2 className="text-lg font-black text-luxury-black">نظام التحكم السحابي</h2>
+            <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -349,7 +350,11 @@ export default function AdminDashboard() {
                 )}
                 <div className="flex-1 text-right">
                   <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
-                  <p className="text-[10px] font-bold text-primary">{item.price ? `${item.price.toLocaleString()} ر.ي` : item.account || item.role || 'تفاصيل'}</p>
+                  <p className="text-[10px] font-bold text-primary">
+                    {item.price ? `${item.price.toLocaleString()} ر.ي` : 
+                     item.account ? item.account : 
+                     item.rating ? `${item.rating} نجوم` : 'تفاصيل'}
+                  </p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
@@ -367,7 +372,7 @@ export default function AdminDashboard() {
 
       {/* Item Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
+        <DialogContent className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
               {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : activeTab === 'faqs' ? 'سؤال جديد' : activeTab === 'reviews' ? 'رأي عميل جديد' : 'جديد'}`}
@@ -627,13 +632,6 @@ export default function AdminDashboard() {
                       <div className="relative">
                         <Input name="name" defaultValue={editingItem?.name} placeholder="الاسم كما سيظهر" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
                         <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">الوظيفة / الدور</label>
-                      <div className="relative">
-                        <Input name="role" defaultValue={editingItem?.role} placeholder="مثال: مصممة ديكور" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                       </div>
                     </div>
                     <div className="space-y-2 text-right">

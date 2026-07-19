@@ -60,7 +60,6 @@
       "type": "object",
       "properties": {
         "name": { "type": "string" },
-        "role": { "type": "string" },
         "content": { "type": "string" },
         "image": { "type": "string" },
         "rating": { "type": "number" },
