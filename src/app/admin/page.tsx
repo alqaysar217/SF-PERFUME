@@ -76,8 +76,7 @@ export default function AdminDashboard() {
   }, [router])
 
   useEffect(() => {
-    if (tabParam) setActiveTab(tabParam)
-    else setActiveTab("dashboard")
+    setActiveTab(tabParam || "dashboard")
   }, [tabParam])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -253,10 +252,10 @@ export default function AdminDashboard() {
             {[productsLoading, accountsLoading, faqsLoading, reviewsLoading, bannersLoading].some(l => l && activeTab !== 'dashboard') ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
             ) : filteredItems.map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
+              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
                 <div className="flex items-center gap-4 text-right flex-1">
                   {(item.image || item.logo) ? (
-                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                       <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
                       {item.isOffer && (
                          <div className="absolute top-0 right-0 p-0.5 bg-primary rounded-bl-lg shadow-sm">
@@ -265,7 +264,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
                       {activeTab === 'faqs' ? <HelpCircle className="w-6 h-6" /> : <Package className="w-6 h-6" />}
                     </div>
                   )}
@@ -282,10 +281,10 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 active:scale-90 transition-transform">
+                  <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 active:scale-90 transition-transform">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-primary active:scale-90 transition-transform">
+                  <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 hover:text-primary active:scale-90 transition-transform">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -308,23 +307,23 @@ export default function AdminDashboard() {
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-[2rem]">
+        <AlertDialogContent className="fixed left-[50%] top-[50%] z-[100] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-2xl">
           <AlertDialogHeader className="space-y-6">
-            <div className="w-20 h-20 bg-luxury-black rounded-2xl flex items-center justify-center text-primary mx-auto shadow-xl">
+            <div className="w-20 h-20 bg-luxury-black rounded-xl flex items-center justify-center text-primary mx-auto shadow-xl">
               <ShieldAlert className="w-10 h-10" />
             </div>
             <div className="space-y-2 text-center">
               <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد النقل</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed">
+              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed text-center">
                 سيتم نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank || deletingItem?.title}"</span> لسلة المحذوفات.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-10 flex flex-col sm:flex-row gap-3">
-            <AlertDialogAction onClick={handleSoftDelete} className="flex-1 h-14 rounded-2xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md">
+            <AlertDialogAction onClick={handleSoftDelete} className="flex-1 h-14 rounded-xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md">
               نقل للمحذوفات
             </AlertDialogAction>
-            <AlertDialogCancel className="flex-1 h-14 rounded-2xl border-gray-100 bg-gray-50 text-gray-400 font-black text-md">
+            <AlertDialogCancel className="flex-1 h-14 rounded-xl border-gray-100 bg-gray-50 text-gray-400 font-black text-md">
               تراجع
             </AlertDialogCancel>
           </AlertDialogFooter>

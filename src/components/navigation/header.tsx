@@ -4,9 +4,9 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2 } from "lucide-react"
+import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2, X } from "lucide-react"
 import Image from "next/image"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -129,19 +129,24 @@ export function Header() {
                 <Menu className="w-5 h-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" dir="rtl" className="rounded-l-xl p-0 overflow-hidden border-none bg-white w-72 flex flex-col shadow-2xl">
-              <div className="p-6 border-b border-gray-100 flex items-center gap-4 shrink-0 bg-white text-right">
-                <div className="w-10 h-10 bg-luxury-black rounded-lg flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
-                  SF
+            <SheetContent side="right" dir="rtl" className="rounded-l-2xl p-0 overflow-hidden border-none bg-white w-72 flex flex-col shadow-2xl">
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white text-right shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-luxury-black rounded-lg flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
+                    SF
+                  </div>
+                  <div className="text-right">
+                    <SheetTitle className="font-black text-sm text-luxury-black m-0 p-0">SF PERFUME</SheetTitle>
+                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
+                  </div>
                 </div>
-                <div className="text-right flex-1">
-                  <SheetTitle className="font-black text-sm text-luxury-black m-0 text-right">SF PERFUME</SheetTitle>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1 text-right">مركز التحكم للإدارة</p>
-                </div>
+                <SheetClose className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+                  <X className="w-5 h-5" />
+                </SheetClose>
               </div>
               
               <ScrollArea className="flex-1">
-                <div className="px-3 py-6 space-y-1.5">
+                <div className="px-3 py-6 space-y-1">
                   {adminMenuItems.map((item) => {
                     const isActive = item.id === "dashboard" 
                       ? (!currentTab || currentTab === 'dashboard')
@@ -152,7 +157,7 @@ export function Header() {
                         href={item.href}
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "flex flex-row items-center gap-4 p-3.5 rounded-xl transition-all group justify-start w-full text-right",
+                          "flex flex-row items-center gap-4 p-3 rounded-lg transition-all group w-full text-right",
                           isActive 
                             ? "bg-primary/10 text-primary shadow-sm" 
                             : "hover:bg-gray-50 text-gray-500 hover:text-luxury-black"
@@ -180,7 +185,7 @@ export function Header() {
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex flex-row items-center gap-4 p-3.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors group justify-start"
+                    className="w-full flex flex-row items-center gap-4 p-3 rounded-lg text-red-500 hover:bg-red-50 transition-colors group text-right"
                   >
                     <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                       <LogOut className="w-5 h-5" />
