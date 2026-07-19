@@ -110,8 +110,8 @@ export function Header() {
               className="object-cover"
             />
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black text-right">SF PERFUME</h1>
+          <div className="flex flex-col text-right">
+            <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
             <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
               <MapPin className="w-2 h-2 text-primary" />
               المكلا، حضرموت
@@ -137,7 +137,7 @@ export function Header() {
                 </div>
                 <div className="text-right">
                   <h2 className="font-black text-sm text-luxury-black">SF PERFUME</h2>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">Admin Control Center</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">مركز التحكم للإدارة</p>
                 </div>
               </div>
               
@@ -192,7 +192,7 @@ export function Header() {
                 className="object-cover"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col text-right">
               <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
               <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
                 <MapPin className="w-2 h-2 text-primary" />
