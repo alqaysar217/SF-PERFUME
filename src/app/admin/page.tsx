@@ -259,8 +259,8 @@ export default function AdminDashboard() {
                   )}
                   <div className="text-right overflow-hidden">
                     <div className="flex items-center gap-2">
+                      {item.isOffer && <Percent className="w-3 h-3 text-primary shrink-0" />}
                       <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
-                      {item.isOffer && <Percent className="w-3 h-3 text-primary" />}
                     </div>
                     <p className="text-[10px] font-bold text-primary">
                       {item.price ? `${item.price.toLocaleString()} ر.ي` : 
