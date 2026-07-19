@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus, MessageCircle, Loader2 } from "lucide-react"
+import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus, MessageCircle, Loader2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect, useMemo } from "react"
@@ -23,10 +23,19 @@ export default function ProductDetails() {
   const productRef = useMemo(() => db && typeof id === 'string' ? doc(db, "products", id) : null, [db, id])
   const { data: product, loading } = useDoc<any>(productRef)
 
-  // Fetch similar products
+  /**
+   * منطق المنتجات المشابهة:
+   * يتم البحث عن منتجات تشترك في نفس "الفئة" (Category) لضمان أن العميل
+   * الذي يشاهد عطوراً رجالية تظهر له اقتراحات رجالية أخرى.
+   */
   const similarQuery = useMemo(() => 
-    db && product?.category ? query(collection(db, "products"), where("category", "==", product.category), limit(4)) : null
+    db && product?.category ? query(
+      collection(db, "products"), 
+      where("category", "==", product.category), 
+      limit(4)
+    ) : null
   , [db, product?.category])
+  
   const { data: similarProducts } = useCollection<any>(similarQuery)
 
   useEffect(() => {
@@ -35,7 +44,13 @@ export default function ProductDetails() {
     setIsFavorite(favorites.some((f: any) => f.id === product.id))
   }, [product])
 
-  if (loading) return <div className="p-20 text-center"><Loader2 className="w-10 h-10 animate-spin mx-auto text-primary" /></div>
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      <span className="text-xs font-black text-gray-400">جاري استحضار العبير...</span>
+    </div>
+  )
+
   if (!product) return <div className="p-20 text-center font-bold">المنتج غير موجود</div>
 
   const addToCart = () => {
@@ -164,7 +179,10 @@ export default function ProductDetails() {
         )}
 
         <section className="space-y-6 pt-6">
-          <h3 className="text-md font-black text-luxury-black px-1 uppercase tracking-widest">منتجات مشابهة</h3>
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-md font-black text-luxury-black uppercase tracking-widest">منتجات قد تعجبك</h3>
+            <ArrowRight className="w-4 h-4 text-primary rotate-180" />
+          </div>
           <div className="flex flex-col gap-8">
             {similarProducts.filter((p: any) => p.id !== product.id).slice(0, 3).map((p: any) => (
               <ProductCard key={p.id} product={p} />

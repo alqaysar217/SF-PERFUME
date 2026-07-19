@@ -18,7 +18,16 @@ import {
   LayoutDashboard,
   LogOut,
   Star,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Tag,
+  Layers,
+  Banknote,
+  History,
+  Zap,
+  Maximize2,
+  List,
+  AlignLeft,
+  AlertTriangle
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,6 +46,16 @@ import {
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { toast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog"
 import { errorEmitter } from '@/firebase/error-emitter'
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors'
 
@@ -49,7 +68,9 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard")
   const [mounted, setMounted] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
+  const [deletingItem, setDeletingItem] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -79,8 +100,8 @@ export default function AdminDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 1024 * 1024) {
-        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 1 ميجابايت" })
+      if (file.size > 1.5 * 1024 * 1024) {
+        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 1.5 ميجابايت لضمان سرعة التحميل" })
         return
       }
       const reader = new FileReader()
@@ -123,7 +144,7 @@ export default function AdminDashboard() {
           });
           errorEmitter.emit('permission-error', permissionError);
         });
-      toast({ title: "جاري التحديث...", description: "تم إرسال البيانات للسحاب" })
+      toast({ title: "جاري التحديث...", description: "تم إرسال التغييرات للسحاب" })
     } else {
       addDoc(collectionRef, { ...data, createdAt: serverTimestamp() })
         .catch(async (err) => {
@@ -134,7 +155,7 @@ export default function AdminDashboard() {
           });
           errorEmitter.emit('permission-error', permissionError);
         });
-      toast({ title: "جاري الإضافة...", description: "يتم الآن رفع البيانات" })
+      toast({ title: "جاري الإضافة...", description: "تمت إضافة العنصر بنجاح" })
     }
 
     setIsModalOpen(false)
@@ -143,9 +164,24 @@ export default function AdminDashboard() {
     setIsSaving(false)
   }
 
-  const handleDelete = (id: string, collectionName: string) => {
-    if (!db || !confirm("هل أنت متأكد من الحذف النهائي؟")) return
-    const docRef = doc(db, collectionName, id)
+  const confirmDelete = () => {
+    if (!db || !deletingItem) return
+    
+    // Logic: Prevent deleting brands that have products linked
+    if (activeTab === 'brands') {
+      const hasProducts = products.some((p: any) => p.brand === deletingItem.name)
+      if (hasProducts) {
+        toast({ 
+          variant: "destructive", 
+          title: "لا يمكن الحذف", 
+          description: "هذه الماركة مرتبطة بمنتجات موجودة، يرجى حذف المنتجات أولاً." 
+        })
+        setIsDeleteDialogOpen(false)
+        return
+      }
+    }
+
+    const docRef = doc(db, activeTab, deletingItem.id)
     deleteDoc(docRef)
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
@@ -154,7 +190,10 @@ export default function AdminDashboard() {
         });
         errorEmitter.emit('permission-error', permissionError);
       });
-    toast({ title: "تم طلب الحذف", description: "سيتم إزالة العنصر فوراً" })
+    
+    toast({ title: "تم الحذف", description: "تمت إزالة العنصر من السجلات" })
+    setIsDeleteDialogOpen(false)
+    setDeletingItem(null)
   }
 
   if (!mounted) return null
@@ -166,7 +205,7 @@ export default function AdminDashboard() {
           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <h2 className="text-xl font-black text-luxury-black text-right">نظام التحكم السحابي</h2>
-            <p className="text-gray-400 text-xs font-medium text-right">مرحباً بك. كل البيانات التي تقوم بإضافتها هنا تُخزن بشكل دائم ومشفر في Firebase.</p>
+            <p className="text-gray-400 text-xs font-medium text-right leading-relaxed">إدارة المتجر بالكامل من خلال واجهة واحدة متصلة بـ Firebase.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -191,12 +230,12 @@ export default function AdminDashboard() {
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-right px-2">الإدارة السريعة</h3>
+            <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-right px-2">روابط سريعة</h3>
             <div className="grid grid-cols-1 gap-4">
               {[
-                { name: "إدارة المخزون (عطور وساعات)", icon: Package, href: "?tab=products" },
-                { name: "إدارة الماركات والشركاء", icon: Award, href: "?tab=brands" },
-                { name: "بيانات التحويل البنكي", icon: CreditCard, href: "?tab=accounts" },
+                { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
+                { name: "إدارة الماركات", icon: Award, href: "?tab=brands" },
+                { name: "الحسابات البنكية", icon: CreditCard, href: "?tab=accounts" },
               ].map((item, i) => (
                 <button 
                   key={i}
@@ -206,7 +245,7 @@ export default function AdminDashboard() {
                   <ChevronLeft className="w-5 h-5 text-gray-200" />
                   <div className="flex items-center gap-4">
                     <h4 className="text-sm font-black text-luxury-black">{item.name}</h4>
-                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary">
+                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary transition-all">
                       <item.icon className="w-6 h-6" />
                     </div>
                   </div>
@@ -234,7 +273,7 @@ export default function AdminDashboard() {
                   <button onClick={() => { setEditingItem(item); setImagePreview(item.image || item.logo || null); setIsModalOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(item.id, activeTab)} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500">
+                  <button onClick={() => { setDeletingItem(item); setIsDeleteDialogOpen(true); }} className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -255,101 +294,189 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Dynamic Modal */}
+      {/* Product/Item Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col">
+        <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <DialogHeader className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تعديل البيانات السحابية" : "إضافة بيانات جديدة"}
+              {editingItem ? "تحديث البيانات" : "إضافة منتج جديد"}
             </DialogTitle>
           </DialogHeader>
           
-          <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 pb-24 space-y-8 pt-4 scrollbar-hide text-right">
-            {(activeTab === "products" || activeTab === "brands") && (
-              <div className="space-y-4">
-                <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3">الصورة</h4>
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="relative aspect-video rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  {imagePreview ? (
-                    <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
-                  ) : (
-                    <>
-                      <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                      <span className="text-[10px] font-black text-gray-400">اضغط لرفع صورة وحفظها في قاعدة البيانات</span>
-                    </>
-                  )}
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileChange} 
-                    accept="image/*" 
-                    className="hidden" 
-                  />
-                </div>
-              </div>
-            )}
-
+          <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 pb-32 space-y-8 pt-4 scrollbar-hide text-right">
             {activeTab === "products" && (
               <>
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3 text-right">المعلومات الأساسية</h4>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-end gap-2 text-primary">
+                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
+                    <Tag className="w-4 h-4" />
+                  </div>
                   <div className="space-y-4">
-                    <Input name="name" defaultValue={editingItem?.name} placeholder="اسم العطر" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم المنتج</label>
+                      <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: سوفاج إليكسير" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
+                    </div>
+                    
                     <div className="grid grid-cols-2 gap-4">
-                      <select name="category" defaultValue={editingItem?.category || 'men'} className="h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right">
-                        <option value="men">رجالي</option>
-                        <option value="women">نسائي</option>
-                        <option value="watches">ساعات</option>
-                      </select>
-                      <Input name="brand" defaultValue={editingItem?.brand} placeholder="الماركة" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 px-1">الماركة</label>
+                        <div className="relative">
+                          <Input name="brand" defaultValue={editingItem?.brand} placeholder="شانيل، ديور..." required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                          <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 px-1">التصنيف</label>
+                        <div className="relative">
+                          <select name="category" defaultValue={editingItem?.category || 'men'} className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
+                            <option value="men">عطور رجالية</option>
+                            <option value="women">عطور نسائية</option>
+                            <option value="watches">ساعات فاخرة</option>
+                          </select>
+                          <Layers className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h4 className="text-[11px] font-black text-primary uppercase tracking-widest border-r-4 border-primary pr-3 text-right">الأسعار والمواصفات</h4>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-end gap-2 text-primary">
+                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
+                    <Banknote className="w-4 h-4" />
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <Input name="oldPrice" type="number" defaultValue={editingItem?.oldPrice} placeholder="السعر القديم" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
-                    <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="السعر الحالي" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
-                    <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="الثبات" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
-                    <Input name="size" defaultValue={editingItem?.size} placeholder="الحجم (مثلاً: 100 مل)" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
-                    <div className="flex items-center justify-end gap-2 pr-2 col-span-2">
-                      <span className="text-xs font-black">عرض خاص</span>
-                      <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">السعر الحالي</label>
+                      <div className="relative">
+                        <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="0.00" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">ر.ي</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">السعر القديم</label>
+                      <div className="relative">
+                        <Input name="oldPrice" type="number" defaultValue={editingItem?.oldPrice} placeholder="0.00" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <History className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">الثبات</label>
+                      <div className="relative">
+                        <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="مثال: 12 ساعة" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">الحجم</label>
+                      <div className="relative">
+                        <Input name="size" defaultValue={editingItem?.size} placeholder="مثال: 100 مل" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+                        <Maximize2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      </div>
                     </div>
                   </div>
-                  <Input name="projection" defaultValue={editingItem?.projection} placeholder="الفوحان" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
-                  <Textarea name="ingredients" defaultValue={editingItem?.ingredients} placeholder="المكونات (قرفة، لافندر...)" className="rounded-xl bg-gray-50 border-none font-bold text-right" />
-                  <Textarea name="description" defaultValue={editingItem?.description} placeholder="وصف العطر" className="rounded-xl bg-gray-50 border-none font-bold text-right" />
+                  <div className="flex items-center justify-end gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10">
+                    <span className="text-xs font-black text-luxury-black">تفعيل وسم "عرض خاص" على المنتج</span>
+                    <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-end gap-2 text-primary">
+                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
+                    <AlignLeft className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center justify-end gap-1">
+                        <List className="w-3 h-3" /> المكونات (افصل بينها بفاصلة)
+                      </label>
+                      <Textarea name="ingredients" defaultValue={editingItem?.ingredients} placeholder="قرفة، لافندر، خشب صندل..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[80px]" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 px-1">وصف العطر</label>
+                      <Textarea name="description" defaultValue={editingItem?.description} placeholder="اكتب وصفاً جذاباً للعملاء..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[100px]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-end gap-2 text-primary">
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
+                    <ImageIcon className="w-4 h-4" />
+                  </div>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative aspect-[16/9] rounded-[2rem] bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    {imagePreview ? (
+                      <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-gray-300 mb-2" />
+                        <span className="text-[10px] font-black text-gray-400">انقر لرفع صورة العطر</span>
+                      </>
+                    )}
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                  </div>
                 </div>
               </>
             )}
 
             {activeTab === "brands" && (
-               <div className="space-y-4">
-                 <Input name="name" defaultValue={editingItem?.name} placeholder="اسم الماركة" required className="h-12 rounded-xl bg-gray-50 text-right" />
-               </div>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 px-1">اسم الماركة</label>
+                  <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: ديور" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 px-1">شعار الماركة</label>
+                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer">
+                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-contain p-2" alt="" /> : <Upload className="w-6 h-6 text-gray-300" />}
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                  </div>
+                </div>
+              </div>
             )}
 
             {activeTab === "accounts" && (
               <div className="space-y-4">
-                 <Input name="bank" defaultValue={editingItem?.bank} placeholder="اسم البنك" required className="h-12 rounded-xl bg-gray-50 text-right" />
-                 <Input name="name" defaultValue={editingItem?.name} placeholder="اسم صاحب الحساب" required className="h-12 rounded-xl bg-gray-50 text-right" />
-                 <Input name="account" defaultValue={editingItem?.account} placeholder="رقم الحساب" required className="h-12 rounded-xl bg-gray-50 text-right" />
+                 <Input name="bank" defaultValue={editingItem?.bank} placeholder="اسم البنك / المحفظة" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
+                 <Input name="name" defaultValue={editingItem?.name} placeholder="اسم صاحب الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
+                 <Input name="account" defaultValue={editingItem?.account} placeholder="رقم الحساب" required className="h-12 rounded-xl bg-gray-50 border-none text-right" />
               </div>
             )}
 
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                {editingItem ? "تزامن التعديلات" : "إضافة للسحاب"}
+                {editingItem ? "حفظ التغييرات" : "إضافة للمتجر"}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Modern Delete Confirmation */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="rounded-[2.5rem] border-none p-8 text-right bg-white">
+          <AlertDialogHeader className="space-y-4">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mx-auto">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <AlertDialogTitle className="text-xl font-black text-luxury-black text-center">هل أنت متأكد من الحذف؟</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400 text-sm font-medium text-center leading-relaxed">
+              سيتم إزالة <span className="text-luxury-black font-bold">"{deletingItem?.name || deletingItem?.bank}"</span> نهائياً من قاعدة البيانات. لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-8 flex gap-3 sm:justify-center">
+            <AlertDialogCancel className="flex-1 h-12 rounded-xl border-gray-100 font-bold">تراجع</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="flex-1 h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold border-none">
+              تأكيد الحذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
