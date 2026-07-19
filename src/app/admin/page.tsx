@@ -47,7 +47,7 @@ import {
 } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { toast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -309,9 +309,9 @@ export default function AdminDashboard() {
             {activeTab === "products" && (
               <>
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
+                  <div className="flex items-center gap-2 text-primary justify-start">
                     <Tag className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -343,9 +343,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
+                  <div className="flex items-center gap-2 text-primary justify-start">
                     <Banknote className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2 text-right">
@@ -384,9 +384,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
+                  <div className="flex items-center gap-2 text-primary justify-start">
                     <AlignLeft className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -403,9 +403,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
+                  <div className="flex items-center gap-2 text-primary justify-start">
                     <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
@@ -451,7 +451,7 @@ export default function AdminDashboard() {
 
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
-                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                {isSaving ? <Loader2Icon className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                 {editingItem ? "حفظ التغييرات" : "إضافة للمتجر"}
               </Button>
             </div>
@@ -496,3 +496,5 @@ export default function AdminDashboard() {
     </div>
   )
 }
+
+import { Loader2 as Loader2Icon, Sparkles as SparklesIcon, MapPin as MapPinIcon, ShieldCheck as ShieldCheckIcon, Star as StarIcon, DialogClose } from "lucide-react"
