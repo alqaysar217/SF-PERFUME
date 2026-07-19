@@ -11,9 +11,9 @@ interface ReviewFormProps {
 export function ReviewForm({ editingItem }: ReviewFormProps) {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-end gap-2 text-primary">
-        <span className="text-[11px] font-black uppercase tracking-widest">شهادات العملاء</span>
+      <div className="flex items-center justify-start gap-2 text-primary">
         <Quote className="w-4 h-4" />
+        <span className="text-[11px] font-black uppercase tracking-widest">شهادات العملاء</span>
       </div>
 
       <div className="space-y-5">
@@ -46,7 +46,7 @@ export function ReviewForm({ editingItem }: ReviewFormProps) {
             defaultValue={editingItem?.content} 
             placeholder="ماذا قال العميل عن تجربته؟" 
             required 
-            className="w-full min-h-[120px] p-5 rounded-2xl bg-gray-50 border-none font-medium text-right text-sm outline-none focus:ring-1 focus:ring-primary/20 transition-all" 
+            className="w-full min-h-[120px] p-5 rounded-2xl bg-gray-50 border-none font-medium text-right text-sm outline-none focus:ring-1 focus:ring-primary/20 transition-all pr-4" 
           />
         </div>
       </div>

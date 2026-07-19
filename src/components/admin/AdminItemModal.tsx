@@ -6,14 +6,16 @@ import {
   Dialog, 
   DialogContent, 
   DialogHeader, 
-  DialogTitle 
+  DialogTitle,
+  DialogClose
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { 
   Image as ImageIcon, 
   Upload, 
   Save, 
-  Loader2 
+  Loader2,
+  X 
 } from "lucide-react"
 import { ProductForm } from "./forms/ProductForm"
 import { BrandForm } from "./forms/BrandForm"
@@ -62,7 +64,10 @@ export function AdminItemModal({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none shadow-2xl rounded-[2rem] p-0 overflow-hidden flex flex-col bg-white max-h-[90vh]">
-        <div className="p-6 border-b border-gray-50 bg-white sticky top-0 z-10">
+        <div className="p-6 border-b border-gray-50 bg-white sticky top-0 z-10 flex items-center justify-between">
+          <DialogClose className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+            <X className="w-5 h-5" />
+          </DialogClose>
           <DialogTitle className="text-right font-black text-xl text-luxury-black">
             {editingItem ? "تحديث البيانات" : `إضافة جديد`}
           </DialogTitle>
@@ -74,9 +79,9 @@ export function AdminItemModal({
           {/* Shared Image Upload Section */}
           {activeTab !== "faqs" && (
             <div className="space-y-6">
-              <div className="flex items-center justify-end gap-2 text-primary">
-                <span className="text-[11px] font-black uppercase tracking-widest">الصورة المرفقة</span>
+              <div className="flex items-center justify-start gap-2 text-primary">
                 <ImageIcon className="w-4 h-4" />
+                <span className="text-[11px] font-black uppercase tracking-widest">الصورة المرفقة</span>
               </div>
               <div 
                 onClick={() => fileInputRef.current?.click()}

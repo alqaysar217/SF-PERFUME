@@ -11,9 +11,9 @@ interface AccountFormProps {
 export function AccountForm({ editingItem }: AccountFormProps) {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-end gap-2 text-primary">
-        <span className="text-[11px] font-black uppercase tracking-widest">بيانات الحساب البنكي</span>
+      <div className="flex items-center justify-start gap-2 text-primary">
         <CreditCard className="w-4 h-4" />
+        <span className="text-[11px] font-black uppercase tracking-widest">بيانات الحساب البنكي</span>
       </div>
       
       <div className="space-y-5">
