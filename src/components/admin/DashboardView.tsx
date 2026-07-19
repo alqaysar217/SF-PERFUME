@@ -1,15 +1,16 @@
 
 "use client"
 
-import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star } from "lucide-react"
+import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star, Percent } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface DashboardViewProps {
   productsCount: number
-  trashCount: number
+  offersCount: number
+  brandsCount: number
 }
 
-export function DashboardView({ productsCount, trashCount }: DashboardViewProps) {
+export function DashboardView({ productsCount, offersCount, brandsCount }: DashboardViewProps) {
   const router = useRouter()
 
   const adminActions = [
@@ -29,23 +30,35 @@ export function DashboardView({ productsCount, trashCount }: DashboardViewProps)
         <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white p-5 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
-          <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
-            <Package className="w-5 h-5" />
+      {/* Stats Cards - Updated to show 3 columns */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white p-4 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
+          <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
+            <Package className="w-4 h-4" />
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">المنتجات</p>
-            <p className="text-lg font-black text-luxury-black">{productsCount}</p>
+          <div className="text-center">
+            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">المنتجات</p>
+            <p className="text-sm font-black text-luxury-black">{productsCount}</p>
           </div>
         </div>
-        <div className="bg-white p-5 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-            <Trash2 className="w-5 h-5" />
+
+        <div className="bg-white p-4 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
+          <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
+            <Percent className="w-4 h-4" />
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">المحذوفات</p>
-            <p className="text-lg font-black text-luxury-black">{trashCount}</p>
+          <div className="text-center">
+            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">العروض</p>
+            <p className="text-sm font-black text-luxury-black">{offersCount}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+            <Award className="w-4 h-4" />
+          </div>
+          <div className="text-center">
+            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">الماركات</p>
+            <p className="text-sm font-black text-luxury-black">{brandsCount}</p>
           </div>
         </div>
       </div>
@@ -60,7 +73,7 @@ export function DashboardView({ productsCount, trashCount }: DashboardViewProps)
               className="bg-white p-5 rounded-[1.2rem] border border-gray-50 flex items-center justify-between group luxury-shadow"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                   <item.icon className="w-6 h-6" />
                 </div>
                 <h4 className="text-sm font-black text-luxury-black">{item.name}</h4>

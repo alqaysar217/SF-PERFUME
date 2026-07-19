@@ -100,7 +100,6 @@ export default function AdminDashboard() {
     const formData = new FormData(e.currentTarget)
     const data: any = Object.fromEntries(formData.entries())
     
-    // Process images and types
     data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
     if (activeTab === 'brands') data.logo = data.image
     if (activeTab === 'products') {
@@ -177,12 +176,19 @@ export default function AdminDashboard() {
     return items
   }, [activeTab, products, brands, accounts, faqs, reviews, banners, isOfferFilter])
 
+  // Calculate additional stats
+  const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
+
   if (!mounted) return null
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background">
       {activeTab === "dashboard" ? (
-        <DashboardView productsCount={products.length} trashCount={trashItems.length} />
+        <DashboardView 
+          productsCount={products.length} 
+          offersCount={offersCount} 
+          brandsCount={brands.length} 
+        />
       ) : activeTab === "trash" ? (
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-between items-center px-1">
@@ -248,9 +254,10 @@ export default function AdminDashboard() {
             ) : filteredItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in">
                 <div className="flex items-center gap-4 text-right flex-1">
+                  {item.isOffer && <Percent className="w-3 h-3 text-primary shrink-0" />}
                   {(item.image || item.logo) ? (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
-                      <img src={item.image || item.logo} alt="" className="object-cover w-full h-full" />
+                      <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
                     </div>
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
@@ -259,7 +266,6 @@ export default function AdminDashboard() {
                   )}
                   <div className="text-right overflow-hidden">
                     <div className="flex items-center gap-2">
-                      {item.isOffer && <Percent className="w-3 h-3 text-primary shrink-0" />}
                       <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
                     </div>
                     <p className="text-[10px] font-bold text-primary">
