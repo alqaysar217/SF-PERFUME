@@ -464,7 +464,7 @@ export default function AdminDashboard() {
 
       {/* Modern & Unique Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-[3rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden relative">
+        <AlertDialogContent className="rounded-[3rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95%] max-w-lg z-50">
           <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />
           
           <AlertDialogHeader className="space-y-6">
