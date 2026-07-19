@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, useRef } from "react"
@@ -167,7 +166,6 @@ export default function AdminDashboard() {
   const confirmDelete = () => {
     if (!db || !deletingItem) return
     
-    // Logic: Prevent deleting brands that have products linked
     if (activeTab === 'brands') {
       const hasProducts = products.some((p: any) => p.brand === deletingItem.name)
       if (hasProducts) {
@@ -307,9 +305,9 @@ export default function AdminDashboard() {
             {activeTab === "products" && (
               <>
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
+                  <div className="flex items-center gap-2 text-primary">
                     <Tag className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2">
@@ -341,9 +339,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
+                  <div className="flex items-center gap-2 text-primary">
                     <Banknote className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -375,20 +373,20 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-end gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10">
-                    <span className="text-xs font-black text-luxury-black">تفعيل وسم "عرض خاص" على المنتج</span>
+                  <div className="flex items-center gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10">
                     <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
+                    <span className="text-xs font-black text-luxury-black">تفعيل وسم "عرض خاص" على المنتج</span>
                   </div>
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
+                  <div className="flex items-center gap-2 text-primary">
                     <AlignLeft className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center justify-end gap-1">
+                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center gap-1">
                         <List className="w-3 h-3" /> المكونات (افصل بينها بفاصلة)
                       </label>
                       <Textarea name="ingredients" defaultValue={editingItem?.ingredients} placeholder="قرفة، لافندر، خشب صندل..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[80px]" />
@@ -401,9 +399,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-end gap-2 text-primary">
-                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
+                  <div className="flex items-center gap-2 text-primary">
                     <ImageIcon className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
