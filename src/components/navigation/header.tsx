@@ -1,5 +1,5 @@
 
-"use client"
+'use client';
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
@@ -100,6 +100,7 @@ export function Header() {
   if (isAdmin && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
+        {/* Logo and branding on the right side of the header */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
              <Image 
@@ -126,15 +127,16 @@ export function Header() {
               </button>
             </SheetTrigger>
             <SheetContent side="right" dir="rtl" className="rounded-l-[2rem] p-0 overflow-hidden border-none bg-background w-72 flex flex-col">
-              <SheetHeader className="p-5 border-b border-gray-100 flex items-center gap-4 shrink-0">
+              {/* Sidebar Branding: Logo first (Right) then text */}
+              <div className="p-6 border-b border-gray-100 flex items-center gap-4 shrink-0 bg-white">
                 <div className="w-10 h-10 bg-luxury-black rounded-xl flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
                   SF
                 </div>
                 <div className="text-right">
-                  <SheetTitle className="font-black text-sm text-luxury-black">SF PERFUME</SheetTitle>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none">مركز التحكم للإدارة</p>
+                  <SheetTitle className="font-black text-sm text-luxury-black m-0">SF PERFUME</SheetTitle>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
                 </div>
-              </SheetHeader>
+              </div>
               
               <ScrollArea className="flex-1">
                 <div className="px-3 py-4 space-y-1">
@@ -143,8 +145,9 @@ export function Header() {
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group justify-start"
                     >
+                      {/* Icon first from the right */}
                       <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                         <item.icon className="w-5 h-5" />
                       </div>
@@ -158,7 +161,7 @@ export function Header() {
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-4 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group"
+                    className="w-full flex items-center gap-4 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors group justify-start"
                   >
                     <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
                       <LogOut className="w-5 h-5" />

@@ -23,13 +23,14 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
   ]
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in text-right">
       <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden text-right">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <h2 className="text-lg font-black text-luxury-black">نظام التحكم السحابي</h2>
         <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white p-4 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
           <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
@@ -62,6 +63,7 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
         </div>
       </div>
 
+      {/* Quick Actions List: Icon first (Right) then text */}
       <div className="space-y-6">
         <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-right px-2">روابط سريعة</h3>
         <div className="grid grid-cols-1 gap-4">
@@ -71,7 +73,8 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
               onClick={() => router.push(`/admin${item.href}`)}
               className="bg-white p-5 rounded-[1.2rem] border border-gray-50 flex items-center justify-between group luxury-shadow"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 text-right">
+                {/* Icon comes first in RTL layout */}
                 <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                   <item.icon className="w-6 h-6" />
                 </div>

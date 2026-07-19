@@ -182,7 +182,7 @@ export default function AdminDashboard() {
   if (!mounted) return null
 
   return (
-    <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background">
+    <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background text-right">
       {activeTab === "dashboard" ? (
         <DashboardView 
           productsCount={products.length} 
@@ -203,6 +203,7 @@ export default function AdminDashboard() {
             ) : trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="flex items-center gap-4 text-right flex-1">
+                  {/* Icon first from the right */}
                   <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
@@ -252,12 +253,17 @@ export default function AdminDashboard() {
             {[productsLoading, accountsLoading, faqsLoading, reviewsLoading, bannersLoading].some(l => l && activeTab !== 'dashboard') ? (
               <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>
             ) : filteredItems.map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in">
+              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-between gap-4 luxury-shadow animate-fade-in text-right">
                 <div className="flex items-center gap-4 text-right flex-1">
-                  {item.isOffer && <Percent className="w-3 h-3 text-primary shrink-0" />}
+                  {/* Icon/Image first from the right */}
                   {(item.image || item.logo) ? (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
                       <img src={item.image || item.logo || "https://picsum.photos/seed/placeholder/200/200"} alt="" className="object-cover w-full h-full" />
+                      {item.isOffer && (
+                         <div className="absolute top-0 right-0 p-0.5 bg-primary rounded-bl-lg shadow-sm">
+                            <Percent className="w-2.5 h-2.5 text-white" />
+                         </div>
+                      )}
                     </div>
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
@@ -265,9 +271,7 @@ export default function AdminDashboard() {
                     </div>
                   )}
                   <div className="text-right overflow-hidden">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
-                    </div>
+                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
                     <p className="text-[10px] font-bold text-primary">
                       {item.price ? `${item.price.toLocaleString()} ر.ي` : 
                        item.account ? item.account : 
