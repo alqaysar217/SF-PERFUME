@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, useRef } from "react"
@@ -46,7 +47,7 @@ import {
 } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
 import { toast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -59,6 +60,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { errorEmitter } from '@/firebase/error-emitter'
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors'
+import { cn } from "@/lib/utils"
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -297,22 +299,22 @@ export default function AdminDashboard() {
       {/* Product/Item Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
-          <DialogHeader className="p-6 pb-2">
+          <div className="p-6 pb-2">
             <DialogClose className="absolute left-6 top-6 w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black opacity-100 border-none ring-0">
               <ChevronLeft className="w-5 h-5" />
             </DialogClose>
             <DialogTitle className="text-right font-black text-xl text-luxury-black pr-12">
               {editingItem ? "تحديث البيانات" : "إضافة منتج جديد"}
             </DialogTitle>
-          </DialogHeader>
+          </div>
           
           <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 pb-32 space-y-8 pt-4 scrollbar-hide text-right">
             {activeTab === "products" && (
               <>
                 <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <Tag className="w-4 h-4" />
+                  <div className="flex items-center justify-end gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
+                    <Tag className="w-4 h-4" />
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -344,9 +346,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <Banknote className="w-4 h-4" />
+                  <div className="flex items-center justify-end gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
+                    <Banknote className="w-4 h-4" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2 text-right">
@@ -385,9 +387,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <AlignLeft className="w-4 h-4" />
+                  <div className="flex items-center justify-end gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
+                    <AlignLeft className="w-4 h-4" />
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
@@ -404,9 +406,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <ImageIcon className="w-4 h-4" />
+                  <div className="flex items-center justify-end gap-2 text-primary">
                     <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
+                    <ImageIcon className="w-4 h-4" />
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
@@ -497,6 +499,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
-const Loader2 = ({ className }: { className?: string }) => <Loader2Icon className={cn("animate-spin", className)} />
-import { Loader2 as Loader2Icon, Sparkles as SparklesIcon, MapPin as MapPinIcon, ShieldCheck as ShieldCheckIcon, Star as StarIcon, DialogClose } from "lucide-react"
