@@ -53,6 +53,16 @@
         "answer": { "type": "string" }
       },
       "required": ["question", "answer"]
+    },
+    "TrashItem": {
+      "title": "Trash Item",
+      "description": "Temporarily deleted items",
+      "type": "object",
+      "properties": {
+        "originalData": { "type": "object" },
+        "originalCollection": { "type": "string" },
+        "deletedAt": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -74,6 +84,10 @@
     "/faqs/{faqId}": {
       "schema": "#/backend/entities/FAQ",
       "description": "Frequently asked questions list"
+    },
+    "/trash/{trashId}": {
+      "schema": "#/backend/entities/TrashItem",
+      "description": "Deleted items for recovery"
     }
   }
 }

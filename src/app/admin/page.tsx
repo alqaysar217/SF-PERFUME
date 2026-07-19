@@ -29,7 +29,8 @@ import {
   AlignLeft,
   AlertTriangle,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  RotateCcw
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -83,11 +84,13 @@ export default function AdminDashboard() {
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands"), orderBy("name", "asc")) : null, [db])
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
+  const trashQuery = useMemo(() => db ? query(collection(db, "trash"), orderBy("deletedAt", "desc")) : null, [db])
 
   const { data: products } = useCollection(productsQuery)
   const { data: brands } = useCollection(brandsQuery)
   const { data: accounts } = useCollection(accountsQuery)
   const { data: faqs } = useCollection(faqsQuery)
+  const { data: trashItems } = useCollection(trashQuery)
 
   useEffect(() => {
     setMounted(true)
@@ -103,8 +106,8 @@ export default function AdminDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 1.5 * 1024 * 1024) {
-        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 1.5 ميجابايت لضمان سرعة التحميل" })
+      if (file.size > 800 * 1024) {
+        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت لضمان الحفظ بنجاح" })
         return
       }
       const reader = new FileReader()
@@ -124,7 +127,7 @@ export default function AdminDashboard() {
     const data: any = Object.fromEntries(formData.entries())
     
     if (activeTab === 'products' || activeTab === 'brands') {
-      data.image = imagePreview || editingItem?.image || ""
+      data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
       if (activeTab === 'brands') data.logo = data.image
     }
 
@@ -167,9 +170,10 @@ export default function AdminDashboard() {
     setIsSaving(false)
   }
 
-  const confirmDelete = () => {
+  const handleSoftDelete = () => {
     if (!db || !deletingItem) return
     
+    // منع حذف الماركة إذا كان لها منتجات
     if (activeTab === 'brands') {
       const hasProducts = products.some((p: any) => p.brand === deletingItem.name)
       if (hasProducts) {
@@ -183,19 +187,41 @@ export default function AdminDashboard() {
       }
     }
 
-    const docRef = doc(db, activeTab, deletingItem.id)
-    deleteDoc(docRef)
-      .catch(async (err) => {
+    // نقل لسلة المحذوفات
+    const trashRef = collection(db, "trash")
+    addDoc(trashRef, {
+      originalData: deletingItem,
+      originalCollection: activeTab,
+      deletedAt: serverTimestamp()
+    }).then(() => {
+      const docRef = doc(db, activeTab, deletingItem.id)
+      deleteDoc(docRef).catch(async (err) => {
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
         });
         errorEmitter.emit('permission-error', permissionError);
       });
+      toast({ title: "نُقل للمحذوفات", description: "يمكنك استعادة العنصر من قسم المحذوفات" })
+    })
     
-    toast({ title: "تم الحذف", description: "تمت إزالة العنصر من السجلات" })
     setIsDeleteDialogOpen(false)
     setDeletingItem(null)
+  }
+
+  const handleRestore = (item: any) => {
+    if (!db) return
+    const collectionRef = collection(db, item.originalCollection)
+    addDoc(collectionRef, item.originalData).then(() => {
+      deleteDoc(doc(db, "trash", item.id))
+      toast({ title: "تمت الاستعادة", description: "عاد العنصر لمكانه الأصلي" })
+    })
+  }
+
+  const handlePermanentDelete = (itemId: string) => {
+    if (!db) return
+    deleteDoc(doc(db, "trash", itemId))
+    toast({ title: "حذف نهائي", description: "تمت إزالة العنصر من السجلات تماماً" })
   }
 
   if (!mounted) return null
@@ -207,7 +233,7 @@ export default function AdminDashboard() {
           <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <h2 className="text-lg font-black text-luxury-black text-right">نظام التحكم السحابي</h2>
-            <p className="text-gray-400 text-xs font-medium text-right leading-relaxed">إدارة المتجر بالكامل من خلال واجهة واحدة متصلة بـ Firebase.</p>
+            <p className="text-gray-400 text-xs font-medium text-right leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -222,11 +248,11 @@ export default function AdminDashboard() {
             </div>
             <div className="bg-white p-5 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-                <Award className="w-5 h-5" />
+                <Trash2 className="w-5 h-5" />
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">الماركات</p>
-                <p className="text-lg font-black text-luxury-black">{brands.length}</p>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">المحذوفات</p>
+                <p className="text-lg font-black text-luxury-black">{trashItems.length}</p>
               </div>
             </div>
           </div>
@@ -238,6 +264,7 @@ export default function AdminDashboard() {
                 { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
                 { name: "إدارة الماركات", icon: Award, href: "?tab=brands" },
                 { name: "الحسابات البنكية", icon: CreditCard, href: "?tab=accounts" },
+                { name: "سلة المحذوفات", icon: Trash2, href: "?tab=trash" },
               ].map((item, i) => (
                 <button 
                   key={i}
@@ -256,6 +283,34 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+      ) : activeTab === "trash" ? (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center px-1">
+             <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
+                <ChevronRight className="w-5 h-5" />
+             </button>
+             <h2 className="text-sm font-black text-luxury-black">سلة المحذوفات ({trashItems.length})</h2>
+          </div>
+
+          <div className="space-y-3">
+            {trashItems.map((item: any) => (
+              <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
+                <div className="text-right">
+                  <h4 className="text-xs font-black text-luxury-black">{item.originalData.name || item.originalData.bank}</h4>
+                  <p className="text-[9px] text-gray-400">حُذف من: {item.originalCollection}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => handleRestore(item)} className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => handlePermanentDelete(item.id)} className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center text-red-600">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="space-y-6">
           <div className="flex justify-between items-center px-1">
@@ -270,7 +325,7 @@ export default function AdminDashboard() {
 
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-2xl border border-gray-50 flex items-center justify-between luxury-shadow">
+              <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="flex items-center gap-4 text-right">
                   {(item.image || item.logo) && (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
@@ -309,7 +364,7 @@ export default function AdminDashboard() {
             {activeTab === "products" && (
               <>
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary justify-start">
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <Tag className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-widest">المعلومات الأساسية</span>
                   </div>
@@ -343,7 +398,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary justify-start">
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <Banknote className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-widest">الأسعار والمواصفات</span>
                   </div>
@@ -377,14 +432,10 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 bg-primary/5 p-3 rounded-xl border border-primary/10 justify-end">
-                    <span className="text-xs font-black text-luxury-black">تفعيل وسم "عرض خاص" على المنتج</span>
-                    <input type="checkbox" name="isOffer" defaultChecked={editingItem?.isOffer} className="w-5 h-5 accent-primary" />
-                  </div>
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary justify-start">
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <AlignLeft className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
                   </div>
@@ -403,7 +454,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-primary justify-start">
+                  <div className="flex items-center justify-start gap-2 text-primary">
                     <ImageIcon className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-widest">صورة المنتج</span>
                   </div>
@@ -451,7 +502,7 @@ export default function AdminDashboard() {
 
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
-                {isSaving ? <Loader2Icon className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                 {editingItem ? "حفظ التغييرات" : "إضافة للمتجر"}
               </Button>
             </div>
@@ -461,7 +512,7 @@ export default function AdminDashboard() {
 
       {/* Modern & Unique Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-[1.5rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95%] max-w-lg z-50">
+        <AlertDialogContent className="fixed left-[50%] top-[50%] z-50 grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-[1.5rem]">
           <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />
           
           <AlertDialogHeader className="space-y-6">
@@ -473,19 +524,17 @@ export default function AdminDashboard() {
             <div className="space-y-2 text-center">
               <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد الإجراء</AlertDialogTitle>
               <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed max-w-[260px] mx-auto">
-                أنت على وشك حذف <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank}"</span> نهائياً.
-                <br />
-                هذا الإجراء غير قابل للتراجع.
+                أنت على وشك نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank}"</span> لسلة المحذوفات.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
 
           <AlertDialogFooter className="mt-10 flex flex-col sm:flex-row gap-3">
             <AlertDialogAction 
-              onClick={confirmDelete} 
+              onClick={handleSoftDelete} 
               className="flex-1 h-14 rounded-2xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md border-none shadow-xl active:scale-95 transition-all order-1 sm:order-2"
             >
-              تأكيد الحذف
+              نقل للمحذوفات
             </AlertDialogAction>
             <AlertDialogCancel className="flex-1 h-14 rounded-2xl border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-400 font-black text-md active:scale-95 transition-all order-2 sm:order-1">
               تراجع
@@ -496,5 +545,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
-import { Loader2 as Loader2Icon, Sparkles as SparklesIcon, MapPin as MapPinIcon, ShieldCheck as ShieldCheckIcon, Star as StarIcon, DialogClose } from "lucide-react"
