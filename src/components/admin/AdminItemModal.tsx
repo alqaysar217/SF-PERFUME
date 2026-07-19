@@ -65,12 +65,12 @@ export function AdminItemModal({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none shadow-2xl rounded-[2rem] p-0 overflow-hidden flex flex-col bg-white max-h-[90vh]">
         <div className="p-6 border-b border-gray-50 bg-white sticky top-0 z-10 flex items-center justify-between">
-          <DialogClose className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
-            <X className="w-5 h-5" />
-          </DialogClose>
           <DialogTitle className="text-right font-black text-xl text-luxury-black">
             {editingItem ? "تحديث البيانات" : `إضافة جديد`}
           </DialogTitle>
+          <DialogClose className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+            <X className="w-5 h-5" />
+          </DialogClose>
         </div>
         
         <form onSubmit={onSave} className="flex-1 overflow-y-auto px-6 pb-32 space-y-8 pt-6 scrollbar-hide text-right">
