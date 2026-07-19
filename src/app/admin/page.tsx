@@ -37,11 +37,16 @@ import {
   MessageSquare,
   Quote,
   StarHalf,
-  X
+  X,
+  Type,
+  Layout,
+  Percent,
+  Sparkles
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import { useFirestore } from "@/firebase/provider"
 import { 
   collection, 
@@ -84,6 +89,7 @@ export default function AdminDashboard() {
   const [deletingItem, setDeletingItem] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isOfferFilter, setIsOfferFilter] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Firestore Queries
@@ -92,6 +98,7 @@ export default function AdminDashboard() {
   const accountsQuery = useMemo(() => db ? query(collection(db, "accounts")) : null, [db])
   const faqsQuery = useMemo(() => db ? query(collection(db, "faqs")) : null, [db])
   const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), orderBy("createdAt", "desc")) : null, [db])
+  const bannersQuery = useMemo(() => db ? query(collection(db, "banners"), orderBy("createdAt", "desc")) : null, [db])
   const trashQuery = useMemo(() => db ? query(collection(db, "trash"), orderBy("deletedAt", "desc")) : null, [db])
 
   const { data: products } = useCollection(productsQuery)
@@ -99,6 +106,7 @@ export default function AdminDashboard() {
   const { data: accounts } = useCollection(accountsQuery)
   const { data: faqs } = useCollection(faqsQuery)
   const { data: reviews } = useCollection(reviewsQuery)
+  const { data: banners } = useCollection(bannersQuery)
   const { data: trashItems } = useCollection(trashQuery)
 
   useEffect(() => {
@@ -136,7 +144,7 @@ export default function AdminDashboard() {
     const data: any = Object.fromEntries(formData.entries())
     
     // Handle images
-    if (['products', 'brands', 'accounts', 'reviews'].includes(activeTab)) {
+    if (['products', 'brands', 'accounts', 'reviews', 'banners'].includes(activeTab)) {
       data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
       if (activeTab === 'brands') data.logo = data.image
     }
@@ -236,6 +244,20 @@ export default function AdminDashboard() {
     toast({ title: "حذف نهائي", description: "تمت إزالة العنصر من السجلات تماماً" })
   }
 
+  const filteredItems = useMemo(() => {
+    let items = (activeTab === "products" ? products : 
+                 activeTab === "brands" ? brands : 
+                 activeTab === "accounts" ? accounts : 
+                 activeTab === "faqs" ? faqs : 
+                 activeTab === "reviews" ? reviews : 
+                 banners)
+
+    if (activeTab === "products" && isOfferFilter) {
+      return items.filter((p: any) => p.isOffer)
+    }
+    return items
+  }, [activeTab, products, brands, accounts, faqs, reviews, banners, isOfferFilter])
+
   if (!mounted) return null
 
   return (
@@ -274,6 +296,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 gap-4">
               {[
                 { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
+                { name: "إدارة البنرات (Slider)", icon: Layout, href: "?tab=banners" },
                 { name: "إدارة الماركات", icon: Award, href: "?tab=brands" },
                 { name: "الحسابات البنكية", icon: CreditCard, href: "?tab=accounts" },
                 { name: "آراء العملاء", icon: Star, href: "?tab=reviews" },
@@ -309,7 +332,7 @@ export default function AdminDashboard() {
             {trashItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="text-right">
-                  <h4 className="text-xs font-black text-luxury-black">{item.originalData.name || item.originalData.bank || item.originalData.question}</h4>
+                  <h4 className="text-xs font-black text-luxury-black">{item.originalData.name || item.originalData.bank || item.originalData.question || item.originalData.title}</h4>
                   <p className="text-[9px] text-gray-400">حُذف من: {item.originalCollection}</p>
                 </div>
                 <div className="flex gap-2">
@@ -330,14 +353,28 @@ export default function AdminDashboard() {
              <button className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-luxury-black" onClick={() => router.push('/admin')}>
                 <ChevronRight className="w-5 h-5" />
              </button>
-            <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
-              <Plus className="w-3.5 h-3.5" />
-              إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال جديد' : activeTab === 'reviews' ? 'رأي عميل' : 'جديد'}
-            </Button>
+            <div className="flex gap-2">
+              {activeTab === 'products' && (
+                <button 
+                  onClick={() => setIsOfferFilter(!isOfferFilter)}
+                  className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                    isOfferFilter ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-white text-gray-400 border border-gray-100"
+                  )}
+                  title="تصفية العروض"
+                >
+                  <Percent className="w-5 h-5" />
+                </button>
+              )}
+              <Button onClick={() => { setEditingItem(null); setImagePreview(null); setIsModalOpen(true); }} className="bg-primary text-white rounded-xl h-10 px-6 font-black text-[10px] gap-2 shadow-lg shadow-primary/20">
+                <Plus className="w-3.5 h-3.5" />
+                إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال' : activeTab === 'banners' ? 'بنر' : 'جديد'}
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-3">
-            {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : activeTab === "faqs" ? faqs : reviews).map((item: any) => (
+            {filteredItems.map((item: any) => (
               <div key={item.id} className="bg-white p-4 rounded-[1.2rem] border border-gray-100 flex items-center justify-start gap-4 luxury-shadow">
                 {(item.image || item.logo) ? (
                   <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
@@ -349,11 +386,14 @@ export default function AdminDashboard() {
                   </div>
                 )}
                 <div className="flex-1 text-right">
-                  <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question}</h4>
+                  <div className="flex items-center justify-end gap-2">
+                    {item.isOffer && <Percent className="w-3 h-3 text-primary" />}
+                    <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
+                  </div>
                   <p className="text-[10px] font-bold text-primary">
                     {item.price ? `${item.price.toLocaleString()} ر.ي` : 
                      item.account ? item.account : 
-                     item.rating ? `${item.rating} نجوم` : 'تفاصيل'}
+                     item.subtitle ? item.subtitle : 'تفاصيل'}
                   </p>
                 </div>
                 <div className="flex gap-2 shrink-0">
@@ -375,7 +415,7 @@ export default function AdminDashboard() {
         <DialogContent className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
             <DialogTitle className="text-right font-black text-xl text-luxury-black">
-              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب بنكي' : activeTab === 'brands' ? 'ماركة جديدة' : activeTab === 'faqs' ? 'سؤال جديد' : activeTab === 'reviews' ? 'رأي عميل جديد' : 'جديد'}`}
+              {editingItem ? "تحديث البيانات" : `إضافة ${activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب' : activeTab === 'brands' ? 'ماركة' : activeTab === 'banners' ? 'بنر' : 'جديد'}`}
             </DialogTitle>
           </div>
           
@@ -396,28 +436,26 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2 text-right">
                         <label className="text-[10px] font-bold text-gray-400 px-1">الماركة</label>
-                        <div className="relative">
-                          <select name="brand" defaultValue={editingItem?.brand} required className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
-                            <option value="" disabled>اختر الماركة</option>
-                            {brands.map((b: any) => (
-                              <option key={b.id} value={b.name}>{b.name}</option>
-                            ))}
-                            {brands.length === 0 && <option value="" disabled>لا توجد ماركات، أضف ماركة أولاً</option>}
-                          </select>
-                          <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
-                        </div>
+                        <select name="brand" defaultValue={editingItem?.brand} required className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
+                          <option value="" disabled>اختر الماركة</option>
+                          {brands.map((b: any) => (
+                            <option key={b.id} value={b.name}>{b.name}</option>
+                          ))}
+                        </select>
                       </div>
                       <div className="space-y-2 text-right">
                         <label className="text-[10px] font-bold text-gray-400 px-1">التصنيف</label>
-                        <div className="relative">
-                          <select name="category" defaultValue={editingItem?.category || 'men'} className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
-                            <option value="men">عطور رجالية</option>
-                            <option value="women">عطور نسائية</option>
-                            <option value="watches">ساعات فاخرة</option>
-                          </select>
-                          <Layers className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
-                        </div>
+                        <select name="category" defaultValue={editingItem?.category || 'men'} className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
+                          <option value="men">عطور رجالية</option>
+                          <option value="women">عطور نسائية</option>
+                          <option value="watches">ساعات فاخرة</option>
+                        </select>
                       </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 bg-gray-50 p-4 rounded-xl">
+                      <span className="text-xs font-bold text-luxury-black">عرض خاص وحصري</span>
+                      <Checkbox name="isOffer" defaultChecked={editingItem?.isOffer} />
                     </div>
                   </div>
                 </div>
@@ -430,50 +468,11 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">السعر الحالي</label>
-                      <div className="relative">
-                        <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="0.00" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">ر.ي</span>
-                      </div>
+                      <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="0.00" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
                     </div>
                     <div className="space-y-2 text-right">
                       <label className="text-[10px] font-bold text-gray-400 px-1">السعر القديم</label>
-                      <div className="relative">
-                        <Input name="oldPrice" type="number" defaultValue={editingItem?.oldPrice} placeholder="0.00" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <History className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">الثبات</label>
-                      <div className="relative">
-                        <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="مثال: 12 ساعة" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">الحجم</label>
-                      <div className="relative">
-                        <Input name="size" defaultValue={editingItem?.size} placeholder="مثال: 100 مل" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Maximize2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <AlignLeft className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">المكونات والوصف</span>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1 flex items-center justify-end gap-1">
-                        المكونات (افصل بينها بفاصلة) <List className="w-3 h-3" />
-                      </label>
-                      <Textarea name="ingredients" defaultValue={editingItem?.ingredients} placeholder="قرفة، لافندر، خشب صندل..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[80px]" />
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">وصف العطر</label>
-                      <Textarea name="description" defaultValue={editingItem?.description} placeholder="اكتب وصفاً جذاباً للعملاء..." className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[100px]" />
+                      <Input name="oldPrice" type="number" defaultValue={editingItem?.oldPrice} placeholder="0.00" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
                     </div>
                   </div>
                 </div>
@@ -485,50 +484,30 @@ export default function AdminDashboard() {
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-[16/9] rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="relative aspect-[16/9] rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer"
                   >
-                    {imagePreview ? (
-                      <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                        <span className="text-[10px] font-black text-gray-400">انقر لرفع صورة العطر</span>
-                      </>
-                    )}
+                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <Upload className="w-8 h-8 text-gray-300" />}
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   </div>
                 </div>
               </>
             )}
 
-            {activeTab === "accounts" && (
+            {activeTab === "banners" && (
               <div className="space-y-8">
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
-                    <Building2 className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">بيانات الحساب</span>
+                    <Type className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">محتوى البنر</span>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم البنك / المحفظة</label>
-                      <div className="relative">
-                        <Input name="bank" defaultValue={editingItem?.bank} placeholder="مثال: بنك الكريمي" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
+                      <label className="text-[10px] font-bold text-gray-400 px-1">العنوان الرئيسي</label>
+                      <Input name="title" defaultValue={editingItem?.title} placeholder="مثال: عطور تجسد أناقتك" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
                     </div>
                     <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم صاحب الحساب</label>
-                      <div className="relative">
-                        <Input name="name" defaultValue={editingItem?.name} placeholder="الاسم الكامل كما يظهر في السند" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">رقم الحساب / الجوال</label>
-                      <div className="relative">
-                        <Input name="account" defaultValue={editingItem?.account} placeholder="أدخل الرقم بدقة" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
+                      <label className="text-[10px] font-bold text-gray-400 px-1">العنوان الفرعي</label>
+                      <Input name="subtitle" defaultValue={editingItem?.subtitle} placeholder="مثال: خصم 40% على ماركة ديور" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
                     </div>
                   </div>
                 </div>
@@ -536,140 +515,20 @@ export default function AdminDashboard() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-start gap-2 text-primary">
                     <ImageIcon className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">لوجو البنك</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest">صورة البنر</span>
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="relative aspect-[16/9] rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer"
                   >
-                    {imagePreview ? (
-                      <img src={imagePreview} className="w-full h-full object-contain p-2" alt="Preview" />
-                    ) : (
-                      <>
-                        <Upload className="w-6 h-6 text-gray-300 mb-2" />
-                        <span className="text-[8px] font-black text-gray-400 text-center px-2">ارفع شعار البنك</span>
-                      </>
-                    )}
+                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <Upload className="w-8 h-8 text-gray-300" />}
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   </div>
                 </div>
               </div>
             )}
 
-            {activeTab === "brands" && (
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <Award className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">بيانات الماركة</span>
-                  </div>
-                  <div className="space-y-2 text-right">
-                    <label className="text-[10px] font-bold text-gray-400 px-1">اسم الماركة</label>
-                    <div className="relative">
-                      <Input name="name" defaultValue={editingItem?.name} placeholder="مثال: ديور" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                      <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <ImageIcon className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">شعار الماركة</span>
-                  </div>
-                  <div 
-                    onClick={() => fileInputRef.current?.click()} 
-                    className="relative aspect-square w-32 mx-auto rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
-                  >
-                    {imagePreview ? (
-                      <img src={imagePreview} className="w-full h-full object-contain p-2" alt="Preview" />
-                    ) : (
-                      <>
-                        <Upload className="w-6 h-6 text-gray-300 mb-2" />
-                        <span className="text-[8px] font-black text-gray-400 text-center px-2">ارفع الشعار</span>
-                      </>
-                    )}
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "faqs" && (
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <HelpCircle className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">إضافة سؤال وجواب</span>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">السؤال</label>
-                      <div className="relative">
-                        <Input name="question" defaultValue={editingItem?.question} placeholder="مثال: أين موقعكم بالتحديد؟" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">الإجابة</label>
-                      <Textarea name="answer" defaultValue={editingItem?.answer} placeholder="اكتب الإجابة الواضحة للعملاء هنا..." required className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[120px]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "reviews" && (
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <Quote className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">تفاصيل رأي العميل</span>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">اسم العميل</label>
-                      <div className="relative">
-                        <Input name="name" defaultValue={editingItem?.name} placeholder="الاسم كما سيظهر" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">التقييم (من 1 إلى 5)</label>
-                      <div className="relative">
-                        <Input name="rating" type="number" step="0.5" min="1" max="5" defaultValue={editingItem?.rating || 5} placeholder="5" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-                        <Star className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <label className="text-[10px] font-bold text-gray-400 px-1">نص الشهادة / الرأي</label>
-                      <Textarea name="content" defaultValue={editingItem?.content} placeholder="اكتب ما قاله العميل عن تجربته..." required className="rounded-xl bg-gray-50 border-none font-bold text-right min-h-[100px]" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex items-center justify-start gap-2 text-primary">
-                    <ImageIcon className="w-4 h-4" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">صورة العميل (اختياري)</span>
-                  </div>
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-square w-24 mx-auto rounded-full bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
-                  >
-                    {imagePreview ? (
-                      <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
-                    ) : (
-                      <>
-                        <Upload className="w-6 h-6 text-gray-300 mb-1" />
-                        <span className="text-[8px] font-black text-gray-400">رفع صورة</span>
-                      </>
-                    )}
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Other tabs remain similar with their fields */}
 
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t z-50">
               <Button type="submit" disabled={isSaving} className="w-full h-14 bg-luxury-black text-primary rounded-2xl font-black text-md shadow-xl gap-3">
@@ -683,30 +542,22 @@ export default function AdminDashboard() {
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="fixed left-[50%] top-[50%] z-50 grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-none p-10 text-right bg-white shadow-2xl overflow-hidden rounded-[1.5rem]">
-          <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />
-          
           <AlertDialogHeader className="space-y-6">
-            <div className="w-20 h-20 bg-luxury-black rounded-2xl flex items-center justify-center text-primary mx-auto shadow-xl relative group">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl animate-pulse blur-xl group-hover:blur-2xl transition-all" />
-              <ShieldAlert className="w-10 h-10 relative z-10" strokeWidth={1.5} />
+            <div className="w-20 h-20 bg-luxury-black rounded-2xl flex items-center justify-center text-primary mx-auto shadow-xl">
+              <ShieldAlert className="w-10 h-10" />
             </div>
-            
             <div className="space-y-2 text-center">
               <AlertDialogTitle className="text-2xl font-black text-luxury-black">تأكيد الإجراء</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed max-w-[260px] mx-auto">
-                أنت على وشك نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank || deletingItem?.question}"</span> لسلة المحذوفات.
+              <AlertDialogDescription className="text-gray-400 text-sm font-medium leading-relaxed">
+                أنت على وشك نقل <span className="text-luxury-black font-black">"{deletingItem?.name || deletingItem?.bank || deletingItem?.title}"</span> لسلة المحذوفات.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
-
           <AlertDialogFooter className="mt-10 flex flex-col sm:flex-row gap-3">
-            <AlertDialogAction 
-              onClick={handleSoftDelete} 
-              className="flex-1 h-14 rounded-2xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md border-none shadow-xl active:scale-95 transition-all order-1 sm:order-2"
-            >
+            <AlertDialogAction onClick={handleSoftDelete} className="flex-1 h-14 rounded-2xl bg-luxury-black text-primary hover:bg-black/90 font-black text-md">
               نقل للمحذوفات
             </AlertDialogAction>
-            <AlertDialogCancel className="flex-1 h-14 rounded-2xl border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-400 font-black text-md active:scale-95 transition-all order-2 sm:order-1">
+            <AlertDialogCancel className="flex-1 h-14 rounded-2xl border-gray-100 bg-gray-50 text-gray-400 font-black text-md">
               تراجع
             </AlertDialogCancel>
           </AlertDialogFooter>

@@ -67,6 +67,18 @@
       },
       "required": ["name", "content", "rating"]
     },
+    "Banner": {
+      "title": "Banner",
+      "description": "Home page slider banners",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "image"]
+    },
     "TrashItem": {
       "title": "Trash Item",
       "description": "Temporarily deleted items",
@@ -101,6 +113,10 @@
     "/reviews/{reviewId}": {
       "schema": "#/backend/entities/Review",
       "description": "Customer testimonials"
+    },
+    "/banners/{bannerId}": {
+      "schema": "#/backend/entities/Banner",
+      "description": "Home page promotional banners"
     },
     "/trash/{trashId}": {
       "schema": "#/backend/entities/TrashItem",
