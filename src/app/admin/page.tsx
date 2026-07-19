@@ -204,29 +204,29 @@ export default function AdminDashboard() {
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background">
       {activeTab === "dashboard" ? (
         <div className="space-y-8">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
+          <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-            <h2 className="text-xl font-black text-luxury-black text-right">نظام التحكم السحابي</h2>
+            <h2 className="text-lg font-black text-luxury-black text-right">نظام التحكم السحابي</h2>
             <p className="text-gray-400 text-xs font-medium text-right leading-relaxed">إدارة المتجر بالكامل من خلال واجهة واحدة متصلة بـ Firebase.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
+            <div className="bg-white p-5 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
               <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
                 <Package className="w-5 h-5" />
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">المنتجات</p>
-                <p className="text-xl font-black text-luxury-black">{products.length}</p>
+                <p className="text-lg font-black text-luxury-black">{products.length}</p>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
+            <div className="bg-white p-5 rounded-[1.2rem] border border-gray-50 shadow-sm space-y-3 luxury-shadow">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
                 <Award className="w-5 h-5" />
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">الماركات</p>
-                <p className="text-xl font-black text-luxury-black">{brands.length}</p>
+                <p className="text-lg font-black text-luxury-black">{brands.length}</p>
               </div>
             </div>
           </div>
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
                 <button 
                   key={i}
                   onClick={() => router.push(`/admin${item.href}`)}
-                  className="bg-white p-5 rounded-[2.2rem] border border-gray-50 flex items-center justify-between group luxury-shadow"
+                  className="bg-white p-5 rounded-[1.2rem] border border-gray-50 flex items-center justify-between group luxury-shadow"
                 >
                   <ChevronLeft className="w-5 h-5 text-gray-200" />
                   <div className="flex items-center gap-4">
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
 
           <div className="space-y-3">
             {(activeTab === "products" ? products : activeTab === "brands" ? brands : activeTab === "accounts" ? accounts : faqs).map((item: any) => (
-              <div key={item.id} className="bg-white p-4 rounded-[1.8rem] border border-gray-50 flex items-center justify-between luxury-shadow">
+              <div key={item.id} className="bg-white p-4 rounded-2xl border border-gray-50 flex items-center justify-between luxury-shadow">
                 <div className="flex items-center gap-4 text-right">
                   {(item.image || item.logo) && (
                     <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 shrink-0">
@@ -298,12 +298,9 @@ export default function AdminDashboard() {
 
       {/* Product/Item Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="rounded-t-[2.5rem] p-0 sm:rounded-[2.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
+        <DialogContent className="rounded-t-[1.5rem] p-0 sm:rounded-[1.5rem] max-h-[90vh] overflow-hidden border-none flex flex-col bg-white">
           <div className="p-6 pb-2">
-            <DialogClose className="absolute left-6 top-6 w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-luxury-black opacity-100 border-none ring-0">
-              <ChevronLeft className="w-5 h-5" />
-            </DialogClose>
-            <DialogTitle className="text-right font-black text-xl text-luxury-black pr-12">
+            <DialogTitle className="text-right font-black text-xl text-luxury-black">
               {editingItem ? "تحديث البيانات" : "إضافة منتج جديد"}
             </DialogTitle>
           </div>
@@ -412,7 +409,7 @@ export default function AdminDashboard() {
                   </div>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-[16/9] rounded-[2rem] bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="relative aspect-[16/9] rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-100 transition-colors"
                   >
                     {imagePreview ? (
                       <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
@@ -464,12 +461,12 @@ export default function AdminDashboard() {
 
       {/* Modern & Unique Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-[3rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95%] max-w-lg z-50">
+        <AlertDialogContent className="rounded-[1.5rem] border-none p-10 text-right bg-white shadow-2xl overflow-hidden fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[95%] max-w-lg z-50">
           <div className="absolute top-0 right-0 w-full h-2 bg-luxury-black/5" />
           
           <AlertDialogHeader className="space-y-6">
-            <div className="w-20 h-20 bg-luxury-black rounded-[2rem] flex items-center justify-center text-primary mx-auto shadow-xl relative group">
-              <div className="absolute inset-0 bg-primary/20 rounded-[2rem] animate-pulse blur-xl group-hover:blur-2xl transition-all" />
+            <div className="w-20 h-20 bg-luxury-black rounded-2xl flex items-center justify-center text-primary mx-auto shadow-xl relative group">
+              <div className="absolute inset-0 bg-primary/20 rounded-2xl animate-pulse blur-xl group-hover:blur-2xl transition-all" />
               <ShieldAlert className="w-10 h-10 relative z-10" strokeWidth={1.5} />
             </div>
             
