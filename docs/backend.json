@@ -13,7 +13,7 @@
         "displayOrder": { "type": "number", "description": "Manual display order/priority" },
         "image": { "type": "string" },
         "size": { "type": "string" },
-        "category": { "type": "string", "enum": ["men", "women", "watches"] },
+        "category": { "type": "string", "enum": ["men", "women", "unisex", "watches"] },
         "description": { "type": "string" },
         "ingredients": { "type": "string" },
         "projection": { "type": "string" },

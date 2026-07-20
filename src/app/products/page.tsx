@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search, SlidersHorizontal, X, User, UserRound, Watch, LayoutGrid, Loader2 } from "lucide-react"
+import { Search, SlidersHorizontal, X, User, UserRound, Watch, LayoutGrid, Loader2, Users } from "lucide-react"
 import { ProductCard } from "@/components/shared/product-card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,7 @@ export default function ProductsPage() {
       const matchesFilter = activeFilter === "الكل" || 
         (activeFilter === "رجالي" && p.category === 'men') ||
         (activeFilter === "نسائي" && p.category === 'women') ||
+        (activeFilter === "للجنسين" && p.category === 'unisex') ||
         (activeFilter === "ساعات" && p.category === 'watches')
       return matchesSearch && matchesFilter
     });
@@ -47,6 +48,7 @@ export default function ProductsPage() {
     { name: "الكل", icon: LayoutGrid },
     { name: "رجالي", icon: User },
     { name: "نسائي", icon: UserRound },
+    { name: "للجنسين", icon: Users },
     { name: "ساعات", icon: Watch },
   ]
 

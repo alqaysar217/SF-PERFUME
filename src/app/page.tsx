@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { LayoutGrid, User, UserRound, Watch, Sparkles, ArrowLeft, Loader2, Star, Quote, MapPin, ChevronDown } from "lucide-react"
+import { LayoutGrid, User, UserRound, Watch, Sparkles, ArrowLeft, Loader2, Star, Quote, MapPin, ChevronDown, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductCard } from "@/components/shared/product-card"
@@ -16,6 +16,7 @@ const CATEGORIES_WITH_ICONS = [
   { name: "الكل", icon: LayoutGrid, id: 'all' },
   { name: "عطور رجالية", icon: User, id: 'men' },
   { name: "عطور نسائية", icon: UserRound, id: 'women' },
+  { name: "للجنسين", icon: Users, id: 'unisex' },
   { name: "ساعات", icon: Watch, id: 'watches' },
 ]
 
@@ -74,6 +75,7 @@ export default function HomePage() {
     return items.filter((p: any) => {
       if (activeTab === "عطور رجالية") return p.category === 'men'
       if (activeTab === "عطور نسائية") return p.category === 'women'
+      if (activeTab === "للجنسين") return p.category === 'unisex'
       if (activeTab === "ساعات") return p.category === 'watches'
       return true
     }).slice(0, 5);

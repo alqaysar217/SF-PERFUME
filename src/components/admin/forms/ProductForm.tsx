@@ -52,6 +52,7 @@ export function ProductForm({ editingItem, brands }: ProductFormProps) {
               <select name="category" defaultValue={editingItem?.category || 'men'} className="w-full h-12 rounded-xl bg-gray-50 border-none font-bold px-4 text-right appearance-none">
                 <option value="men">عطور رجالية</option>
                 <option value="women">عطور نسائية</option>
+                <option value="unisex">عطور للجنسين (للإثنين)</option>
                 <option value="watches">ساعات فاخرة</option>
               </select>
             </div>
