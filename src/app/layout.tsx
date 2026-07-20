@@ -1,4 +1,3 @@
-
 import './globals.css';
 import { Suspense } from 'react';
 import { Toaster } from '@/components/ui/toaster';
@@ -41,6 +40,7 @@ export default function RootLayout({
       <body className="antialiased pb-24 min-h-screen bg-background text-foreground">
         <FirebaseProvider>
           <FirebaseErrorListener />
+          {/* Next.js 15: useSearchParams requires Suspense boundary */}
           <Suspense fallback={<div className="h-16 bg-white/95" />}>
             <Header />
           </Suspense>

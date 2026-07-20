@@ -98,8 +98,9 @@ function AdminDashboardContent() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // فحص أمني: منع رفع صور أكبر من 800 كيلوبايت لمنع تعطل قاعدة البيانات (DoS Protection)
       if (file.size > 800 * 1024) {
-        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت" })
+        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت للحفاظ على استقرار المتجر." })
         return
       }
       const reader = new FileReader()
@@ -147,7 +148,7 @@ function AdminDashboardContent() {
       });
     }
 
-    toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح" })
+    toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح وأمان" })
     setIsModalOpen(false)
     setEditingItem(null)
     setImagePreview(null)
@@ -184,7 +185,7 @@ function AdminDashboardContent() {
     deleteDoc(doc(db, "trash", item.id)).catch(async () => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `trash/${item.id}`, operation: 'delete' }));
     });
-    toast({ title: "تمت الاستعادة" })
+    toast({ title: "تمت الاستعادة بنجاح" })
   }
 
   const handlePermanentDelete = async (itemId: string) => {
@@ -192,7 +193,7 @@ function AdminDashboardContent() {
     deleteDoc(doc(db, "trash", itemId)).catch(async () => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `trash/${itemId}`, operation: 'delete' }));
     });
-    toast({ title: "حذف نهائي" })
+    toast({ title: "حذف نهائي آمن" })
   }
 
   const filteredItems = useMemo(() => {
