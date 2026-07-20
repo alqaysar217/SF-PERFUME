@@ -123,7 +123,7 @@ export function Header() {
             />
           </div>
           <div className="flex flex-col text-right">
-            <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
+            <h1 className="text-[13px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
             <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
               <ShieldCheck className="w-2 h-2 text-primary" />
               دخول آمن للمدير
@@ -225,7 +225,7 @@ export function Header() {
               />
             </div>
             <div className="flex flex-col text-right">
-              <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
+              <h1 className="text-[13px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
               <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
                 <MapPin className="w-2 h-2 text-primary" />
                 المكلا، حضرموت
