@@ -56,10 +56,10 @@ export default function PaymentInfoPage() {
           </div>
         ) : accounts.length > 0 ? (
           accounts.map((acc: any) => (
-            <div key={acc.id} className="bg-white p-5 rounded-xl border border-gray-50 shadow-sm space-y-4 relative overflow-hidden group luxury-shadow">
+            <div key={acc.id} className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm space-y-3 relative overflow-hidden group luxury-shadow">
               <div className="absolute top-0 right-0 w-1 h-full bg-primary/20" />
-              <div className="flex items-center gap-4 text-right">
-                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center relative overflow-hidden border border-gray-100 shrink-0 shadow-sm">
+              <div className="flex items-center gap-3 text-right">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center relative overflow-hidden border border-gray-100 shrink-0 shadow-sm">
                   <Image 
                     src={acc.image || `https://picsum.photos/seed/${acc.bank}/100/100`} 
                     alt={acc.bank} 
@@ -73,13 +73,13 @@ export default function PaymentInfoPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <code className="text-lg font-black text-primary tracking-widest">{acc.account}</code>
+              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <code className="text-base font-black text-primary tracking-widest">{acc.account}</code>
                 <button 
                   onClick={() => handleCopy(acc.account)}
-                  className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-400 active:text-primary active:scale-90 transition-all border border-gray-100 shadow-sm"
+                  className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-gray-400 active:text-primary active:scale-90 transition-all border border-gray-100 shadow-sm"
                 >
-                  <Copy className="w-5 h-5" />
+                  <Copy className="w-4 h-4" />
                 </button>
               </div>
             </div>
