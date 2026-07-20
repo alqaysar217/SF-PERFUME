@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useFirestore } from "@/firebase/provider"
 import { 
@@ -33,7 +33,7 @@ import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCi
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab')
@@ -344,5 +344,13 @@ export default function AdminDashboard() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>}>
+      <AdminDashboardContent />
+    </Suspense>
   )
 }

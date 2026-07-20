@@ -3,6 +3,7 @@
 
 import { usePathname } from 'next/navigation';
 import './globals.css';
+import { Suspense } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { BottomNav } from '@/components/navigation/bottom-nav';
 import { WhatsAppBubble } from '@/components/shared/whatsapp-bubble';
@@ -56,7 +57,9 @@ export default function RootLayout({
       <body className="antialiased pb-24 min-h-screen bg-background text-foreground">
         <FirebaseProvider>
           <FirebaseErrorListener />
-          <Header />
+          <Suspense fallback={<div className="h-16 bg-white/95" />}>
+            <Header />
+          </Suspense>
           <main className="md:max-w-md md:mx-auto w-full min-h-[calc(100vh-64px)]">
             {children}
           </main>
