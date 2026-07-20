@@ -9,7 +9,6 @@ import { WhatsAppBubble } from '@/components/shared/whatsapp-bubble';
 import { Header } from '@/components/navigation/header';
 import { FirebaseProvider } from '@/firebase/provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { AIAssistant } from '@/components/ai/ai-assistant';
 
 export default function RootLayout({
   children,
@@ -63,7 +62,6 @@ export default function RootLayout({
           </main>
           {!isAdmin && <BottomNav />}
           {!isAdmin && <WhatsAppBubble />}
-          {!isAdmin && <AIAssistant />}
           <Toaster />
         </FirebaseProvider>
       </body>
