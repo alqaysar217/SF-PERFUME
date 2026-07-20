@@ -68,6 +68,9 @@ export function AdminItemModal({
           <DialogTitle className="text-right font-black text-xl text-luxury-black">
             {editingItem ? "تحديث البيانات" : `إضافة جديد`}
           </DialogTitle>
+          <DialogClose className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-all active:scale-90">
+            <X className="w-5 h-5" />
+          </DialogClose>
         </div>
         
         <form onSubmit={onSave} className="flex-1 overflow-y-auto px-6 pb-32 space-y-8 pt-6 scrollbar-hide text-right">
