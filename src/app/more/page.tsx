@@ -49,7 +49,7 @@ export default function MorePage() {
             src="/logo.png" 
             alt="SF Logo" 
             fill 
-            className="object-contain p-4"
+            className="object-cover scale-110"
           />
           <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white text-xs">✨</div>
         </div>

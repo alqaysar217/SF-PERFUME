@@ -87,7 +87,7 @@ export default function HomePage() {
               src="/logo.png" 
               alt="SF Logo" 
               fill 
-              className="object-contain p-3"
+              className="object-cover scale-110"
               priority
             />
            </div>

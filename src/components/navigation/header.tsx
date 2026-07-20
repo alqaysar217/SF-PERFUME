@@ -110,7 +110,7 @@ export function Header() {
               src="/logo.png" 
               alt="SF Logo" 
               fill
-              className="object-contain p-1"
+              className="object-cover scale-110"
             />
           </div>
           <div className="flex flex-col text-right">
@@ -133,7 +133,7 @@ export function Header() {
               <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white text-right shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg shrink-0 overflow-hidden relative border border-gray-100">
-                    <Image src="/logo.png" alt="SF Logo" fill className="object-contain p-1" />
+                    <Image src="/logo.png" alt="SF Logo" fill className="object-cover scale-110" />
                   </div>
                   <div className="text-right">
                     <SheetTitle className="font-black text-sm text-luxury-black m-0 p-0">SF PERFUME</SheetTitle>
@@ -212,7 +212,7 @@ export function Header() {
                 src="/logo.png" 
                 alt="SF Logo" 
                 fill
-                className="object-contain p-1"
+                className="object-cover scale-110"
               />
             </div>
             <div className="flex flex-col text-right">
