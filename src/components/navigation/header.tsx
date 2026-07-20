@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { useAuth, useUser } from "@/firebase"
+import { signOut } from "firebase/auth"
 
 const PAGE_TITLES: { [key: string]: string } = {
   "/products": "المتجر الكامل",
@@ -32,6 +34,8 @@ export function Header() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
+  const auth = useAuth()
+  const { user } = useUser(auth)
   
   const [cartCount, setCartCount] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -81,11 +85,16 @@ export function Header() {
     return () => window.removeEventListener('cart-updated', updateCartCount)
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdmin')
-    router.push('/')
-    toast({ title: "تم الخروج", description: "تم تسجيل خروجك بنجاح" })
-    setIsMenuOpen(false)
+  const handleLogout = async () => {
+    if (!auth) return
+    try {
+      await signOut(auth)
+      router.push('/')
+      toast({ title: "تم الخروج", description: "تم تسجيل خروجك بأمان" })
+      setIsMenuOpen(false)
+    } catch (error) {
+      toast({ variant: "destructive", title: "خطأ", description: "فشل تسجيل الخروج" })
+    }
   }
 
   const adminMenuItems = [
@@ -101,7 +110,8 @@ export function Header() {
 
   if (!mounted) return <header className="h-16 bg-white/95" />
 
-  if (isAdmin && !isAdminLogin) {
+  // إظهار هيدر الإدارة فقط إذا كان هناك مستخدم مسجل دخوله
+  if (isAdmin && user && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
         <div className="flex items-center gap-3">
@@ -116,8 +126,8 @@ export function Header() {
           <div className="flex flex-col text-right">
             <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
             <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
-              <MapPin className="w-2 h-2 text-primary" />
-              المكلا، حضرموت
+              <ShieldCheck className="w-2 h-2 text-primary" />
+              جلسة عمل مؤمنة
             </div>
           </div>
         </div>
@@ -137,7 +147,7 @@ export function Header() {
                   </div>
                   <div className="text-right">
                     <SheetTitle className="font-black text-sm text-luxury-black m-0 p-0">SF PERFUME</SheetTitle>
-                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
+                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم المؤمن</p>
                   </div>
                 </div>
               </div>
@@ -187,13 +197,13 @@ export function Header() {
                     <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                       <LogOut className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black flex-1 text-right">تسجيل الخروج</span>
+                    <span className="text-xs font-black flex-1 text-right">تسجيل الخروج الآمن</span>
                   </button>
                 </div>
               </ScrollArea>
               
               <div className="p-6 border-t border-gray-50 bg-gray-50/50">
-                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest text-center">Cloud Management v1.0</p>
+                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest text-center">Cloud Protection Active</p>
               </div>
             </SheetContent>
           </Sheet>

@@ -1,44 +1,58 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Lock, User, ShieldCheck, ArrowRight } from "lucide-react"
+import { Lock, Mail, ShieldCheck, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import Image from "next/image"
 import Link from "next/link"
+import { useAuth, useUser } from "@/firebase"
+import { signInWithEmailAndPassword } from "firebase/auth"
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const auth = useAuth()
+  const { user, loading: authLoading } = useUser(auth)
 
-  const handleLogin = (e: React.FormEvent) => {
+  // إذا كان المستخدم مسجلاً دخوله بالفعل، نوجهه للوحة الإدارة
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/admin')
+    }
+  }, [user, authLoading, router])
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!auth) return
+
     setIsLoading(true)
     
-    // محاكاة عملية التحقق - في الواقع يجب استخدام Firebase Auth
-    setTimeout(() => {
-      if (username === "admin" && password === "sf2024") {
-        localStorage.setItem('isAdmin', 'true')
-        router.push('/admin')
-        toast({ 
-          title: "تم الدخول بنجاح", 
-          description: "مرحباً بك في لوحة الإدارة" 
-        })
-      } else {
-        toast({ 
-          variant: "destructive", 
-          title: "فشل تسجيل الدخول", 
-          description: "اسم المستخدم أو كلمة المرور غير صحيحة" 
-        })
-      }
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+      toast({ 
+        title: "تم الدخول بنجاح", 
+        description: "مرحباً بك في لوحة الإدارة المؤمنة" 
+      })
+      router.push('/admin')
+    } catch (error: any) {
+      console.error(error)
+      toast({ 
+        variant: "destructive", 
+        title: "فشل تسجيل الدخول", 
+        description: "البريد الإلكتروني أو كلمة المرور غير صحيحة" 
+      })
+    } finally {
       setIsLoading(false)
-    }, 1200)
+    }
   }
+
+  if (authLoading) return null
 
   return (
     <div className="flex flex-col min-h-screen bg-background items-center justify-center p-6 animate-fade-in">
@@ -61,23 +75,23 @@ export default function AdminLoginPage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-black text-luxury-black tracking-widest uppercase">SF PERFUME</h1>
-            <p className="text-[10px] text-primary font-bold uppercase tracking-[0.3em]">Administrative Portal</p>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-[0.3em]">Secure Administrative Portal</p>
           </div>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
-            {/* Username Field */}
+            {/* Email Field */}
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">البريد الإلكتروني</label>
               <div className="relative">
-                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
+                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
-                  type="text" 
-                  placeholder="admin"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email" 
+                  placeholder="admin@sfperfume.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
                   required
                 />
@@ -106,7 +120,7 @@ export default function AdminLoginPage() {
             disabled={isLoading}
             className="w-full h-14 bg-luxury-black text-primary hover:bg-black/90 rounded-2xl font-black text-md shadow-xl active:scale-95 transition-all gap-3"
           >
-            {isLoading ? "جاري التحقق..." : "تسجيل الدخول"}
+            {isLoading ? "جاري التحقق..." : "تسجيل الدخول الآمن"}
           </Button>
         </form>
 
@@ -114,7 +128,7 @@ export default function AdminLoginPage() {
         <div className="flex flex-col items-center gap-3 pt-4">
           <div className="flex items-center gap-2 text-gray-300">
             <ShieldCheck className="w-4 h-4" />
-            <span className="text-[9px] font-bold uppercase tracking-widest">Secure Cloud Access</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest">Firebase Shield Protected</span>
           </div>
           <div className="w-12 h-1 bg-gray-100 rounded-full" />
         </div>

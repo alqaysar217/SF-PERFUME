@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useFirestore } from "@/firebase/provider"
+import { useFirestore, useAuth, useUser } from "@/firebase"
 import { 
   collection, 
   addDoc, 
@@ -38,6 +38,8 @@ function AdminDashboardContent() {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab')
   const db = useFirestore()
+  const auth = useAuth()
+  const { user, loading: authLoading } = useUser(auth)
   
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard")
   const [mounted, setMounted] = useState(false)
@@ -82,11 +84,14 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     setMounted(true)
-    const isAdmin = localStorage.getItem('isAdmin')
-    if (!isAdmin) {
+  }, [])
+
+  // حماية المسار: إذا انتهى التحميل ولم يوجد مستخدم، نوجهه لصفحة الدخول
+  useEffect(() => {
+    if (!authLoading && !user && mounted) {
       router.push('/admin/login')
     }
-  }, [router])
+  }, [user, authLoading, router, mounted])
 
   useEffect(() => {
     setActiveTab(tabParam || "dashboard")
@@ -134,7 +139,7 @@ function AdminDashboardContent() {
       setIsModalOpen(false)
       setEditingItem(null)
       setImagePreview(null)
-    } catch (err) {
+    } catch (err: any) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: activeTab, operation: editingItem?.id ? 'update' : 'create', requestResourceData: data }))
     } finally {
       setIsSaving(false)
@@ -152,7 +157,7 @@ function AdminDashboardContent() {
       })
       deleteDoc(doc(db, activeTab, deletingItem.id))
       toast({ title: "نُقل للمحذوفات" })
-    } catch (err) {
+    } catch (err: any) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: activeTab, operation: 'delete' }))
     } finally {
       setIsDeleteDialogOpen(false)
@@ -166,7 +171,7 @@ function AdminDashboardContent() {
       addDoc(collection(db, item.originalCollection), item.originalData)
       deleteDoc(doc(db, "trash", item.id))
       toast({ title: "تمت الاستعادة" })
-    } catch (err) {
+    } catch (err: any) {
       toast({ variant: "destructive", title: "خطأ في الاستعادة" })
     }
   }
@@ -176,7 +181,7 @@ function AdminDashboardContent() {
     try {
       deleteDoc(doc(db, "trash", itemId))
       toast({ title: "حذف نهائي" })
-    } catch (err) {
+    } catch (err: any) {
       toast({ variant: "destructive", title: "فشل الحذف" })
     }
   }
@@ -192,7 +197,13 @@ function AdminDashboardContent() {
 
   const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
 
-  if (!mounted) return null
+  if (!mounted || authLoading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+    </div>
+  )
+
+  if (!user) return null
 
   return (
     <div className="flex flex-col gap-8 p-4 animate-fade-in pb-32 bg-background text-right">
