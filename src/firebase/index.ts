@@ -19,8 +19,8 @@ export function initializeFirebase(): {
 } {
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   
-  // تفعيل التخزين المحلي لضمان عمل التطبيق في حالة ضعف الإنترنت أو انقطاعه
-  // يتم تخزين البيانات في ذاكرة المتصفح لفتح المتجر فوراً
+  // تفعيل التخزين المحلي (Offline Persistence) لضمان عمل التطبيق في حالة ضعف الإنترنت
+  // يتم تخزين البيانات في ذاكرة المتصفح لفتح المتجر فوراً عند العودة
   const db = getApps().length > 0 
     ? getFirestore(app) 
     : initializeFirestore(app, {
