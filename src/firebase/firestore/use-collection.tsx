@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,6 +8,7 @@ import {
   QuerySnapshot
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export function useCollection<T = DocumentData>(query: Query<T> | null) {
   const [data, setData] = useState<T[]>([]);
@@ -21,10 +21,9 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
       return;
     }
 
-    // استخدام onSnapshot مع تفعيل الذاكرة المحلية يضمن ظهور البيانات فوراً من الكاش
     const unsubscribe = onSnapshot(
       query,
-      { includeMetadataChanges: true }, // تتبع التغييرات بين الكاش والسيرفر
+      { includeMetadataChanges: true },
       (snapshot: QuerySnapshot<T>) => {
         const items = snapshot.docs.map(doc => ({
           ...doc.data(),
@@ -33,13 +32,13 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         
         setData(items);
         setLoading(false);
-        
-        // إذا كانت البيانات قادمة من الكاش (Offline)، يمكننا تسجيل ذلك إذا أردنا
-        const source = snapshot.metadata.fromCache ? "local cache" : "server";
       },
-      (err) => {
-        // بدلاً من السقوط، نقوم بإرسال الخطأ للمستمع المركزي
-        errorEmitter.emit('general-error', err);
+      async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: (query as any)._query?.path?.segments?.join('/') || 'unknown',
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
         setError(err);
         setLoading(false);
       }

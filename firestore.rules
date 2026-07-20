@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // وظيفة للتحقق مما إذا كان المستخدم مسجل الدخول (المدير)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // المنتجات، الماركات، البنرات، الأسئلة، والآراء:
+    // مسموح للجميع بالقراءة، ومسموح للمدير فقط بالكتابة
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /brands/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /accounts/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /faqs/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /reviews/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // سلة المحذوفات: للمدير فقط (قراءة وكتابة)
+    match /trash/{id} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

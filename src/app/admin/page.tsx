@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -86,7 +85,6 @@ function AdminDashboardContent() {
     setMounted(true)
   }, [])
 
-  // حماية المسار: إذا انتهى التحميل ولم يوجد مستخدم، نوجهه لصفحة الدخول
   useEffect(() => {
     if (!authLoading && !user && mounted) {
       router.push('/admin/login')
@@ -128,62 +126,73 @@ function AdminDashboardContent() {
     }
     if (activeTab === 'reviews') data.rating = Number(data.rating)
 
-    try {
-      if (editingItem?.id) {
-        const docRef = doc(db, activeTab, editingItem.id)
-        updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
-      } else {
-        addDoc(collection(db, activeTab), { ...data, createdAt: serverTimestamp() })
-      }
-      toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح" })
-      setIsModalOpen(false)
-      setEditingItem(null)
-      setImagePreview(null)
-    } catch (err: any) {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: activeTab, operation: editingItem?.id ? 'update' : 'create', requestResourceData: data }))
-    } finally {
-      setIsSaving(false)
+    const finalData = { ...data, updatedAt: serverTimestamp() };
+
+    if (editingItem?.id) {
+      const docRef = doc(db, activeTab, editingItem.id);
+      updateDoc(docRef, finalData).catch(async (err) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: `${activeTab}/${editingItem.id}`,
+          operation: 'update',
+          requestResourceData: finalData
+        }));
+      });
+    } else {
+      addDoc(collection(db, activeTab), { ...data, createdAt: serverTimestamp() }).catch(async (err) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: activeTab,
+          operation: 'create',
+          requestResourceData: data
+        }));
+      });
     }
+
+    toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح" })
+    setIsModalOpen(false)
+    setEditingItem(null)
+    setImagePreview(null)
+    setIsSaving(false)
   }
 
   const handleSoftDelete = async () => {
     if (!db || !deletingItem) return
     
-    try {
-      addDoc(collection(db, "trash"), {
-        originalData: deletingItem,
-        originalCollection: activeTab,
-        deletedAt: serverTimestamp()
-      })
-      deleteDoc(doc(db, activeTab, deletingItem.id))
-      toast({ title: "نُقل للمحذوفات" })
-    } catch (err: any) {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: activeTab, operation: 'delete' }))
-    } finally {
-      setIsDeleteDialogOpen(false)
-      setDeletingItem(null)
-    }
+    const trashData = {
+      originalData: deletingItem,
+      originalCollection: activeTab,
+      deletedAt: serverTimestamp()
+    };
+
+    addDoc(collection(db, "trash"), trashData).catch(async () => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'trash', operation: 'create', requestResourceData: trashData }));
+    });
+    
+    deleteDoc(doc(db, activeTab, deletingItem.id)).catch(async () => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `${activeTab}/${deletingItem.id}`, operation: 'delete' }));
+    });
+
+    toast({ title: "نُقل للمحذوفات" })
+    setIsDeleteDialogOpen(false)
+    setDeletingItem(null)
   }
 
   const handleRestore = async (item: any) => {
     if (!db) return
-    try {
-      addDoc(collection(db, item.originalCollection), item.originalData)
-      deleteDoc(doc(db, "trash", item.id))
-      toast({ title: "تمت الاستعادة" })
-    } catch (err: any) {
-      toast({ variant: "destructive", title: "خطأ في الاستعادة" })
-    }
+    addDoc(collection(db, item.originalCollection), item.originalData).catch(async () => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: item.originalCollection, operation: 'create' }));
+    });
+    deleteDoc(doc(db, "trash", item.id)).catch(async () => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `trash/${item.id}`, operation: 'delete' }));
+    });
+    toast({ title: "تمت الاستعادة" })
   }
 
   const handlePermanentDelete = async (itemId: string) => {
     if (!db) return
-    try {
-      deleteDoc(doc(db, "trash", itemId))
-      toast({ title: "حذف نهائي" })
-    } catch (err: any) {
-      toast({ variant: "destructive", title: "فشل الحذف" })
-    }
+    deleteDoc(doc(db, "trash", itemId)).catch(async () => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `trash/${itemId}`, operation: 'delete' }));
+    });
+    toast({ title: "حذف نهائي" })
   }
 
   const filteredItems = useMemo(() => {
