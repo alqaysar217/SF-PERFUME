@@ -35,8 +35,9 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setErrorMsg(null)
     
-    // تحويل اسم المستخدم لبريد إلكتروني مقبول في Firebase إذا لم يكن كذلك
-    const email = username.includes('@') ? username : `${username}@sfperfume.com`
+    // إذا أدخلت بريدك الجيميل كاملاً سيستخدمه كما هو
+    // إذا أدخلت اسماً فقط سيضيف له نطاق المتجر تلقائياً
+    const email = username.includes('@') ? username.trim() : `${username.trim()}@sfperfume.com`
     
     try {
       await signInWithEmailAndPassword(auth, email, password)
@@ -46,17 +47,16 @@ export default function AdminLoginPage() {
       })
       router.push('/admin')
     } catch (error: any) {
-      // إزالة console.error لتجنب ظهور شاشات الخطأ في بيئة التطوير
-      let message = "اسم المستخدم أو كلمة المرور غير صحيحة"
+      let message = "بيانات الدخول غير صحيحة"
       
       if (error.code === 'auth/invalid-credential') {
-        message = "بيانات الدخول غير صحيحة. يرجى التأكد من تفعيل Email/Password في Firebase Console وإضافة المستخدم."
+        message = "البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد من كتابة البريد كاملاً إذا كان gmail."
       } else if (error.code === 'auth/user-not-found') {
-        message = "المستخدم غير موجود في سجلات النظام."
+        message = "المستخدم غير موجود. تأكد من إضافة الحساب في Firebase Authentication."
       } else if (error.code === 'auth/wrong-password') {
-        message = "كلمة المرور التي أدخلتها غير صحيحة."
+        message = "كلمة المرور خاطئة."
       } else if (error.code === 'auth/too-many-requests') {
-        message = "محاولات كثيرة خاطئة. تم حظر الدخول مؤقتاً لحمايتك."
+        message = "محاولات كثيرة خاطئة. يرجى الانتظار قليلاً."
       }
 
       setErrorMsg(message)
@@ -112,12 +112,12 @@ export default function AdminLoginPage() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">البريد الإلكتروني أو اسم المستخدم</label>
               <div className="relative">
                 <UserIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
                   type="text" 
-                  placeholder="مثلاً: admin"
+                  placeholder="مثلاً: alqaysar217@gmail.com"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
