@@ -140,9 +140,6 @@ export function Header() {
                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم للإدارة</p>
                   </div>
                 </div>
-                <SheetClose className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
-                  <X className="w-5 h-5" />
-                </SheetClose>
               </div>
               
               <ScrollArea className="flex-1">
@@ -157,7 +154,7 @@ export function Header() {
                         href={item.href}
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "flex flex-row items-center gap-4 p-3 rounded-lg transition-all group w-full text-right",
+                          "flex flex-row-reverse items-center gap-4 p-3 rounded-lg transition-all group w-full text-right",
                           isActive 
                             ? "bg-primary/10 text-primary shadow-sm" 
                             : "hover:bg-gray-50 text-gray-500 hover:text-luxury-black"
@@ -172,7 +169,7 @@ export function Header() {
                           <item.icon className="w-5 h-5" />
                         </div>
                         <span className={cn(
-                          "text-xs font-black transition-colors",
+                          "text-xs font-black transition-colors flex-1 text-right",
                           isActive ? "text-primary" : "group-hover:text-luxury-black"
                         )}>
                           {item.name}
@@ -185,12 +182,12 @@ export function Header() {
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex flex-row items-center gap-4 p-3 rounded-lg text-red-500 hover:bg-red-50 transition-colors group text-right"
+                    className="w-full flex flex-row-reverse items-center gap-4 p-3 rounded-lg text-red-500 hover:bg-red-50 transition-colors group text-right"
                   >
                     <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                       <LogOut className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black">تسجيل الخروج</span>
+                    <span className="text-xs font-black flex-1 text-right">تسجيل الخروج</span>
                   </button>
                 </div>
               </ScrollArea>
