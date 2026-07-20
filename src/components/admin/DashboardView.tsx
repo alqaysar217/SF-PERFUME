@@ -1,18 +1,8 @@
 
 "use client"
 
-import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star, Percent, TrendingUp } from "lucide-react"
+import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  Cell
-} from 'recharts';
 
 interface DashboardViewProps {
   productsCount: number
@@ -23,11 +13,11 @@ interface DashboardViewProps {
 export function DashboardView({ productsCount, offersCount, brandsCount }: DashboardViewProps) {
   const router = useRouter()
 
-  const data = [
-    { name: 'المنتجات', value: productsCount, color: '#C9A227' },
-    { name: 'العروض', value: offersCount, color: '#f97316' },
-    { name: 'الماركات', value: brandsCount, color: '#3b82f6' },
-  ];
+  const stats = [
+    { name: "إجمالي المنتجات", value: productsCount, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
+    { name: "العروض النشطة", value: offersCount, icon: Star, color: "text-orange-600", bg: "bg-orange-50" },
+    { name: "الماركات المسجلة", value: brandsCount, icon: Award, color: "text-purple-600", bg: "bg-purple-50" },
+  ]
 
   const adminActions = [
     { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
@@ -46,36 +36,22 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
         <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
       </div>
 
-      {/* Analytics Chart */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
-        <div className="flex items-center justify-between">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">إحصائيات المخزون</h3>
-        </div>
-        <div className="h-[200px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 'bold' }} 
-              />
-              <Tooltip 
-                cursor={{ fill: 'transparent' }}
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-              />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={40}>
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="grid grid-cols-1 gap-4">
+        {stats.map((stat, i) => (
+          <div key={i} className="bg-white p-5 rounded-xl border border-gray-50 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center`}>
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{stat.name}</p>
+                <h4 className="text-xl font-black text-luxury-black">{stat.value}</h4>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Quick Actions List */}
       <div className="space-y-6">
         <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-right px-2">روابط سريعة</h3>
         <div className="grid grid-cols-1 gap-4">

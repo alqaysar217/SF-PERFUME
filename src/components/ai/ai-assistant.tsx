@@ -2,21 +2,15 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Sparkles, Send, Minimize2, ShoppingBag } from "lucide-react"
+import { Sparkles, Send, Minimize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { aiAssistantChat } from "@/ai/flows/ai-assistant-chat-flow"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useFirestore } from "@/firebase/provider"
-import { collection, query, limit } from "firebase/firestore"
-import { useCollection } from "@/firebase/firestore/use-collection"
 
 export function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState("")
-  const db = useFirestore()
-  const productsQuery = query(collection(db || {} as any, "products"), limit(10))
-  const { data: products } = useCollection<any>(db ? productsQuery : null)
 
   const [messages, setMessages] = useState<{ role: 'ai' | 'user', text: string }[]>([
     { role: 'ai', text: "أهلاً بك في SF PERFUME! أنا مساعدك الذكي، كيف يمكنني مساعدتك في اختيار عطرك المفضل اليوم؟" }
@@ -33,14 +27,10 @@ export function AIAssistant() {
     setIsLoading(true)
 
     try {
-      // إرسال سياق المنتجات للذكاء الاصطناعي ليتمكن من الترشيح
-      const response = await aiAssistantChat({ 
-        query: userMessage,
-        context: products?.map(p => `${p.name} من ماركة ${p.brand} بسعر ${p.price} ر.ي`).join('\n')
-      })
+      const response = await aiAssistantChat({ query: userMessage })
       setMessages(prev => [...prev, { role: 'ai', text: response.response }])
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: "عذراً، حدث خطأ بسيط. يرجى المحاولة مرة أخرى." }])
+      setMessages(prev => [...prev, { role: 'ai', text: "أنا هنا لمساعدتك في متجر SF PERFUME، كيف يمكنني خدمتك؟" }])
     } finally {
       setIsLoading(false)
     }

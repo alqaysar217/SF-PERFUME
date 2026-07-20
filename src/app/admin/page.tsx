@@ -29,9 +29,8 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog"
-import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, Award, CreditCard, Star, Image as ImageIcon, RotateCcw, FileText, Search, X } from "lucide-react"
+import { ShieldAlert, ChevronRight, Plus, Percent, Loader2, Edit, Trash2, HelpCircle, Package, FileText, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export default function AdminDashboard() {
@@ -49,7 +48,6 @@ export default function AdminDashboard() {
   const [isSaving, setIsSaving] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isOfferFilter, setIsOfferFilter] = useState(false)
-  const [adminSearch, setAdminSearch] = useState("")
 
   const productsQuery = useMemo(() => db ? query(collection(db, "products")) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands")) : null, [db])
@@ -92,7 +90,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setActiveTab(tabParam || "dashboard")
-    setAdminSearch("")
   }, [tabParam])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,18 +186,9 @@ export default function AdminDashboard() {
       products, brands, accounts: accountsRaw, faqs: faqsRaw, reviews: reviewsRaw, banners: bannersRaw 
     }
     let items = map[activeTab] || []
-    
-    // فلترة البحث الإداري
-    if (adminSearch) {
-      items = items.filter((item: any) => {
-        const name = (item.name || item.bank || item.question || item.title || "").toLowerCase();
-        return name.includes(adminSearch.toLowerCase());
-      });
-    }
-
     if (activeTab === "products" && isOfferFilter) return items.filter((p: any) => p.isOffer)
     return items
-  }, [activeTab, products, brands, accountsRaw, faqsRaw, reviewsRaw, bannersRaw, isOfferFilter, adminSearch])
+  }, [activeTab, products, brands, accountsRaw, faqsRaw, reviewsRaw, bannersRaw, isOfferFilter])
 
   const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
 
@@ -271,22 +259,6 @@ export default function AdminDashboard() {
                 إضافة {activeTab === 'products' ? 'منتج' : activeTab === 'accounts' ? 'حساب' : activeTab === 'brands' ? 'ماركة' : activeTab === 'faqs' ? 'سؤال' : activeTab === 'banners' ? 'بنر' : 'جديد'}
               </Button>
             </div>
-          </div>
-
-          {/* Admin Fast Search */}
-          <div className="relative">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-            <Input 
-              placeholder={`البحث في ${activeTab === 'products' ? 'المنتجات' : 'القائمة'}...`}
-              value={adminSearch}
-              onChange={(e) => setAdminSearch(e.target.value)}
-              className="h-12 pr-10 rounded-xl border-none bg-white shadow-sm font-bold text-xs"
-            />
-            {adminSearch && (
-              <button onClick={() => setAdminSearch("")} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
-                <X className="w-4 h-4" />
-              </button>
-            )}
           </div>
 
           <div className="space-y-3">
