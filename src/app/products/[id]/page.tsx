@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus, MessageCircle, Loader2, ArrowRight } from "lucide-react"
+import { Heart, Star, ShieldCheck, Zap, Sparkles, Droplets, Plus, MessageCircle, Loader2, ArrowRight, Watch, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useState, useEffect, useMemo } from "react"
@@ -24,23 +24,18 @@ export default function ProductDetails() {
   const productRef = useMemo(() => db && typeof id === 'string' ? doc(db, "products", id) : null, [db, id])
   const { data: product, loading } = useDoc<any>(productRef)
 
-  // جلب مجموعة من المنتجات للاختيار منها
-  const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(20)) : null, [db])
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(50)) : null, [db])
   const { data: allProducts } = useCollection<any>(productsQuery)
 
-  // منطق المنتجات المقترحة: الأولوية لنفس الفئة ثم البقية
+  const isWatch = product?.category === 'watches'
+
   const similarProducts = useMemo(() => {
     if (!allProducts || !product) return [];
     
-    // استبعاد المنتج الحالي
     const filtered = allProducts.filter(p => p.id !== product.id);
-    
-    // المنتجات من نفس الفئة
     const sameCategory = filtered.filter(p => p.category === product.category);
-    // المنتجات الأخرى
     const others = filtered.filter(p => p.category !== product.category);
     
-    // دمجهم بحيث تظهر الفئة المتشابهة أولاً
     return [...sameCategory, ...others].slice(0, 4);
   }, [allProducts, product]);
 
@@ -53,7 +48,7 @@ export default function ProductDetails() {
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <Loader2 className="w-10 h-10 animate-spin text-primary" />
-      <span className="text-xs font-black text-gray-400">جاري استحضار العبير...</span>
+      <span className="text-xs font-black text-gray-400">جاري استحضار التفاصيل...</span>
     </div>
   )
 
@@ -143,37 +138,42 @@ export default function ProductDetails() {
         {product.description && (
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 space-y-3 luxury-shadow">
             <h3 className="text-[11px] font-black text-luxury-black flex items-center gap-2 uppercase tracking-[0.2em]">
-              <ShieldCheck className="w-5 h-5 text-primary" />
-              وصف العبير
+              {isWatch ? <Info className="w-5 h-5 text-primary" /> : <ShieldCheck className="w-5 h-5 text-primary" />}
+              {isWatch ? 'تفاصيل الساعة' : 'وصف العبير'}
             </h3>
             <p className="text-gray-500 text-[13px] leading-relaxed font-medium">{product.description}</p>
           </section>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
-             <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
-                <Zap className="w-5 h-5" />
-             </div>
-             <div>
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">الثبات</p>
-                <p className="text-[13px] font-black text-luxury-black">{product.longevity || 'عالي'}</p>
-             </div>
+        {!isWatch && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
+               <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
+                  <Zap className="w-5 h-5" />
+               </div>
+               <div>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">الثبات</p>
+                  <p className="text-[13px] font-black text-luxury-black">{product.longevity || 'عالي'}</p>
+               </div>
+            </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
+               <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
+                  <Droplets className="w-5 h-5" />
+               </div>
+               <div>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">الفوحان</p>
+                  <p className="text-[13px] font-black text-luxury-black">{product.projection || 'ممتاز'}</p>
+               </div>
+            </div>
           </div>
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 luxury-shadow">
-             <div className="w-11 h-11 bg-primary/5 rounded-xl flex items-center justify-center text-primary shrink-0">
-                <Droplets className="w-5 h-5" />
-             </div>
-             <div>
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">الفوحان</p>
-                <p className="text-[13px] font-black text-luxury-black">{product.projection || 'ممتاز'}</p>
-             </div>
-          </div>
-        </div>
+        )}
 
         {product.ingredients && (
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 space-y-4 luxury-shadow">
-            <h3 className="text-[11px] font-black text-luxury-black uppercase tracking-[0.2em]">المكونات الأساسية</h3>
+            <h3 className="text-[11px] font-black text-luxury-black uppercase tracking-[0.2em] flex items-center gap-2">
+              {isWatch ? <Watch className="w-4 h-4 text-primary" /> : <Sparkles className="w-4 h-4 text-primary" />}
+              {isWatch ? 'المواصفات الفنية' : 'المكونات الأساسية'}
+            </h3>
             <div className="flex flex-wrap gap-2">
               {product.ingredients.split('،').map((ing: string, i: number) => (
                 <span key={i} className="bg-gray-50 text-luxury-black text-[11px] font-bold px-4 py-2 rounded-xl border border-gray-100">
@@ -190,9 +190,13 @@ export default function ProductDetails() {
             <ArrowRight className="w-4 h-4 text-primary rotate-180" />
           </div>
           <div className="flex flex-col gap-8">
-            {similarProducts.map((p: any) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+            {similarProducts.length > 0 ? (
+              similarProducts.map((p: any) => (
+                <ProductCard key={p.id} product={p} />
+              ))
+            ) : (
+              <p className="text-center text-gray-400 text-xs py-10 font-bold">جاري البحث عن منتجات مميزة...</p>
+            )}
           </div>
           
           <Button asChild variant="outline" className="w-full h-14 rounded-xl border-gray-100 font-black text-xs gap-2 active:scale-95 transition-all">
