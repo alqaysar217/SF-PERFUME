@@ -12,7 +12,6 @@ import Link from "next/link"
 export default function OffersPage() {
   const db = useFirestore()
 
-  // استعلام بسيط لا يحتاج لفهرس مركب
   const offersQuery = useMemo(() => 
     db ? query(
       collection(db, "products"), 
@@ -22,7 +21,6 @@ export default function OffersPage() {
 
   const { data: offersRaw, loading } = useCollection<any>(offersQuery)
 
-  // الترتيب الذكي برمجياً: حسب رقم الترتيب أولاً ثم الأحدث
   const offers = useMemo(() => {
     if (!offersRaw) return [];
     return [...offersRaw].sort((a, b) => {
@@ -33,7 +31,6 @@ export default function OffersPage() {
         return orderA - orderB;
       }
       
-      // في حال تساوي الرقم، الأحدث أولاً
       const timeA = a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
       const timeB = b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
       return timeB - timeA;

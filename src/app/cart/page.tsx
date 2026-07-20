@@ -49,9 +49,9 @@ export default function CartPage() {
     let message = "مرحباً SF PERFUME، أود طلب المنتجات التالية:\n\n"
     cart.forEach((item, index) => {
       message += `${index + 1}- ${item.name} (${item.brand})\n`
-      message += `   الكمية: ${item.quantity} | السعر: ${item.price.toLocaleString()} ر.ي\n`
+      message += `   الكمية: ${item.quantity} | السعر: ${item.price.toLocaleString()} ر.س\n`
     })
-    message += `\nإجمالي الطلب: ${totalPrice.toLocaleString()} ر.ي`
+    message += `\nإجمالي الطلب: ${totalPrice.toLocaleString()} ر.س`
     
     window.open(`https://wa.me/967777161451?text=${encodeURIComponent(message)}`, '_blank')
   }
@@ -77,7 +77,7 @@ export default function CartPage() {
                 <div className="flex-1 space-y-1">
                   <p className="text-[10px] font-black text-primary uppercase">{item.brand}</p>
                   <h3 className="text-sm font-black text-luxury-black line-clamp-1">{item.name}</h3>
-                  <p className="text-xs font-black text-primary">{(item.price * item.quantity).toLocaleString()} ر.ي</p>
+                  <p className="text-xs font-black text-primary">{(item.price * item.quantity).toLocaleString()} ر.س</p>
                   
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-3 bg-gray-50 px-2 py-1 rounded-lg">
@@ -101,7 +101,7 @@ export default function CartPage() {
           <div className="fixed bottom-24 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl z-40 border-t border-gray-100 md:max-w-md md:mx-auto w-full shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
             <div className="flex justify-between items-center mb-4 px-2">
               <span className="text-xs font-bold text-gray-400">إجمالي السلة</span>
-              <span className="text-lg font-black text-luxury-black">{totalPrice.toLocaleString()} ر.ي</span>
+              <span className="text-lg font-black text-luxury-black">{totalPrice.toLocaleString()} ر.س</span>
             </div>
             <Button 
               onClick={handleCheckout}

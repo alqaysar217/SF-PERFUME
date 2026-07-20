@@ -81,7 +81,7 @@ export function ProductForm({ editingItem, brands }: ProductFormProps) {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2 text-right">
-            <label className="text-[10px] font-bold text-gray-400 px-1">السعر الحالي (ر.ي)</label>
+            <label className="text-[10px] font-bold text-gray-400 px-1">السعر الحالي (ر.س)</label>
             <Input name="price" type="number" defaultValue={editingItem?.price} placeholder="0.00" required className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right" />
           </div>
           <div className="space-y-2 text-right">

@@ -103,9 +103,9 @@ export function ProductCard({ product }: { product: any }) {
             </h3>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-base font-black text-luxury-black">{product.price?.toLocaleString()} ر.ي</span>
+            <span className="text-base font-black text-luxury-black">{product.price?.toLocaleString()} ر.س</span>
             {product.oldPrice && (
-              <span className="text-[10px] text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.ي</span>
+              <span className="text-[10px] text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.س</span>
             )}
           </div>
         </div>

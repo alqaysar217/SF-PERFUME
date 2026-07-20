@@ -111,7 +111,6 @@ function AdminDashboardContent() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // تقليل الحجم لـ 500 كيلوبايت لضمان عدم تجاوز حد 1 ميجا بعد تشفير Base64
       if (file.size > 500 * 1024) {
         toast({ 
           variant: "destructive", 
@@ -136,7 +135,6 @@ function AdminDashboardContent() {
     
     data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
     
-    // فحص إضافي أخير للحجم لمنع أخطاء الـ Permission Denied الخفية
     if (data.image.length > 900000) {
        toast({ variant: "destructive", title: "فشل الحفظ", description: "بيانات الصورة ضخمة جداً، يرجى استخدام صورة أصغر." });
        setIsSaving(false);
@@ -332,7 +330,7 @@ function AdminDashboardContent() {
                          <h4 className="text-xs font-black text-luxury-black line-clamp-1">{item.name || item.bank || item.question || item.title}</h4>
                       </div>
                       <p className="text-[10px] font-bold text-primary">
-                        {item.price ? `${item.price.toLocaleString()} ر.ي` : 
+                        {item.price ? `${item.price.toLocaleString()} ر.س` : 
                          item.account ? item.account : 
                          item.subtitle ? item.subtitle : 'تفاصيل'}
                       </p>

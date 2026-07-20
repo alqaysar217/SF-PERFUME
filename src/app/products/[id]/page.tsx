@@ -14,6 +14,7 @@ import { useFirestore } from "@/firebase/provider"
 import { doc, collection, query, where, limit } from "firebase/firestore"
 import { useDoc } from "@/firebase/firestore/use-doc"
 import { useCollection } from "@/firebase/firestore/use-collection"
+import Link from "next/link"
 
 export default function ProductDetails() {
   const { id } = useParams()
@@ -23,15 +24,25 @@ export default function ProductDetails() {
   const productRef = useMemo(() => db && typeof id === 'string' ? doc(db, "products", id) : null, [db, id])
   const { data: product, loading } = useDoc<any>(productRef)
 
-  const similarQuery = useMemo(() => 
-    db && product?.category ? query(
-      collection(db, "products"), 
-      where("category", "==", product.category), 
-      limit(4)
-    ) : null
-  , [db, product?.category])
-  
-  const { data: similarProducts } = useCollection<any>(similarQuery)
+  // جلب مجموعة من المنتجات للاختيار منها
+  const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(20)) : null, [db])
+  const { data: allProducts } = useCollection<any>(productsQuery)
+
+  // منطق المنتجات المقترحة: الأولوية لنفس الفئة ثم البقية
+  const similarProducts = useMemo(() => {
+    if (!allProducts || !product) return [];
+    
+    // استبعاد المنتج الحالي
+    const filtered = allProducts.filter(p => p.id !== product.id);
+    
+    // المنتجات من نفس الفئة
+    const sameCategory = filtered.filter(p => p.category === product.category);
+    // المنتجات الأخرى
+    const others = filtered.filter(p => p.category !== product.category);
+    
+    // دمجهم بحيث تظهر الفئة المتشابهة أولاً
+    return [...sameCategory, ...others].slice(0, 4);
+  }, [allProducts, product]);
 
   useEffect(() => {
     if (!product) return
@@ -70,7 +81,7 @@ export default function ProductDetails() {
   }
 
   const directOrder = () => {
-    const message = `مرحباً SF PERFUME، أود الاستفسار عن/طلب المنتج التالي:\n\nالمنتج: ${product.name}\nالماركة: ${product.brand}\nالسعر: ${product.price?.toLocaleString()} ر.ي\n\nيرجى تزويدي بمزيد من المعلومات.`
+    const message = `مرحباً SF PERFUME، أود الاستفسار عن/طلب المنتج التالي:\n\nالمنتج: ${product.name}\nالماركة: ${product.brand}\nالسعر: ${product.price?.toLocaleString()} ر.س\n\nيرجى تزويدي بمزيد من المعلومات.`
     window.open(`https://wa.me/967777161451?text=${encodeURIComponent(message)}`, '_blank')
   }
 
@@ -122,9 +133,9 @@ export default function ProductDetails() {
           <h1 className="text-2xl font-black text-luxury-black leading-tight tracking-tight">{product.name}</h1>
           
           <div className="flex items-baseline gap-3">
-            <span className="text-2xl font-black text-luxury-black">{product.price?.toLocaleString()} ر.ي</span>
+            <span className="text-2xl font-black text-luxury-black">{product.price?.toLocaleString()} ر.س</span>
             {product.oldPrice && (
-              <span className="text-xs text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.ي</span>
+              <span className="text-xs text-gray-300 line-through font-bold">{product.oldPrice.toLocaleString()} ر.س</span>
             )}
           </div>
         </section>
@@ -179,10 +190,17 @@ export default function ProductDetails() {
             <ArrowRight className="w-4 h-4 text-primary rotate-180" />
           </div>
           <div className="flex flex-col gap-8">
-            {similarProducts?.filter((p: any) => p.id !== product.id).slice(0, 3).map((p: any) => (
+            {similarProducts.map((p: any) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
+          
+          <Button asChild variant="outline" className="w-full h-14 rounded-xl border-gray-100 font-black text-xs gap-2 active:scale-95 transition-all">
+            <Link href="/products">
+              مشاهدة المزيد من المنتجات
+              <ArrowRight className="w-4 h-4 rotate-180" />
+            </Link>
+          </Button>
         </section>
       </div>
 
