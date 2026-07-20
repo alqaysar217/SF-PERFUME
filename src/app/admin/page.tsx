@@ -111,8 +111,13 @@ function AdminDashboardContent() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 800 * 1024) {
-        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت." })
+      // تقليل الحجم لـ 500 كيلوبايت لضمان عدم تجاوز حد 1 ميجا بعد تشفير Base64
+      if (file.size > 500 * 1024) {
+        toast({ 
+          variant: "destructive", 
+          title: "حجم الصورة كبير جداً", 
+          description: "يرجى اختيار صورة أقل من 500 كيلوبايت لضمان حفظها بنجاح." 
+        })
         return
       }
       const reader = new FileReader()
@@ -130,6 +135,14 @@ function AdminDashboardContent() {
     const data: any = Object.fromEntries(formData.entries())
     
     data.image = imagePreview || editingItem?.image || editingItem?.logo || ""
+    
+    // فحص إضافي أخير للحجم لمنع أخطاء الـ Permission Denied الخفية
+    if (data.image.length > 900000) {
+       toast({ variant: "destructive", title: "فشل الحفظ", description: "بيانات الصورة ضخمة جداً، يرجى استخدام صورة أصغر." });
+       setIsSaving(false);
+       return;
+    }
+
     if (activeTab === 'brands') data.logo = data.image
     if (activeTab === 'products') {
       data.price = Number(data.price)
@@ -163,7 +176,7 @@ function AdminDashboardContent() {
       });
     }
 
-    toast({ title: "تم الحفظ بنجاح" })
+    toast({ title: "تمت العملية بنجاح" })
     setIsModalOpen(false)
     setEditingItem(null)
     setImagePreview(null)

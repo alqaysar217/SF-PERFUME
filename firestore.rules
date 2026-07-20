@@ -3,11 +3,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // وظيفة للتحقق مما إذا كان المستخدم مسجل الدخول (المدير)
     function isAuthenticated() {
-      return request.auth != null;
+      return request.auth != null && request.auth.uid != null;
     }
 
-    // المنتجات، الماركات، البنرات، الأسئلة، والآراء:
-    // مسموح للجميع بالقراءة، ومسموح للمدير فقط بالكتابة
+    // القواعد العامة للمنتجات والخدمات
     match /products/{id} {
       allow read: if true;
       allow write: if isAuthenticated();
@@ -33,7 +32,7 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
-    // سلة المحذوفات: للمدير فقط (قراءة وكتابة)
+    // سلة المحذوفات: للمدير الموثق فقط
     match /trash/{id} {
       allow read, write: if isAuthenticated();
     }
