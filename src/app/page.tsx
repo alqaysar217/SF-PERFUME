@@ -24,7 +24,6 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const db = useFirestore()
 
-  // استعلامات بسيطة لتجنب أخطاء الفهارس المركبة
   const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(50)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners")) : null, [db])
@@ -51,12 +50,11 @@ export default function HomePage() {
       const timer = setTimeout(() => {
         setShowSplash(false)
         sessionStorage.setItem('hasShownSplash', 'true')
-      }, 1200)
+      }, 1500)
       return () => clearTimeout(timer)
     }
   }, [])
 
-  // الفرز الذكي برمجياً
   const sortedAndFilteredProducts = useMemo(() => {
     if (!productsRaw) return [];
     
@@ -84,8 +82,14 @@ export default function HomePage() {
       <div className="fixed inset-0 z-[100] bg-luxury-black flex flex-col items-center justify-center gap-6">
         <div className="relative w-24 h-24 flex items-center justify-center animate-fade-in">
            <div className="absolute inset-0 border-2 border-primary/30 rounded-full animate-ping"></div>
-           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl relative z-10">
-             <span className="text-luxury-black font-black text-2xl tracking-tighter">SF</span>
+           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl relative z-10 overflow-hidden">
+             <Image 
+              src="/logo.png" 
+              alt="SF Logo" 
+              fill 
+              className="object-contain p-3"
+              priority
+            />
            </div>
         </div>
         <div className="text-center space-y-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>

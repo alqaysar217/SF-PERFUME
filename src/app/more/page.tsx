@@ -3,6 +3,7 @@
 
 import { Info, Phone, Award, BookOpen, Share2, Instagram, Facebook, MessageCircle, ChevronLeft, CreditCard, HelpCircle } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
 
@@ -43,8 +44,13 @@ export default function MorePage() {
       {/* Profile Header */}
       <div className="flex flex-col items-center gap-4 py-8 bg-luxury-black rounded-[3rem] text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-primary/5 -z-10 animate-pulse" />
-        <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center text-luxury-black font-black text-3xl shadow-2xl relative">
-          SF
+        <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl relative overflow-hidden">
+          <Image 
+            src="/logo.png" 
+            alt="SF Logo" 
+            fill 
+            className="object-contain p-4"
+          />
           <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white text-xs">✨</div>
         </div>
         <div className="text-center">

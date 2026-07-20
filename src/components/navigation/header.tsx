@@ -105,12 +105,12 @@ export function Header() {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
              <Image 
-              src="https://picsum.photos/seed/brand/200/200" 
+              src="/logo.png" 
               alt="SF Logo" 
               fill
-              className="object-cover"
+              className="object-contain p-1"
             />
           </div>
           <div className="flex flex-col text-right">
@@ -132,8 +132,8 @@ export function Header() {
             <SheetContent side="right" dir="rtl" className="rounded-l-2xl p-0 overflow-hidden border-none bg-white w-72 flex flex-col shadow-2xl">
               <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white text-right shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-luxury-black rounded-lg flex items-center justify-center text-primary font-black text-lg shadow-lg shrink-0">
-                    SF
+                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg shrink-0 overflow-hidden relative border border-gray-100">
+                    <Image src="/logo.png" alt="SF Logo" fill className="object-contain p-1" />
                   </div>
                   <div className="text-right">
                     <SheetTitle className="font-black text-sm text-luxury-black m-0 p-0">SF PERFUME</SheetTitle>
@@ -207,12 +207,12 @@ export function Header() {
       <div className="flex items-center gap-3">
         {isHome ? (
           <div onClick={handleLogoClick} className="flex items-center gap-3 group active:scale-95 transition-transform cursor-pointer">
-            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden relative shrink-0">
                <Image 
-                src="https://picsum.photos/seed/brand/200/200" 
+                src="/logo.png" 
                 alt="SF Logo" 
                 fill
-                className="object-cover"
+                className="object-contain p-1"
               />
             </div>
             <div className="flex flex-col text-right">
