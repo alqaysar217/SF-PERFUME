@@ -35,9 +35,8 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setErrorMsg(null)
     
-    // إذا أدخلت بريدك الجيميل كاملاً سيستخدمه كما هو
-    // إذا أدخلت اسماً فقط سيضيف له نطاق المتجر تلقائياً
-    const email = username.includes('@') ? username.trim() : `${username.trim()}@sfperfume.com`
+    // ذكاء اصطناعي بسيط: إذا لم يكتب المستخدم @، نفترض أنه يستخدم جيميل كما طلب
+    const email = username.includes('@') ? username.trim() : `${username.trim()}@gmail.com`
     
     try {
       await signInWithEmailAndPassword(auth, email, password)
@@ -50,21 +49,14 @@ export default function AdminLoginPage() {
       let message = "بيانات الدخول غير صحيحة"
       
       if (error.code === 'auth/invalid-credential') {
-        message = "البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد من كتابة البريد كاملاً إذا كان gmail."
+        message = "اسم المستخدم أو كلمة المرور غير صحيحة. تأكد من البيانات المسجلة في Firebase."
       } else if (error.code === 'auth/user-not-found') {
         message = "المستخدم غير موجود. تأكد من إضافة الحساب في Firebase Authentication."
-      } else if (error.code === 'auth/wrong-password') {
-        message = "كلمة المرور خاطئة."
       } else if (error.code === 'auth/too-many-requests') {
         message = "محاولات كثيرة خاطئة. يرجى الانتظار قليلاً."
       }
 
       setErrorMsg(message)
-      toast({ 
-        variant: "destructive", 
-        title: "فشل تسجيل الدخول", 
-        description: message 
-      })
     } finally {
       setIsLoading(false)
     }
@@ -100,30 +92,35 @@ export default function AdminLoginPage() {
         </div>
 
         {errorMsg && (
-          <Alert variant="destructive" className="rounded-2xl border-destructive/20 bg-destructive/5">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-right font-black text-xs">خطأ في الدخول</AlertTitle>
-            <AlertDescription className="text-right text-[10px] font-bold">
-              {errorMsg}
-            </AlertDescription>
+          <Alert variant="destructive" className="rounded-2xl border-destructive/20 bg-destructive/5 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <div className="text-right flex-1">
+                <AlertTitle className="font-black text-xs mb-1">فشل تسجيل الدخول</AlertTitle>
+                <AlertDescription className="text-[10px] font-bold leading-relaxed">
+                  {errorMsg}
+                </AlertDescription>
+              </div>
+            </div>
           </Alert>
         )}
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">البريد الإلكتروني أو اسم المستخدم</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم</label>
               <div className="relative">
                 <UserIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
                   type="text" 
-                  placeholder="مثلاً: alqaysar217@gmail.com"
+                  placeholder="مثلاً: alqaysar217"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
                   required
                 />
               </div>
+              <p className="text-[8px] text-gray-300 font-medium pr-1">سيتم إضافة @gmail.com تلقائياً إذا لم تكتبها</p>
             </div>
 
             <div className="space-y-2 text-right">
@@ -147,7 +144,7 @@ export default function AdminLoginPage() {
             disabled={isLoading}
             className="w-full h-14 bg-luxury-black text-primary hover:bg-black/90 rounded-2xl font-black text-md shadow-xl active:scale-95 transition-all gap-3"
           >
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "تسجيل الدخول الآمن"}
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "دخول آمن"}
           </Button>
         </form>
 
