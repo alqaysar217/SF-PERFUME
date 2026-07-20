@@ -126,7 +126,7 @@ export function Header() {
             <h1 className="text-[11px] font-black tracking-tighter leading-none text-luxury-black">SF PERFUME</h1>
             <div className="flex items-center gap-1 text-[7px] text-gray-400 font-bold uppercase mt-1">
               <ShieldCheck className="w-2 h-2 text-primary" />
-              جلسة عمل مؤمنة
+              دخول آمن للمدير
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ export function Header() {
                   </div>
                   <div className="text-right">
                     <SheetTitle className="font-black text-sm text-luxury-black m-0 p-0">SF PERFUME</SheetTitle>
-                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم المؤمن</p>
+                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter leading-none mt-1">مركز التحكم المعتمد</p>
                   </div>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export function Header() {
               </ScrollArea>
               
               <div className="p-6 border-t border-gray-50 bg-gray-50/50">
-                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest text-center">Cloud Protection Active</p>
+                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest text-center">حماية الخوادم نشطة</p>
               </div>
             </SheetContent>
           </Sheet>
