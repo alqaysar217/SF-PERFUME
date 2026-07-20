@@ -59,17 +59,16 @@ export default function PaymentInfoPage() {
             <div key={acc.id} className="bg-white p-5 rounded-xl border border-gray-50 shadow-sm space-y-4 relative overflow-hidden group luxury-shadow">
               <div className="absolute top-0 right-0 w-1 h-full bg-primary/20" />
               <div className="flex items-center gap-4 text-right">
-                <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center relative overflow-hidden border border-gray-100 shrink-0">
+                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center relative overflow-hidden border border-gray-100 shrink-0 shadow-sm">
                   <Image 
                     src={acc.image || `https://picsum.photos/seed/${acc.bank}/100/100`} 
                     alt={acc.bank} 
                     fill 
-                    className="object-cover opacity-60"
+                    className="object-contain p-1"
                   />
-                  <span className="relative z-10 text-[9px] font-black text-luxury-black text-center px-1 bg-white/40 backdrop-blur-sm rounded-md line-clamp-2">{acc.bank}</span>
                 </div>
                 <div className="flex-1 space-y-0.5">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{acc.bank}</p>
+                  <p className="text-[10px] text-primary font-black uppercase tracking-widest">{acc.bank}</p>
                   <p className="text-sm font-black text-luxury-black">{acc.name}</p>
                 </div>
               </div>
