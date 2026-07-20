@@ -58,7 +58,7 @@ export function ProductForm({ editingItem, brands }: ProductFormProps) {
           </div>
 
           <div className="space-y-2 text-right">
-            <label className="text-[10px] font-bold text-gray-400 px-1">الحجم (مثال: 100 مل أو 40 ملم)</label>
+            <label className="text-[10px] font-bold text-gray-400 px-1">الحجم / القياس (مثال: 100 مل أو 40 ملم)</label>
             <div className="relative">
               <Input name="size" defaultValue={editingItem?.size} placeholder="الحجم / القياس" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
               <Maximize2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
@@ -91,17 +91,17 @@ export function ProductForm({ editingItem, brands }: ProductFormProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2 text-right">
-            <label className="text-[10px] font-bold text-gray-400 px-1">الثبات</label>
-            <div className="relative">
-              <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="مثال: 12+ ساعة" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
-              <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-            </div>
-          </div>
-          <div className="space-y-2 text-right">
             <label className="text-[10px] font-bold text-gray-400 px-1">الفوحان</label>
             <div className="relative">
               <Input name="projection" defaultValue={editingItem?.projection} placeholder="مثال: قوي جداً" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
               <Droplets className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            </div>
+          </div>
+          <div className="space-y-2 text-right">
+            <label className="text-[10px] font-bold text-gray-400 px-1">الثبات</label>
+            <div className="relative">
+              <Input name="longevity" defaultValue={editingItem?.longevity} placeholder="مثال: 12+ ساعة" className="h-12 rounded-xl bg-gray-50 border-none font-bold text-right pr-4" />
+              <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
             </div>
           </div>
         </div>
