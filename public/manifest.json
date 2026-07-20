@@ -1,0 +1,35 @@
+
+{
+  "name": "SF PERFUME - Luxury Fragrance Experience",
+  "short_name": "SF PERFUME",
+  "description": "أرقى أنواع العطور العالمية والساعات الفاخرة في اليمن - حضرموت. تميز معنا بهويتك العطرية.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#C9A227",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "SF PERFUME Home"
+    }
+  ]
+}
