@@ -46,8 +46,7 @@ export default function AdminLoginPage() {
       })
       router.push('/admin')
     } catch (error: any) {
-      console.error("Auth Error:", error.code)
-      
+      // إزالة console.error لتجنب ظهور شاشات الخطأ في بيئة التطوير
       let message = "اسم المستخدم أو كلمة المرور غير صحيحة"
       
       if (error.code === 'auth/invalid-credential') {
