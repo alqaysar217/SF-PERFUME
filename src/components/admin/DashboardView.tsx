@@ -1,8 +1,18 @@
 
 "use client"
 
-import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star, Percent } from "lucide-react"
+import { Package, Trash2, ChevronLeft, LayoutGrid, Award, CreditCard, Star, Percent, TrendingUp } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
 interface DashboardViewProps {
   productsCount: number
@@ -12,6 +22,12 @@ interface DashboardViewProps {
 
 export function DashboardView({ productsCount, offersCount, brandsCount }: DashboardViewProps) {
   const router = useRouter()
+
+  const data = [
+    { name: 'المنتجات', value: productsCount, color: '#C9A227' },
+    { name: 'العروض', value: offersCount, color: '#f97316' },
+    { name: 'الماركات', value: brandsCount, color: '#3b82f6' },
+  ];
 
   const adminActions = [
     { name: "إدارة المنتجات", icon: Package, href: "?tab=products" },
@@ -24,46 +40,42 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
 
   return (
     <div className="space-y-8 animate-fade-in text-right">
-      <div className="bg-white p-6 rounded-[1.2rem] border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden text-right">
+      <div className="bg-white p-6 rounded-xl border border-gray-100 luxury-shadow space-y-4 relative overflow-hidden text-right">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <h2 className="text-lg font-black text-luxury-black">نظام التحكم السحابي</h2>
         <p className="text-gray-400 text-xs font-medium leading-relaxed">إدارة المتجر بالكامل مع حماية البيانات من الحذف المباشر.</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
-          <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
-            <Package className="w-4 h-4" />
-          </div>
-          <div className="text-center">
-            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">المنتجات</p>
-            <p className="text-sm font-black text-luxury-black">{productsCount}</p>
-          </div>
+      {/* Analytics Chart */}
+      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
+        <div className="flex items-center justify-between">
+          <TrendingUp className="w-5 h-5 text-primary" />
+          <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">إحصائيات المخزون</h3>
         </div>
-
-        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
-          <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
-            <Percent className="w-4 h-4" />
-          </div>
-          <div className="text-center">
-            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">العروض</p>
-            <p className="text-sm font-black text-luxury-black">{offersCount}</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-gray-50 shadow-sm space-y-3 luxury-shadow flex flex-col items-center">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
-            <Award className="w-4 h-4" />
-          </div>
-          <div className="text-center">
-            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">الماركات</p>
-            <p className="text-sm font-black text-luxury-black">{brandsCount}</p>
-          </div>
+        <div className="h-[200px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <XAxis 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 'bold' }} 
+              />
+              <Tooltip 
+                cursor={{ fill: 'transparent' }}
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+              />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={40}>
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Quick Actions List: Icon first (Right) then text */}
+      {/* Quick Actions List */}
       <div className="space-y-6">
         <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-right px-2">روابط سريعة</h3>
         <div className="grid grid-cols-1 gap-4">
@@ -71,10 +83,9 @@ export function DashboardView({ productsCount, offersCount, brandsCount }: Dashb
             <button 
               key={i}
               onClick={() => router.push(`/admin${item.href}`)}
-              className="bg-white p-5 rounded-xl border border-gray-50 flex flex-row items-center justify-between group luxury-shadow text-right"
+              className="bg-white p-5 rounded-xl border border-gray-50 flex flex-row items-center justify-between group luxury-shadow text-right active:scale-95 transition-all"
             >
               <div className="flex flex-row items-center gap-4 text-right flex-1">
-                {/* Icon comes first in RTL layout (Right side) */}
                 <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:bg-primary/5 transition-all shrink-0">
                   <item.icon className="w-6 h-6" />
                 </div>
