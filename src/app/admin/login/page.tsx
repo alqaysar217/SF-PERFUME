@@ -32,6 +32,7 @@ export default function AdminLoginPage() {
   const formatEmail = (val: string) => {
     const trimmed = val.trim()
     if (!trimmed) return ""
+    // إذا كان لا يحتوي على @، نفترض أنه Gmail لسهولة الدخول كما طلب المستخدم
     return trimmed.includes('@') ? trimmed : `${trimmed}@gmail.com`
   }
 
@@ -143,12 +144,12 @@ export default function AdminLoginPage() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم أو البريد</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم أو البريد الإلكتروني</label>
               <div className="relative">
                 <UserIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
                   type="text" 
-                  placeholder="مثلاً: alqaysar217"
+                  placeholder="ادخل اسم المستخدم أو بريدك الإلكتروني"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
