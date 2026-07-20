@@ -52,10 +52,10 @@ export default function AdminLoginPage() {
       })
       router.push('/admin')
     } catch (error: any) {
-      let message = "بيانات الدخول غير صحيحة"
+      let message = "اسم المستخدم أو كلمة المرور غير صحيحة"
       
       if (error.code === 'auth/invalid-credential') {
-        message = "اسم المستخدم أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات المسجلة."
+        message = "بيانات الدخول غير صحيحة. يرجى التأكد من البريد وكلمة المرور."
       } else if (error.code === 'auth/too-many-requests') {
         message = "محاولات كثيرة خاطئة. يرجى الانتظار قليلاً."
       }
@@ -90,7 +90,7 @@ export default function AdminLoginPage() {
       toast({ 
         variant: "destructive",
         title: "خطأ", 
-        description: "فشل إرسال الرابط. تأكد من صحة البريد المسجل في Firebase." 
+        description: "فشل إرسال الرابط. تأكد من صحة البريد المسجل." 
       })
     } finally {
       setIsResetLoading(false)
@@ -148,7 +148,7 @@ export default function AdminLoginPage() {
                 <UserIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
                   type="text" 
-                  placeholder="اكتب اسم المستخدم أو البريد"
+                  placeholder="مثلاً: alqaysar217"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
@@ -158,17 +158,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-2 text-right">
-              <div className="flex justify-between items-center px-1">
-                <button 
-                  type="button" 
-                  onClick={handleForgotPassword}
-                  disabled={isResetLoading}
-                  className="text-[9px] font-black text-primary hover:underline transition-all disabled:opacity-50"
-                >
-                  {isResetLoading ? "جاري الإرسال..." : "نسيت كلمة المرور؟"}
-                </button>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">كلمة المرور</label>
-              </div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">كلمة المرور</label>
               <div className="relative">
                 <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
@@ -179,6 +169,16 @@ export default function AdminLoginPage() {
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
                   required
                 />
+              </div>
+              <div className="flex justify-end px-1">
+                <button 
+                  type="button" 
+                  onClick={handleForgotPassword}
+                  disabled={isResetLoading}
+                  className="text-[10px] font-black text-primary hover:underline transition-all disabled:opacity-50"
+                >
+                  {isResetLoading ? "جاري الإرسال..." : "نسيت كلمة المرور؟"}
+                </button>
               </div>
             </div>
           </div>
