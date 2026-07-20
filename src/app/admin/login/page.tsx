@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Lock, User as UserIcon, ShieldCheck, ArrowRight, Loader2 } from "lucide-react"
+import { Lock, User as UserIcon, ShieldCheck, ArrowRight, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
@@ -11,11 +11,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { useAuth, useUser } from "@/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const router = useRouter()
   const auth = useAuth()
   const { user, loading: authLoading } = useUser(auth)
@@ -31,6 +33,7 @@ export default function AdminLoginPage() {
     if (!auth) return
 
     setIsLoading(true)
+    setErrorMsg(null)
     
     // تحويل اسم المستخدم لبريد إلكتروني مقبول في Firebase إذا لم يكن كذلك
     const email = username.includes('@') ? username : `${username}@sfperfume.com`
@@ -43,11 +46,25 @@ export default function AdminLoginPage() {
       })
       router.push('/admin')
     } catch (error: any) {
-      console.error(error)
+      console.error("Auth Error:", error.code)
+      
+      let message = "اسم المستخدم أو كلمة المرور غير صحيحة"
+      
+      if (error.code === 'auth/invalid-credential') {
+        message = "بيانات الدخول غير صحيحة. يرجى التأكد من تفعيل Email/Password في Firebase Console وإضافة المستخدم."
+      } else if (error.code === 'auth/user-not-found') {
+        message = "المستخدم غير موجود في سجلات النظام."
+      } else if (error.code === 'auth/wrong-password') {
+        message = "كلمة المرور التي أدخلتها غير صحيحة."
+      } else if (error.code === 'auth/too-many-requests') {
+        message = "محاولات كثيرة خاطئة. تم حظر الدخول مؤقتاً لحمايتك."
+      }
+
+      setErrorMsg(message)
       toast({ 
         variant: "destructive", 
         title: "فشل تسجيل الدخول", 
-        description: "اسم المستخدم أو كلمة المرور غير صحيحة" 
+        description: message 
       })
     } finally {
       setIsLoading(false)
@@ -82,6 +99,16 @@ export default function AdminLoginPage() {
             <p className="text-[10px] text-primary font-bold uppercase tracking-[0.3em]">بوابة الوصول الخاصة بالمدير</p>
           </div>
         </div>
+
+        {errorMsg && (
+          <Alert variant="destructive" className="rounded-2xl border-destructive/20 bg-destructive/5">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle className="text-right font-black text-xs">خطأ في الدخول</AlertTitle>
+            <AlertDescription className="text-right text-[10px] font-bold">
+              {errorMsg}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
