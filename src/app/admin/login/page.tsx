@@ -10,13 +10,14 @@ import { toast } from "@/hooks/use-toast"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth, useUser } from "@/firebase"
-import { signInWithEmailAndPassword } from "firebase/auth"
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isResetLoading, setIsResetLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const router = useRouter()
   const auth = useAuth()
@@ -28,6 +29,12 @@ export default function AdminLoginPage() {
     }
   }, [user, authLoading, router])
 
+  const formatEmail = (val: string) => {
+    const trimmed = val.trim()
+    if (!trimmed) return ""
+    return trimmed.includes('@') ? trimmed : `${trimmed}@gmail.com`
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!auth) return
@@ -35,8 +42,7 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setErrorMsg(null)
     
-    // ذكاء اصطناعي بسيط: إذا لم يكتب المستخدم @، نفترض أنه يستخدم جيميل كما طلب
-    const email = username.includes('@') ? username.trim() : `${username.trim()}@gmail.com`
+    const email = formatEmail(username)
     
     try {
       await signInWithEmailAndPassword(auth, email, password)
@@ -49,9 +55,7 @@ export default function AdminLoginPage() {
       let message = "بيانات الدخول غير صحيحة"
       
       if (error.code === 'auth/invalid-credential') {
-        message = "اسم المستخدم أو كلمة المرور غير صحيحة. تأكد من البيانات المسجلة في Firebase."
-      } else if (error.code === 'auth/user-not-found') {
-        message = "المستخدم غير موجود. تأكد من إضافة الحساب في Firebase Authentication."
+        message = "اسم المستخدم أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات المسجلة."
       } else if (error.code === 'auth/too-many-requests') {
         message = "محاولات كثيرة خاطئة. يرجى الانتظار قليلاً."
       }
@@ -59,6 +63,37 @@ export default function AdminLoginPage() {
       setErrorMsg(message)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async () => {
+    if (!auth) return
+    if (!username) {
+      toast({ 
+        variant: "destructive",
+        title: "تنبيه", 
+        description: "يرجى كتابة اسم المستخدم أو البريد أولاً لإرسال رابط الاستعادة" 
+      })
+      return
+    }
+
+    setIsResetLoading(true)
+    const email = formatEmail(username)
+
+    try {
+      await sendPasswordResetEmail(auth, email)
+      toast({ 
+        title: "تم إرسال الرابط", 
+        description: `تم إرسال رابط تعيين كلمة المرور إلى البريد: ${email}` 
+      })
+    } catch (error: any) {
+      toast({ 
+        variant: "destructive",
+        title: "خطأ", 
+        description: "فشل إرسال الرابط. تأكد من صحة البريد المسجل في Firebase." 
+      })
+    } finally {
+      setIsResetLoading(false)
     }
   }
 
@@ -108,23 +143,32 @@ export default function AdminLoginPage() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">اسم المستخدم أو البريد</label>
               <div className="relative">
                 <UserIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
                   type="text" 
-                  placeholder="مثلاً: alqaysar217"
+                  placeholder="اكتب اسم المستخدم أو البريد"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="h-14 pr-12 rounded-2xl border-gray-100 bg-white shadow-sm font-bold focus:border-primary transition-all text-right"
                   required
                 />
               </div>
-              <p className="text-[8px] text-gray-300 font-medium pr-1">سيتم إضافة @gmail.com تلقائياً إذا لم تكتبها</p>
             </div>
 
             <div className="space-y-2 text-right">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pr-1">كلمة المرور</label>
+              <div className="flex justify-between items-center px-1">
+                <button 
+                  type="button" 
+                  onClick={handleForgotPassword}
+                  disabled={isResetLoading}
+                  className="text-[9px] font-black text-primary hover:underline transition-all disabled:opacity-50"
+                >
+                  {isResetLoading ? "جاري الإرسال..." : "نسيت كلمة المرور؟"}
+                </button>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">كلمة المرور</label>
+              </div>
               <div className="relative">
                 <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                 <Input 
