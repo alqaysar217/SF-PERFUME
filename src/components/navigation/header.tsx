@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2, X } from "lucide-react"
+import { Search, ShoppingBag, MapPin, ArrowRight, Menu, LogOut, Package, Award, CreditCard, HelpCircle, Star, Image as ImageIcon, LayoutDashboard, Trash2, X, ShieldCheck } from "lucide-react"
 import Image from "next/image"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -110,7 +110,6 @@ export function Header() {
 
   if (!mounted) return <header className="h-16 bg-white/95" />
 
-  // إظهار هيدر الإدارة فقط إذا كان هناك مستخدم مسجل دخوله
   if (isAdmin && user && !isAdminLogin) {
     return (
       <header className="bg-white/95 backdrop-blur-md sticky top-0 z-50 h-16 px-4 flex items-center justify-between border-b border-gray-100 md:max-w-md md:mx-auto w-full">
