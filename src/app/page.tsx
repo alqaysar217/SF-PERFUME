@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { LayoutGrid, User, UserRound, Watch, Sparkles, ArrowLeft, Loader2, Star, Quote, MapPin } from "lucide-react"
+import { LayoutGrid, User, UserRound, Watch, Sparkles, ArrowLeft, Loader2, Star, Quote, MapPin, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductCard } from "@/components/shared/product-card"
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useFirestore } from "@/firebase/provider"
 import { collection, query, limit } from "firebase/firestore"
 import { useCollection } from "@/firebase/firestore/use-collection"
+import { Button } from "@/components/ui/button"
 
 const CATEGORIES_WITH_ICONS = [
   { name: "الكل", icon: LayoutGrid, id: 'all' },
@@ -22,17 +23,18 @@ export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true)
   const [activeTab, setActiveTab] = useState("الكل")
   const [currentBanner, setCurrentBanner] = useState(0)
+  const [reviewsLimit, setReviewsLimit] = useState(3)
   const db = useFirestore()
 
   const productsQuery = useMemo(() => db ? query(collection(db, "products"), limit(50)) : null, [db])
   const brandsQuery = useMemo(() => db ? query(collection(db, "brands")) : null, [db])
   const bannersQuery = useMemo(() => db ? query(collection(db, "banners")) : null, [db])
-  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews"), limit(3)) : null, [db])
+  const reviewsQuery = useMemo(() => db ? query(collection(db, "reviews")) : null, [db])
   
   const { data: productsRaw, loading: productsLoading } = useCollection<any>(productsQuery)
   const { data: brands, loading: brandsLoading } = useCollection<any>(brandsQuery)
   const { data: banners } = useCollection<any>(bannersQuery)
-  const { data: reviews } = useCollection<any>(reviewsQuery)
+  const { data: reviewsRaw, loading: reviewsLoading } = useCollection<any>(reviewsQuery)
 
   useEffect(() => {
     if (banners.length === 0) return
@@ -76,6 +78,20 @@ export default function HomePage() {
       return true
     }).slice(0, 5);
   }, [productsRaw, activeTab])
+
+  const reviews = useMemo(() => {
+    if (!reviewsRaw) return [];
+    return [...reviewsRaw].sort((a, b) => {
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
+  }, [reviewsRaw]);
+
+  const visibleReviews = useMemo(() => reviews.slice(0, reviewsLimit), [reviews, reviewsLimit]);
 
   if (showSplash) {
     return (
@@ -173,7 +189,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-4 space-y-4 pt-4 pb-12">
+        <section className="px-4 space-y-4 pt-4 pb-12 border-t border-gray-50">
           <div className="flex justify-between items-center px-1">
             <h3 className="text-[10px] font-black text-luxury-black uppercase tracking-widest">الماركات العالمية</h3>
             <Link href="/brands" className="text-primary text-[10px] font-black flex items-center gap-1">
@@ -200,38 +216,59 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-4 pb-12 space-y-6">
+        <section className="px-4 pb-12 space-y-6 border-t border-gray-50 pt-8">
           <div className="flex justify-between items-center px-1">
-            <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">آراء العملاء</h3>
+            <h3 className="text-sm font-black text-luxury-black uppercase tracking-widest">قالوا عنا</h3>
             <div className="flex items-center gap-1 text-primary">
-              <Star className="w-3.5 h-3.5 fill-current" />
+              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
               <span className="text-[11px] font-black">4.9 / 5</span>
             </div>
           </div>
           
           <div className="space-y-4">
-            {reviews.length > 0 ? (
-              reviews.map((review: any) => (
-                <div key={review.id} className="bg-white p-6 rounded-xl border border-gray-50 shadow-sm space-y-4 relative overflow-hidden">
-                  <Quote className="absolute top-4 left-4 w-8 h-8 text-primary/5 -scale-x-100" />
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-primary border border-gray-100 overflow-hidden relative">
-                      {review.image ? <Image src={review.image} alt={review.name} fill className="object-cover" /> : <User className="w-5 h-5" />}
-                    </div>
-                    <div className="text-right">
-                      <h4 className="text-xs font-black text-luxury-black">{review.name}</h4>
-                      <div className="flex gap-0.5 mt-0.5 justify-end">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={cn("w-2.5 h-2.5", i < (review.rating || 5) ? "fill-primary text-primary" : "text-gray-200")} />
-                        ))}
+            {reviewsLoading ? (
+               <div className="py-10 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
+            ) : visibleReviews.length > 0 ? (
+              <>
+                {visibleReviews.map((review: any) => (
+                  <div key={review.id} className="bg-white p-5 rounded-2xl border border-gray-50 shadow-sm relative overflow-hidden luxury-shadow transition-all animate-fade-in">
+                    <Quote className="absolute -top-1 -left-1 w-12 h-12 text-primary/5 -scale-x-100 rotate-12" />
+                    
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary border border-primary/10 overflow-hidden relative shadow-inner">
+                          {review.image ? <Image src={review.image} alt={review.name} fill className="object-cover" /> : <User className="w-4 h-4" />}
+                        </div>
+                        <div className="text-right">
+                          <h4 className="text-[11px] font-black text-luxury-black leading-none mb-1">{review.name}</h4>
+                          <div className="flex gap-0.5 justify-end">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} className={cn("w-2 h-2", i < (review.rating || 5) ? "fill-primary text-primary" : "text-gray-200")} />
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                      <span className="bg-gray-50 px-2 py-0.5 rounded-full text-[7px] font-black text-gray-300 uppercase tracking-widest border border-gray-100">Verified Client</span>
                     </div>
+                    
+                    <p className="text-[10px] text-gray-500 font-bold leading-relaxed pr-1 text-right relative z-10">
+                      "{review.content}"
+                    </p>
                   </div>
-                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic pr-2 text-right">"{review.content}"</p>
-                </div>
-              ))
+                ))}
+                
+                {reviewsLimit < reviews.length && (
+                  <button 
+                    onClick={() => setReviewsLimit(prev => prev + 3)}
+                    className="w-full h-12 rounded-xl border border-dashed border-gray-200 flex items-center justify-center gap-2 text-gray-400 font-black text-[10px] hover:border-primary/50 hover:text-primary transition-all active:scale-95"
+                  >
+                    عرض المزيد من الآراء
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </>
             ) : (
-              <div className="text-center py-8 text-gray-300 font-bold text-[10px] uppercase tracking-widest">نعتز دائماً برأيكم</div>
+              <div className="text-center py-8 text-gray-300 font-bold text-[10px] uppercase tracking-widest italic">كن أول من يشاركنا رأيه الفاخر</div>
             )}
           </div>
         </section>

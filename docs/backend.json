@@ -64,6 +64,7 @@
         "content": { "type": "string" },
         "image": { "type": "string" },
         "rating": { "type": "number" },
+        "displayOrder": { "type": "number", "description": "Manual display order/priority" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "content", "rating"]

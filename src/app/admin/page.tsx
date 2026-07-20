@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -78,6 +79,18 @@ function AdminDashboardContent() {
     });
   }, [productsRaw]);
 
+  const reviews = useMemo(() => {
+    if (!reviewsRaw) return [];
+    return [...reviewsRaw].sort((a, b) => {
+      const orderA = a.displayOrder ?? 999;
+      const orderB = b.displayOrder ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
+  }, [reviewsRaw]);
+
   const brands = useMemo(() => brandsRaw ? [...brandsRaw].sort((a, b) => a.name?.localeCompare(b.name)) : [], [brandsRaw]);
   const trashItems = useMemo(() => trashItemsRaw ? [...trashItemsRaw].sort((a, b) => (b.deletedAt?.seconds || 0) - (a.deletedAt?.seconds || 0)) : [], [trashItemsRaw]);
 
@@ -98,9 +111,8 @@ function AdminDashboardContent() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // فحص أمني: منع رفع صور أكبر من 800 كيلوبايت لمنع تعطل قاعدة البيانات (DoS Protection)
       if (file.size > 800 * 1024) {
-        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت للحفاظ على استقرار المتجر." })
+        toast({ variant: "destructive", title: "حجم الصورة كبير", description: "يرجى اختيار صورة أقل من 800 كيلوبايت." })
         return
       }
       const reader = new FileReader()
@@ -125,7 +137,10 @@ function AdminDashboardContent() {
       if (data.oldPrice) data.oldPrice = Number(data.oldPrice)
       data.isOffer = data.isOffer === 'on' || data.isOffer === 'true'
     }
-    if (activeTab === 'reviews') data.rating = Number(data.rating)
+    if (activeTab === 'reviews') {
+      data.rating = Number(data.rating)
+      data.displayOrder = Number(data.displayOrder) || 1
+    }
 
     const finalData = { ...data, updatedAt: serverTimestamp() };
 
@@ -148,7 +163,7 @@ function AdminDashboardContent() {
       });
     }
 
-    toast({ title: "تم الحفظ", description: "تم تحديث البيانات بنجاح وأمان" })
+    toast({ title: "تم الحفظ بنجاح" })
     setIsModalOpen(false)
     setEditingItem(null)
     setImagePreview(null)
@@ -198,12 +213,12 @@ function AdminDashboardContent() {
 
   const filteredItems = useMemo(() => {
     const map: any = { 
-      products, brands, accounts: accountsRaw, faqs: faqsRaw, reviews: reviewsRaw, banners: bannersRaw 
+      products, brands, accounts: accountsRaw, faqs: faqsRaw, reviews, banners: bannersRaw 
     }
     let items = map[activeTab] || []
     if (activeTab === "products" && isOfferFilter) return items.filter((p: any) => p.isOffer)
     return items
-  }, [activeTab, products, brands, accountsRaw, faqsRaw, reviewsRaw, bannersRaw, isOfferFilter])
+  }, [activeTab, products, brands, accountsRaw, faqsRaw, reviews, bannersRaw, isOfferFilter])
 
   const offersCount = useMemo(() => products.filter((p: any) => p.isOffer).length, [products])
 
